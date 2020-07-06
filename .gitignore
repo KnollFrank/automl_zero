@@ -3,5 +3,6 @@
 /.idea/
 /binary_cifar10_data/
 /bazel-bin/
-/bazel-bin/
 /bazel-out/
+/bazel-automl_zero/
+/bazel-testlogs/
