@@ -1,0 +1,7 @@
+/bin/
+/.clwb/
+/.idea/
+/binary_cifar10_data/
+/bazel-bin/
+/bazel-bin/
+/bazel-out/
