@@ -42,7 +42,7 @@ using ::testing::Test;
 constexpr double kTolerance = 0.0001;
 
 // Must match the number of ops in the op enum in instruction.proto.
-constexpr IntegerT kNumOps = 65;
+constexpr IntegerT kNumOps = 66;
 
 enum DiffId : IntegerT {
   kNoDifference = 0,

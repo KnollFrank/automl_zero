@@ -106,8 +106,13 @@ class Instruction {
       const FloatDataSetter& float_data_setter_0,
       const FloatDataSetter& float_data_setter_1,
       const FloatDataSetter& float_data_setter_2);
+  Instruction(
+          const Op op,
+          const AddressT out,
+          const AddressT in1,
+          const FloatDataSetter &float_data_setter);
 
-  // Constructor that randomizes all parameters.
+    // Constructor that randomizes all parameters.
   Instruction(Op op, RandomGenerator* rand_gen);
 
   // Copy constructor that randomly alters a parameter.

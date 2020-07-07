@@ -1,3 +1,6 @@
 frankknoll@frankknoll-XPS-13-9370:~/Schreibtisch/ml/google-research/automl_zero$
 bazel build --compilation_mode=dbg //:run_search_experiment
 bazel test //:mutator_test
+
+alle Tests ausführen:
+bazel query //... | xargs bazel test

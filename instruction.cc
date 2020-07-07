@@ -112,6 +112,20 @@ Instruction::Instruction(
       float_data_1_(float_data_setter_1.value_),
       float_data_2_(0.0) {}
 
+    Instruction::Instruction(
+            const Op op,
+            const AddressT out,
+            const AddressT in1,
+            const FloatDataSetter& float_data_setter)
+            : op_(op),
+              in1_(in1),
+              in2_(0),
+              out_(out),
+              activation_data_(0.0),
+              float_data_0_(float_data_setter.value_),
+              float_data_1_(0.0),
+              float_data_2_(0.0) {}
+
 Instruction::Instruction(
     const Op op, const AddressT out,
     const FloatDataSetter& float_data_setter_0,
