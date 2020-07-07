@@ -3,4 +3,5 @@ bazel build --compilation_mode=dbg //:run_search_experiment
 bazel test //:mutator_test
 
 alle Tests ausführen:
-bazel query //... | xargs bazel test
+bazel test //...
+(oder: bazel query //... | xargs bazel test)
