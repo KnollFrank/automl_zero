@@ -1122,6 +1122,11 @@ namespace automl_zero {
                        << std::endl;
                 break;
             }
+            case SCALAR_VECTOR_AT_INDEX_SET_OP: {
+                // "[" << float_data_0_ << "]"
+                stream << "  s" << out_ << " = v" << in1_ << "[" << float_data_0_ << "]" << std::endl;
+                break;
+            }
                 // Do not add default clause. All ops should be supported here.
         }
         std::string instr_str = stream.str();
