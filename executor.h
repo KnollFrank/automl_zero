@@ -78,16 +78,22 @@ namespace automl_zero {
     private:
         FRIEND_TEST(ExecutorTest, PredictComponentFunctionRuns
         );
+
         FRIEND_TEST(ExecutorTest, LearnComponentFunctionRuns
         );
+
         FRIEND_TEST(ExecutorTest, ItereatesThroughFeatures
         );
+
         FRIEND_TEST(ExecutorTest, ItereatesThroughLabelsDuringTraining
         );
+
         FRIEND_TEST(ExecutorTest, ValidationDoesNotSeeLabels
         );
+
         FRIEND_TEST(ExecutorTest, TrainOptimizationsAreCorrect
         );
+
         FRIEND_TEST(ExecutorTest, MultiEpochTrainingWorksCorrectly
         );
 
@@ -146,7 +152,10 @@ namespace automl_zero {
                               TaskBuffer<F> *buffer,
                               RandomGenerator *rand_gen);
 
-// Maps the interval [0.0, inf] to [0.0, 1.0]. The squashing is done by an
+    template<FeatureIndexT F>
+    Vector<F> ExecutePredict(const Algorithm &algorithm, const Vector<F> &input);
+
+    // Maps the interval [0.0, inf] to [0.0, 1.0]. The squashing is done by an
 // arctan, so that losses in [0.0, 0.5] approximately undergo an affine
 // transformation.
     double FlipAndSquash(double value);
@@ -980,6 +989,20 @@ namespace automl_zero {
     };
 
     template<FeatureIndexT F>
+    struct VectorPredictionGetter {
+        inline static Vector<F> Get(Memory<F> *memory) {
+            return memory->vector_[kPredictionsVectorAddress];
+        }
+    };
+
+    template<FeatureIndexT F>
+    struct VectorInputPredictionAssigner {
+        inline static void Assign(const Vector<F> &input, Memory<F> *memory) {
+            memory->vector_[kFeaturesVectorAddress] = input;
+        }
+    };
+
+    template<FeatureIndexT F>
     struct ErrorComputer {
         inline static double Compute(const Memory<F> &memory, const Scalar &label) {
             return std::abs(label - memory.scalar_[kPredictionsScalarAddress]);
@@ -1380,6 +1403,21 @@ namespace automl_zero {
             *valid_label_it = PredictionGetter<F>::Get(memory);
             ++valid_label_it;
         }
+    }
+
+    template<FeatureIndexT F>
+    Vector<F> ExecutePredict(const Algorithm &algorithm, const Vector<F> &input) {
+        std::mt19937 bit_gen(10000);
+        RandomGenerator rand_gen(&bit_gen);
+        Memory<4> memory;
+        memory.Wipe();
+
+        VectorInputPredictionAssigner<F>::Assign(input, &memory);
+        for (const std::shared_ptr<const Instruction> &instruction: algorithm.predict_) {
+            ExecuteInstruction(*instruction, &rand_gen, &memory);
+        }
+        const Vector<F> &output = VectorPredictionGetter<F>::Get(&memory);
+        return output;
     }
 
     constexpr double kMinusTwoOverPi = -0.63661977236758138243;
