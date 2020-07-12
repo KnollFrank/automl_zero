@@ -452,6 +452,19 @@ namespace automl_zero {
         memory->scalar_[instruction.out_] = IndexToFloat(minIndex - v.begin(), F);
     }
 
+    // swap(v1, s2, s3)
+    template<FeatureIndexT F>
+    inline void ExecuteVectorSwapOp(
+            const Instruction &instruction, RandomGenerator *rand_gen,
+            Memory<F> *memory) {
+        const FeatureIndexT index1 = FloatToIndex(memory->scalar_[instruction.in1_], F);
+        const FeatureIndexT index2 = FloatToIndex(memory->scalar_[instruction.in2_], F);
+
+        const double tmp = memory->vector_[instruction.out_](index1);
+        memory->vector_[instruction.out_](index1) = memory->vector_[instruction.out_](index2);
+        memory->vector_[instruction.out_](index2) = tmp;
+    }
+
     template<FeatureIndexT F>
     inline void ExecuteVectorReciprocalOp(
             const Instruction &instruction, RandomGenerator *rand_gen,
@@ -913,8 +926,8 @@ namespace automl_zero {
             &ExecuteVectorGaussianSetOp,       // VECTOR_GAUSSIAN_SET_OP = 63
             &ExecuteMatrixGaussianSetOp,       // MATRIX_GAUSSIAN_SET_OP = 64
             &ExecuteScalarVectorAtIndexSetOp,  // SCALAR_VECTOR_AT_INDEX_SET_OP = 65
-            &ExecuteVectorArgMinOp,             // UNSUPPORTED_OP = 66
-            &ExecuteUnsupportedOp,             // UNSUPPORTED_OP = 67
+            &ExecuteVectorArgMinOp,            // VECTOR_ARG_MIN_OP = 66
+            &ExecuteVectorSwapOp,              // VECTOR_SWAP_OP = 67
             &ExecuteUnsupportedOp,             // UNSUPPORTED_OP = 68
             &ExecuteUnsupportedOp,             // UNSUPPORTED_OP = 69
             &ExecuteUnsupportedOp,             // UNSUPPORTED_OP = 70

@@ -1521,6 +1521,21 @@ namespace automl_zero {
         EXPECT_DOUBLE_EQ(memory_.scalar_[1], 20.0);
     }
 
+    // swap(v1, s2, s3)
+    TEST_F(ExecuteInstructionTest, VectorArithmeticRelated_VectorSwapOp) {
+        // Given
+        const Instruction &instruction = Instruction(VECTOR_SWAP_OP, 2, 3, 1);
+        memory_.vector_[1] = Vector<4>(((const vector<double>) {0.0, 10.0, 20.0, 30.0}).data());
+        memory_.scalar_[2] = IndexToFloat(0, 4);
+        memory_.scalar_[3] = IndexToFloat(2, 4);
+
+        // When
+        ExecuteInstruction(instruction, &train_rand_gen_, &memory_);
+
+        // Then
+        ASSERT_EQ(asStdVector(memory_.vector_[1]), vector<double>({20.0, 10.0, 0.0, 30.0}));
+    }
+
     // s5 = arg_min(v3, 1):
     // v3 = {v3[0], v3[1], v3[2], v3[3]}
     // s5 is the index within v3 of the minimal element of v3 starting at index 1, e.g. {v3[1], v3[2], v3[3]}
