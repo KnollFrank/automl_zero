@@ -1134,8 +1134,11 @@ namespace automl_zero {
                 break;
             }
             case VECTOR_ARG_MIN_OP: {
-                // s5 = arg_min(v3, 1)
-                stream << "  s" << out_ << " = arg_min(v" << in1_ << ", " << float_data_0_ << ")" << std::endl;
+                stream << "  s" << out_ << " = arg_min(v" << in1_ << ", s" << in2_ << ")" << std::endl;
+                break;
+            }
+            case VECTOR_SWAP_OP: {
+                stream << "  swap(v" << out_ << ", s" << in1_ << ", s" << in2_ << ")" << std::endl;
                 break;
             }
                 // Do not add default clause. All ops should be supported here.

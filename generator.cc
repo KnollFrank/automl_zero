@@ -442,31 +442,9 @@ namespace automl_zero {
                 setup_size_init_, no_op_instruction, &algorithm.setup_);
 
         // define predict function
-        algorithm.predict_.emplace_back(make_shared<const Instruction>(
-                SCALAR_VECTOR_AT_INDEX_SET_OP,
-                kPredictionsScalarAddress,
-                kFeaturesVectorAddress,
-                FloatDataSetter(IndexToFloat(2, 4))));
-        algorithm.predict_.emplace_back(make_shared<const Instruction>(
-                VECTOR_CONST_SET_OP,
-                kPredictionsVectorAddress,
-                FloatDataSetter(IndexToFloat(0, 4)),
-                FloatDataSetter(2)));
-        algorithm.predict_.emplace_back(make_shared<const Instruction>(
-                VECTOR_CONST_SET_OP,
-                kPredictionsVectorAddress,
-                FloatDataSetter(IndexToFloat(1, 4)),
-                FloatDataSetter(5)));
-        algorithm.predict_.emplace_back(make_shared<const Instruction>(
-                VECTOR_CONST_SET_OP,
-                kPredictionsVectorAddress,
-                FloatDataSetter(IndexToFloat(2, 4)),
-                FloatDataSetter(12)));
-        algorithm.predict_.emplace_back(make_shared<const Instruction>(
-                VECTOR_CONST_SET_OP,
-                kPredictionsVectorAddress,
-                FloatDataSetter(IndexToFloat(3, 4)),
-                FloatDataSetter(30)));
+        createPredictInstuctionsWhichSortUpToIndex(algorithm, 0);
+        createPredictInstuctionsWhichSortUpToIndex(algorithm, 1);
+        createPredictInstuctionsWhichSortUpToIndex(algorithm, 2);
         PadComponentFunctionWithInstruction(
                 predict_size_init_, no_op_instruction, &algorithm.predict_);
 
@@ -475,5 +453,25 @@ namespace automl_zero {
                 learn_size_init_, no_op_instruction, &algorithm.learn_);
 
         return algorithm;
+    }
+
+    void Generator::createPredictInstuctionsWhichSortUpToIndex(Algorithm &algorithm, const int i) const {
+        // s0 = i;
+        algorithm.predict_.emplace_back(std::make_shared<const Instruction>(
+                SCALAR_CONST_SET_OP,
+                0,
+                ActivationDataSetter(i)));
+        // s1 = arg_min(v0, s0);
+        algorithm.predict_.emplace_back(std::make_shared<const Instruction>(
+                VECTOR_ARG_MIN_OP,
+                0,
+                0,
+                1));
+        // swap(v0, s0, s1);
+        algorithm.predict_.emplace_back(std::make_shared<const Instruction>(
+                VECTOR_SWAP_OP,
+                0,
+                1,
+                0));
     }
 }  // namespace automl_zero

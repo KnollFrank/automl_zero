@@ -440,16 +440,16 @@ namespace automl_zero {
         return result;
     }
 
-    // s5 = arg_min(v3, 1)
+    // s5 = arg_min(v3, s1)
     template<FeatureIndexT F>
     inline void ExecuteVectorArgMinOp(
             const Instruction &instruction, RandomGenerator *rand_gen,
             Memory<F> *memory) {
         const std::vector<double> v = asStdVector(memory->vector_[instruction.in1_]);
-        const FeatureIndexT index = FloatToIndex(instruction.GetFloatData0(), F);
+        const FeatureIndexT index = memory->scalar_[instruction.in2_];
         const auto begin = v.begin() + index;
         const auto minIndex = std::min_element(begin, v.end());
-        memory->scalar_[instruction.out_] = IndexToFloat(minIndex - v.begin(), F);
+        memory->scalar_[instruction.out_] = minIndex - v.begin();
     }
 
     // swap(v1, s2, s3)
@@ -457,8 +457,8 @@ namespace automl_zero {
     inline void ExecuteVectorSwapOp(
             const Instruction &instruction, RandomGenerator *rand_gen,
             Memory<F> *memory) {
-        const FeatureIndexT index1 = FloatToIndex(memory->scalar_[instruction.in1_], F);
-        const FeatureIndexT index2 = FloatToIndex(memory->scalar_[instruction.in2_], F);
+        const FeatureIndexT index1 = memory->scalar_[instruction.in1_];
+        const FeatureIndexT index2 = memory->scalar_[instruction.in2_];
 
         const double tmp = memory->vector_[instruction.out_](index1);
         memory->vector_[instruction.out_](index1) = memory->vector_[instruction.out_](index2);
@@ -1022,7 +1022,7 @@ namespace automl_zero {
     template<FeatureIndexT F>
     struct VectorPredictionGetter {
         inline static Vector<F> Get(Memory<F> *memory) {
-            return memory->vector_[kPredictionsVectorAddress];
+            return memory->vector_[kFeaturesVectorAddress];
         }
     };
 

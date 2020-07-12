@@ -190,6 +190,7 @@ namespace automl_zero {
                 nullptr);  // rand_gen, irrelevant.
 
         Algorithm algorithm = generator.SortAlgorithm();
+        std::string str = algorithm.ToReadable();
         const Vector<4> input = {12, 30, 5, 2};
 
         // When

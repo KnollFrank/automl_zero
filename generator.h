@@ -114,6 +114,8 @@ namespace automl_zero {
         RandomGenerator *rand_gen_;
         Randomizer randomizer_;
         std::shared_ptr<const Instruction> no_op_instruction_;
+
+        void createPredictInstuctionsWhichSortUpToIndex(Algorithm &algorithm, const int i) const;
     };
 
 }  // namespace automl_zero

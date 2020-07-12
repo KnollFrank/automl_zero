@@ -1526,8 +1526,8 @@ namespace automl_zero {
         // Given
         const Instruction &instruction = Instruction(VECTOR_SWAP_OP, 2, 3, 1);
         memory_.vector_[1] = Vector<4>(((const vector<double>) {0.0, 10.0, 20.0, 30.0}).data());
-        memory_.scalar_[2] = IndexToFloat(0, 4);
-        memory_.scalar_[3] = IndexToFloat(2, 4);
+        memory_.scalar_[2] = 0;
+        memory_.scalar_[3] = 2;
 
         // When
         ExecuteInstruction(instruction, &train_rand_gen_, &memory_);
@@ -1536,17 +1536,13 @@ namespace automl_zero {
         ASSERT_EQ(asStdVector(memory_.vector_[1]), vector<double>({20.0, 10.0, 0.0, 30.0}));
     }
 
-    // s5 = arg_min(v3, 1):
+    // s5 = arg_min(v3, s1):
     // v3 = {v3[0], v3[1], v3[2], v3[3]}
-    // s5 is the index within v3 of the minimal element of v3 starting at index 1, e.g. {v3[1], v3[2], v3[3]}
+    // s5 is the index within v3 of the minimal element of v3 starting at index s1, e.g. {v3[1], v3[2], v3[3]}, if s1=1
     TEST_F(ExecuteInstructionTest, VectorArithmeticRelated_VectorArgMinOp1) {
         // Given
-        const Instruction &instruction =
-                Instruction(
-                        VECTOR_ARG_MIN_OP,
-                        5,
-                        3,
-                        FloatDataSetter(IndexToFloat(1, 4)));
+        const Instruction &instruction = Instruction(VECTOR_ARG_MIN_OP, 3, 1, 5);
+        memory_.scalar_[1] = 1;
         memory_.scalar_[5] = -1;
         memory_.vector_[3] = Vector<4>(((const vector<double>) {0.0, 20.0, 10.0, 30.0}).data());
 
@@ -1554,18 +1550,14 @@ namespace automl_zero {
         ExecuteInstruction(instruction, &train_rand_gen_, &memory_);
 
         // Then
-        EXPECT_DOUBLE_EQ(memory_.scalar_[5], IndexToFloat(2, 4));
+        EXPECT_DOUBLE_EQ(memory_.scalar_[5], 2);
     }
 
-    // s5 = arg_min(v3, 0)
+    // s5 = arg_min(v3, s0)
     TEST_F(ExecuteInstructionTest, VectorArithmeticRelated_VectorArgMinOp2) {
         // Given
-        const Instruction &instruction =
-                Instruction(
-                        VECTOR_ARG_MIN_OP,
-                        5,
-                        3,
-                        FloatDataSetter(IndexToFloat(0, 4)));
+        const Instruction &instruction = Instruction(VECTOR_ARG_MIN_OP, 3, 0, 5);
+        memory_.scalar_[0] = 0;
         memory_.scalar_[5] = -1;
         memory_.vector_[3] = Vector<4>(((const vector<double>) {0.0, 20.0, 10.0, 30.0}).data());
 
@@ -1573,7 +1565,7 @@ namespace automl_zero {
         ExecuteInstruction(instruction, &train_rand_gen_, &memory_);
 
         // Then
-        EXPECT_DOUBLE_EQ(memory_.scalar_[5], IndexToFloat(0, 4));
+        EXPECT_DOUBLE_EQ(memory_.scalar_[5], 0);
     }
 
     TEST_F(ExecuteInstructionTest, MatrixArithmeticRelated_MatrixSumOp) {
