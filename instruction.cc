@@ -246,6 +246,7 @@ namespace automl_zero {
             case MATRIX_ROW_MEAN_OP:
             case MATRIX_ROW_ST_DEV_OP:
             case SCALAR_VECTOR_AT_INDEX_SET_OP:
+            case VECTOR_ARG_MIN_OP:
                 RandomizeIn1(rand_gen);
                 RandomizeOut(rand_gen);
                 return;
@@ -378,6 +379,7 @@ namespace automl_zero {
                         return;
                 }
             case SCALAR_VECTOR_AT_INDEX_SET_OP:
+            case VECTOR_ARG_MIN_OP:
                 switch (rand_gen->Choice3()) {
                     case kChoice0of3:
                         RandomizeIn1(rand_gen);
@@ -445,6 +447,7 @@ namespace automl_zero {
             case VECTOR_COLUMN_BROADCAST_OP:
             case VECTOR_ROW_BROADCAST_OP:
             case SCALAR_VECTOR_AT_INDEX_SET_OP:
+            case VECTOR_ARG_MIN_OP:
                 in1_ = rand_gen->VectorInAddress();
                 return;
             case MATRIX_SUM_OP:
@@ -516,6 +519,7 @@ namespace automl_zero {
             case VECTOR_UNIFORM_SET_OP:
             case MATRIX_UNIFORM_SET_OP:
             case SCALAR_VECTOR_AT_INDEX_SET_OP:
+            case VECTOR_ARG_MIN_OP:
                 LOG(FATAL) << "Invalid op: " << static_cast<IntegerT>(op_) << std::endl;
             case SCALAR_SUM_OP:
             case SCALAR_DIFF_OP:
@@ -604,6 +608,7 @@ namespace automl_zero {
             case MATRIX_ROW_NORM_OP:
             case MATRIX_COLUMN_NORM_OP:
             case SCALAR_VECTOR_AT_INDEX_SET_OP:
+            case VECTOR_ARG_MIN_OP:
                 out_ = rand_gen->VectorOutAddress();
                 return;
             case MATRIX_SUM_OP:
@@ -700,7 +705,8 @@ namespace automl_zero {
                 float_data_1_ = rand_gen->UniformFloat(-1.0, 1.0);
                 return;
             }
-            case SCALAR_VECTOR_AT_INDEX_SET_OP: {
+            case SCALAR_VECTOR_AT_INDEX_SET_OP:
+            case VECTOR_ARG_MIN_OP: {
                 // float_data_0_ represents the index. See FloatToIndex for more details.
                 float_data_0_ = rand_gen->UniformFloat(0.0, 1.0);
                 return;
@@ -792,7 +798,8 @@ namespace automl_zero {
                 MutateActivationLogScaleOrFlip(rand_gen, &activation_data_);
                 return;
             }
-            case SCALAR_VECTOR_AT_INDEX_SET_OP: {
+            case SCALAR_VECTOR_AT_INDEX_SET_OP:
+            case VECTOR_ARG_MIN_OP: {
                 float_data_0_ = rand_gen->UniformFloat(0.0, 1.0);
                 break;
             }
@@ -1124,6 +1131,11 @@ namespace automl_zero {
             }
             case SCALAR_VECTOR_AT_INDEX_SET_OP: {
                 stream << "  s" << out_ << " = v" << in1_ << "[" << float_data_0_ << "]" << std::endl;
+                break;
+            }
+            case VECTOR_ARG_MIN_OP: {
+                // s5 = arg_min(v3, 1)
+                stream << "  s" << out_ << " = arg_min(v" << in1_ << ", " << float_data_0_ << ")" << std::endl;
                 break;
             }
                 // Do not add default clause. All ops should be supported here.
