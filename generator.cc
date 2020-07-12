@@ -450,8 +450,23 @@ namespace automl_zero {
         algorithm.predict_.emplace_back(make_shared<const Instruction>(
                 VECTOR_CONST_SET_OP,
                 kPredictionsVectorAddress,
+                FloatDataSetter(IndexToFloat(0, 4)),
+                FloatDataSetter(2)));
+        algorithm.predict_.emplace_back(make_shared<const Instruction>(
+                VECTOR_CONST_SET_OP,
+                kPredictionsVectorAddress,
+                FloatDataSetter(IndexToFloat(1, 4)),
+                FloatDataSetter(5)));
+        algorithm.predict_.emplace_back(make_shared<const Instruction>(
+                VECTOR_CONST_SET_OP,
+                kPredictionsVectorAddress,
                 FloatDataSetter(IndexToFloat(2, 4)),
-                FloatDataSetter(815)));
+                FloatDataSetter(12)));
+        algorithm.predict_.emplace_back(make_shared<const Instruction>(
+                VECTOR_CONST_SET_OP,
+                kPredictionsVectorAddress,
+                FloatDataSetter(IndexToFloat(3, 4)),
+                FloatDataSetter(30)));
         PadComponentFunctionWithInstruction(
                 predict_size_init_, no_op_instruction, &algorithm.predict_);
 

@@ -42,7 +42,7 @@ namespace automl_zero {
     constexpr double kTolerance = 0.0001;
 
 // Must match the number of ops in the op enum in instruction.proto.
-    constexpr IntegerT kNumOps = 66;
+    constexpr IntegerT kNumOps = 67;
 
     enum DiffId : IntegerT {
         kNoDifference = 0,

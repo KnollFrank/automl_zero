@@ -44,12 +44,6 @@ namespace automl_zero {
     constexpr IntegerT kNumValidExamples = 100;
     constexpr double kLargeMaxAbsError = 1000000000.0;
 
-    template<FeatureIndexT F>
-    vector<double> asStdVector(const Vector<F> v) {
-        vector<double> result(v.data(), v.data() + v.size());;
-        return result;
-    }
-
     TEST(GeneratorTest, NoOpHasNoOpInstructions) {
         Generator generator(
                 NO_OP_ALGORITHM,  // Irrelevant.

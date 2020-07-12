@@ -435,6 +435,23 @@ namespace automl_zero {
     }
 
     template<FeatureIndexT F>
+    std::vector<double> asStdVector(const Vector<F> v) {
+        std::vector<double> result(v.data(), v.data() + v.size());;
+        return result;
+    }
+
+    // s5 = arg_min(v3, 1)
+    template<FeatureIndexT F>
+    inline void ExecuteVectorArgMinOp(
+            const Instruction &instruction, RandomGenerator *rand_gen,
+            Memory<F> *memory) {
+        const std::vector<double> v = asStdVector(memory->vector_[instruction.in1_]);
+        const auto begin = v.begin() + instruction.in2_;
+        const auto minIndex = std::min_element(begin, v.end());
+        memory->scalar_[instruction.out_] = minIndex - v.begin();
+    }
+
+    template<FeatureIndexT F>
     inline void ExecuteVectorReciprocalOp(
             const Instruction &instruction, RandomGenerator *rand_gen,
             Memory<F> *memory) {
@@ -895,7 +912,7 @@ namespace automl_zero {
             &ExecuteVectorGaussianSetOp,       // VECTOR_GAUSSIAN_SET_OP = 63
             &ExecuteMatrixGaussianSetOp,       // MATRIX_GAUSSIAN_SET_OP = 64
             &ExecuteScalarVectorAtIndexSetOp,  // SCALAR_VECTOR_AT_INDEX_SET_OP = 65
-            &ExecuteUnsupportedOp,             // UNSUPPORTED_OP = 66
+            &ExecuteVectorArgMinOp,             // UNSUPPORTED_OP = 66
             &ExecuteUnsupportedOp,             // UNSUPPORTED_OP = 67
             &ExecuteUnsupportedOp,             // UNSUPPORTED_OP = 68
             &ExecuteUnsupportedOp,             // UNSUPPORTED_OP = 69

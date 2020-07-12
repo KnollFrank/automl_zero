@@ -86,4 +86,5 @@ enum Op {
   VECTOR_GAUSSIAN_SET_OP = 63;  // OP63 in paper.
   MATRIX_GAUSSIAN_SET_OP = 64;  // OP64 in paper.
   SCALAR_VECTOR_AT_INDEX_SET_OP = 65;
+  VECTOR_ARG_MIN_OP = 66;
 }
