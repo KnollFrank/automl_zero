@@ -446,9 +446,10 @@ namespace automl_zero {
             const Instruction &instruction, RandomGenerator *rand_gen,
             Memory<F> *memory) {
         const std::vector<double> v = asStdVector(memory->vector_[instruction.in1_]);
-        const auto begin = v.begin() + instruction.in2_;
+        const FeatureIndexT index = FloatToIndex(instruction.GetFloatData0(), F);
+        const auto begin = v.begin() + index;
         const auto minIndex = std::min_element(begin, v.end());
-        memory->scalar_[instruction.out_] = minIndex - v.begin();
+        memory->scalar_[instruction.out_] = IndexToFloat(minIndex - v.begin(), F);
     }
 
     template<FeatureIndexT F>

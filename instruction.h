@@ -65,7 +65,7 @@ class IndexDataSetter {
 // size of the vector. Example: a float coordinate (0.501, 0.251) is
 // interpreted as the 8,4-entry in a 16x16 matrix; the same coordinate is
 // interpreted as the 4,2-entry in an 8x8 matrix. This is because the features
-// size is not know at the time the Algorithm is initialized/mutated. The
+// size is not known at the time the Algorithm is initialized/mutated. The
 // details of the conversion are defined by these two functions. Note that
 // FloatToIndex(IndexToFloat(i)) == i, but that that
 // IndexToFloat(FloatToIndex(f)) is only similar to f.
