@@ -42,7 +42,7 @@ namespace automl_zero {
     constexpr double kTolerance = 0.0001;
 
 // Must match the number of ops in the op enum in instruction.proto.
-    constexpr IntegerT kNumOps = 67;
+    constexpr IntegerT kNumOps = 68;
 
     enum DiffId : IntegerT {
         kNoDifference = 0,
@@ -447,6 +447,7 @@ namespace automl_zero {
                 case SCALAR_MATRIX_PRODUCT_OP:
                 case SCALAR_RECIPROCAL_OP:
                 case SCALAR_BROADCAST_OP:
+                case VECTOR_SWAP_OP:
                     EXPECT_TRUE(IsEventually(
                             function<AddressT(void)>([op, &rand_gen]() {
                                 return RandomizeIn1(op, &rand_gen);
@@ -570,6 +571,7 @@ namespace automl_zero {
                 case SCALAR_MIN_OP:
                 case SCALAR_MAX_OP:
                 case VECTOR_ARG_MIN_OP:
+                case VECTOR_SWAP_OP:
                     EXPECT_TRUE(IsEventually(
                             function<AddressT(void)>([op, &rand_gen]() {
                                 return RandomizeIn2(op, &rand_gen);
@@ -682,6 +684,7 @@ namespace automl_zero {
                 case MATRIX_COLUMN_NORM_OP:
                 case SCALAR_VECTOR_AT_INDEX_SET_OP:
                 case VECTOR_ARG_MIN_OP:
+                case VECTOR_SWAP_OP:
                     EXPECT_TRUE(IsEventually(
                             function<AddressT(void)>([op, &rand_gen]() {
                                 return RandomizeOut(op, &rand_gen);
@@ -779,7 +782,8 @@ namespace automl_zero {
                 case VECTOR_COLUMN_BROADCAST_OP:
                 case VECTOR_ROW_BROADCAST_OP:
                 case MATRIX_ROW_ST_DEV_OP:
-                case VECTOR_ARG_MIN_OP: {
+                case VECTOR_ARG_MIN_OP:
+                case VECTOR_SWAP_OP: {
                     Instruction instr;
                     EXPECT_DEATH({ RandomizeData(op, &rand_gen, &instr); }, "Invalid op");
                     break;
@@ -940,6 +944,7 @@ namespace automl_zero {
                 case MATRIX_VECTOR_PRODUCT_OP:
                 case MATRIX_MATRIX_PRODUCT_OP:
                 case VECTOR_ARG_MIN_OP:
+                case VECTOR_SWAP_OP:
                     EXPECT_TRUE(IsEventually(
                             function<IntegerT(void)>([&]() {
                                 return CountDifferences(
@@ -1119,6 +1124,7 @@ namespace automl_zero {
                 case MATRIX_VECTOR_PRODUCT_OP:
                 case MATRIX_MATRIX_PRODUCT_OP:
                 case VECTOR_ARG_MIN_OP:
+                case VECTOR_SWAP_OP:
                     EXPECT_TRUE(IsEventually(
                             function<IntegerT(void)>([&]() {
                                 return CountDifferences(
