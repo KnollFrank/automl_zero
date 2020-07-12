@@ -80,6 +80,7 @@ message TaskSpec {
     UnitTestOnesTaskSpec unit_test_ones_task = 46;
     UnitTestIncrementTaskSpec unit_test_increment_task = 47;
     UnitTestCustomTask unit_test_custom_task = 48;
+    SortTaskSpec sort_task = 49;
   }
 
   // Used for final evaluation.
@@ -214,3 +215,5 @@ message UnitTestIncrementTaskSpec {
 }
 
 message UnitTestCustomTask {}
+
+message SortTaskSpec {}
