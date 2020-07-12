@@ -561,7 +561,6 @@ namespace automl_zero {
                 case VECTOR_COLUMN_BROADCAST_OP:
                 case VECTOR_ROW_BROADCAST_OP:
                 case SCALAR_VECTOR_AT_INDEX_SET_OP:
-                case VECTOR_ARG_MIN_OP:
                     EXPECT_DEATH({ RandomizeIn2(op, &rand_gen); }, "Invalid op");
                     break;
                 case SCALAR_SUM_OP:
@@ -570,6 +569,7 @@ namespace automl_zero {
                 case SCALAR_DIVISION_OP:
                 case SCALAR_MIN_OP:
                 case SCALAR_MAX_OP:
+                case VECTOR_ARG_MIN_OP:
                     EXPECT_TRUE(IsEventually(
                             function<AddressT(void)>([op, &rand_gen]() {
                                 return RandomizeIn2(op, &rand_gen);
@@ -778,7 +778,8 @@ namespace automl_zero {
                 case MATRIX_COLUMN_NORM_OP:
                 case VECTOR_COLUMN_BROADCAST_OP:
                 case VECTOR_ROW_BROADCAST_OP:
-                case MATRIX_ROW_ST_DEV_OP: {
+                case MATRIX_ROW_ST_DEV_OP:
+                case VECTOR_ARG_MIN_OP: {
                     Instruction instr;
                     EXPECT_DEATH({ RandomizeData(op, &rand_gen, &instr); }, "Invalid op");
                     break;
@@ -812,8 +813,7 @@ namespace automl_zero {
                             Range<IntegerT>(-10, 11), Range<IntegerT>(-10, 11)));
                     break;
                 }
-                case SCALAR_VECTOR_AT_INDEX_SET_OP:
-                case VECTOR_ARG_MIN_OP: {
+                case SCALAR_VECTOR_AT_INDEX_SET_OP: {
                     EXPECT_TRUE(IsEventually(
                             function<FeatureIndexT(void)>([op, &rand_gen]() {
                                 Instruction instr;
@@ -939,6 +939,7 @@ namespace automl_zero {
                 case SCALAR_MATRIX_PRODUCT_OP:
                 case MATRIX_VECTOR_PRODUCT_OP:
                 case MATRIX_MATRIX_PRODUCT_OP:
+                case VECTOR_ARG_MIN_OP:
                     EXPECT_TRUE(IsEventually(
                             function<IntegerT(void)>([&]() {
                                 return CountDifferences(
@@ -985,7 +986,6 @@ namespace automl_zero {
                 case VECTOR_COLUMN_BROADCAST_OP:
                 case VECTOR_ROW_BROADCAST_OP:
                 case SCALAR_VECTOR_AT_INDEX_SET_OP:
-                case VECTOR_ARG_MIN_OP:
                     EXPECT_TRUE(IsEventually(
                             function<IntegerT(void)>([&]() {
                                 return CountDifferences(
@@ -1118,6 +1118,7 @@ namespace automl_zero {
                 case SCALAR_MATRIX_PRODUCT_OP:
                 case MATRIX_VECTOR_PRODUCT_OP:
                 case MATRIX_MATRIX_PRODUCT_OP:
+                case VECTOR_ARG_MIN_OP:
                     EXPECT_TRUE(IsEventually(
                             function<IntegerT(void)>([&]() {
                                 return CountDifferences(
@@ -1251,7 +1252,6 @@ namespace automl_zero {
                             {kDifferentOut, kDifferentFloatData0, kDifferentFloatData1}));
                     break;
                 case SCALAR_VECTOR_AT_INDEX_SET_OP:
-                case VECTOR_ARG_MIN_OP:
                     EXPECT_TRUE(IsEventually(
                             function<IntegerT(void)>([&]() {
                                 return CountDifferences(

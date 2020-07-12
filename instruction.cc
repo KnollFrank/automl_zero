@@ -246,7 +246,6 @@ namespace automl_zero {
             case MATRIX_ROW_MEAN_OP:
             case MATRIX_ROW_ST_DEV_OP:
             case SCALAR_VECTOR_AT_INDEX_SET_OP:
-            case VECTOR_ARG_MIN_OP:
                 RandomizeIn1(rand_gen);
                 RandomizeOut(rand_gen);
                 return;
@@ -274,6 +273,7 @@ namespace automl_zero {
             case SCALAR_MATRIX_PRODUCT_OP:
             case MATRIX_VECTOR_PRODUCT_OP:
             case MATRIX_MATRIX_PRODUCT_OP:
+            case VECTOR_ARG_MIN_OP:
                 RandomizeIn1(rand_gen);
                 RandomizeIn2(rand_gen);
                 RandomizeOut(rand_gen);
@@ -367,6 +367,7 @@ namespace automl_zero {
             case SCALAR_MATRIX_PRODUCT_OP:
             case MATRIX_VECTOR_PRODUCT_OP:
             case MATRIX_MATRIX_PRODUCT_OP:
+            case VECTOR_ARG_MIN_OP:
                 switch (rand_gen->Choice3()) {
                     case kChoice0of3:
                         RandomizeIn1(rand_gen);
@@ -379,7 +380,6 @@ namespace automl_zero {
                         return;
                 }
             case SCALAR_VECTOR_AT_INDEX_SET_OP:
-            case VECTOR_ARG_MIN_OP:
                 switch (rand_gen->Choice3()) {
                     case kChoice0of3:
                         RandomizeIn1(rand_gen);
@@ -519,7 +519,6 @@ namespace automl_zero {
             case VECTOR_UNIFORM_SET_OP:
             case MATRIX_UNIFORM_SET_OP:
             case SCALAR_VECTOR_AT_INDEX_SET_OP:
-            case VECTOR_ARG_MIN_OP:
                 LOG(FATAL) << "Invalid op: " << static_cast<IntegerT>(op_) << std::endl;
             case SCALAR_SUM_OP:
             case SCALAR_DIFF_OP:
@@ -527,6 +526,7 @@ namespace automl_zero {
             case SCALAR_DIVISION_OP:
             case SCALAR_MIN_OP:
             case SCALAR_MAX_OP:
+            case VECTOR_ARG_MIN_OP:
                 in2_ = rand_gen->ScalarInAddress();
                 return;
             case VECTOR_SUM_OP:
@@ -586,6 +586,7 @@ namespace automl_zero {
             case MATRIX_ST_DEV_OP:
             case SCALAR_GAUSSIAN_SET_OP:
             case SCALAR_UNIFORM_SET_OP:
+            case VECTOR_ARG_MIN_OP:
                 out_ = rand_gen->ScalarOutAddress();
                 return;
             case VECTOR_SUM_OP:
@@ -608,7 +609,6 @@ namespace automl_zero {
             case MATRIX_ROW_NORM_OP:
             case MATRIX_COLUMN_NORM_OP:
             case SCALAR_VECTOR_AT_INDEX_SET_OP:
-            case VECTOR_ARG_MIN_OP:
                 out_ = rand_gen->VectorOutAddress();
                 return;
             case MATRIX_SUM_OP:
@@ -693,6 +693,7 @@ namespace automl_zero {
             case MATRIX_ST_DEV_OP:
             case MATRIX_ROW_MEAN_OP:
             case MATRIX_ROW_ST_DEV_OP:
+            case VECTOR_ARG_MIN_OP:
                 LOG(FATAL) << "Invalid op: " << static_cast<IntegerT>(op_) << std::endl;
             case SCALAR_CONST_SET_OP: {
                 activation_data_ = rand_gen->UniformActivation(-1.0, 1.0);
@@ -705,8 +706,7 @@ namespace automl_zero {
                 float_data_1_ = rand_gen->UniformFloat(-1.0, 1.0);
                 return;
             }
-            case SCALAR_VECTOR_AT_INDEX_SET_OP:
-            case VECTOR_ARG_MIN_OP: {
+            case SCALAR_VECTOR_AT_INDEX_SET_OP: {
                 // float_data_0_ represents the index. See FloatToIndex for more details.
                 float_data_0_ = rand_gen->UniformFloat(0.0, 1.0);
                 return;
@@ -793,13 +793,13 @@ namespace automl_zero {
             case MATRIX_COLUMN_NORM_OP:
             case VECTOR_COLUMN_BROADCAST_OP:
             case VECTOR_ROW_BROADCAST_OP:
+            case VECTOR_ARG_MIN_OP:
                 LOG(FATAL) << "Invalid op: " << static_cast<IntegerT>(op_) << std::endl;
             case SCALAR_CONST_SET_OP: {
                 MutateActivationLogScaleOrFlip(rand_gen, &activation_data_);
                 return;
             }
-            case SCALAR_VECTOR_AT_INDEX_SET_OP:
-            case VECTOR_ARG_MIN_OP: {
+            case SCALAR_VECTOR_AT_INDEX_SET_OP: {
                 float_data_0_ = rand_gen->UniformFloat(0.0, 1.0);
                 break;
             }
