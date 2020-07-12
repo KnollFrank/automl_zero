@@ -456,18 +456,18 @@ namespace automl_zero {
     }
 
     void Generator::createPredictInstuctionsWhichSortUpToIndex(Algorithm &algorithm, const int i) const {
-        // s0 = i;
+        // s0 = i
         algorithm.predict_.emplace_back(std::make_shared<const Instruction>(
                 SCALAR_CONST_SET_OP,
                 0,
                 ActivationDataSetter(i)));
-        // s1 = arg_min(v0, s0);
+        // s1 = arg_min(v0, s0)
         algorithm.predict_.emplace_back(std::make_shared<const Instruction>(
                 VECTOR_ARG_MIN_OP,
                 0,
                 0,
                 1));
-        // swap(v0, s0, s1);
+        // swap(v0, s0, s1)
         algorithm.predict_.emplace_back(std::make_shared<const Instruction>(
                 VECTOR_SWAP_OP,
                 0,

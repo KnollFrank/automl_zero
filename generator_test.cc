@@ -176,7 +176,7 @@ namespace automl_zero {
         EXPECT_GT(fitness, 0.999);
     }
 
-    TEST(GeneratorTest, Sortalgorithm_Learns) {
+    TEST(GeneratorTest, Sortalgorithm_Learns1) {
         // Given
         Generator generator(
                 NO_OP_ALGORITHM,  // Irrelevant.
@@ -190,7 +190,6 @@ namespace automl_zero {
                 nullptr);  // rand_gen, irrelevant.
 
         Algorithm algorithm = generator.SortAlgorithm();
-        std::string str = algorithm.ToReadable();
         const Vector<4> input = {12, 30, 5, 2};
 
         // When
@@ -198,6 +197,29 @@ namespace automl_zero {
 
         // Then
         ASSERT_EQ(asStdVector(output), vector<double>({2, 5, 12, 30}));
+    }
+
+    TEST(GeneratorTest, Sortalgorithm_Learns2) {
+        // Given
+        Generator generator(
+                NO_OP_ALGORITHM,  // Irrelevant.
+                10,  // setup_size_init, irrelevant
+                12,  // predict_size_init, irrelevant
+                13,  // learn_size_init, irrelevant
+                {},  // allowed_setup_ops, irrelevant.
+                {},  // allowed_predict_ops, irrelevant.
+                {},  // allowed_learn_ops, irrelevant.
+                nullptr,  // bit_gen, irrelevant.
+                nullptr);  // rand_gen, irrelevant.
+
+        Algorithm algorithm = generator.SortAlgorithm();
+        const Vector<4> input = {2, 1, 0, -1};
+
+        // When
+        const Vector<4> &output = ExecutePredict(algorithm, input);
+
+        // Then
+        ASSERT_EQ(asStdVector(output), vector<double>({-1, 0, 1, 2}));
     }
 
     TEST(GeneratorTest, GrTildeGrWithBias_PermanenceTest) {
