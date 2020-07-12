@@ -464,7 +464,7 @@ namespace automl_zero {
         // s1 = arg_min(v0, s0)
         algorithm.predict_.emplace_back(std::make_shared<const Instruction>(
                 VECTOR_ARG_MIN_OP,
-                0,
+                kFeaturesVectorAddress,
                 0,
                 1));
         // swap(v0, s0, s1)
@@ -472,6 +472,6 @@ namespace automl_zero {
                 VECTOR_SWAP_OP,
                 0,
                 1,
-                0));
+                kFeaturesVectorAddress));
     }
 }  // namespace automl_zero

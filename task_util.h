@@ -515,47 +515,47 @@ namespace automl_zero {
         CHECK_GT(task_spec.num_valid_examples(), 0);
         TaskBuffer<F> buffer;
         switch (task_spec.task_type_case()) {
-            case (TaskSpec::kProjectedBinaryClassificationTask):
+            case TaskSpec::kProjectedBinaryClassificationTask:
                 ProjectedBinaryClassificationTaskCreator<F>::Create(
                         task_spec.eval_type(),
                         task_spec.projected_binary_classification_task(),
                         task_spec.num_train_examples(), task_spec.num_valid_examples(),
                         task_spec.features_size(), data_seed, &buffer);
                 break;
-            case (TaskSpec::kScalarLinearRegressionTask):
+            case TaskSpec::kScalarLinearRegressionTask:
                 ScalarLinearRegressionTaskCreator<F>::Create(
                         task_spec.eval_type(), task_spec.num_train_examples(),
                         task_spec.num_valid_examples(), param_seed, data_seed, &buffer);
                 break;
-            case (TaskSpec::kScalar2LayerNnRegressionTask):
+            case TaskSpec::kScalar2LayerNnRegressionTask:
                 Scalar2LayerNnRegressionTaskCreator<F>::Create(
                         task_spec.eval_type(), task_spec.num_train_examples(),
                         task_spec.num_valid_examples(), param_seed, data_seed, &buffer);
                 break;
-            case (TaskSpec::kUnitTestFixedTask):
+            case TaskSpec::kUnitTestFixedTask:
                 UnitTestFixedTaskCreator<F>::Create(
                         task_spec.unit_test_fixed_task(), &buffer);
                 break;
-            case (TaskSpec::kUnitTestZerosTask):
+            case TaskSpec::kUnitTestZerosTask:
                 UnitTestZerosTaskCreator<F>::Create(
                         task_spec.num_train_examples(),
                         task_spec.num_valid_examples(),
                         task_spec.unit_test_zeros_task(),
                         &buffer);
                 break;
-            case (TaskSpec::kUnitTestOnesTask):
+            case TaskSpec::kUnitTestOnesTask:
                 UnitTestOnesTaskCreator<F>::Create(
                         task_spec.num_train_examples(),
                         task_spec.num_valid_examples(),
                         task_spec.unit_test_ones_task(),
                         &buffer);
                 break;
-            case (TaskSpec::kUnitTestIncrementTask):
+            case TaskSpec::kUnitTestIncrementTask:
                 UnitTestIncrementTaskCreator<F>::Create(
                         task_spec.num_train_examples(), task_spec.num_valid_examples(),
                         task_spec.unit_test_increment_task(), &buffer);
                 break;
-            case (TaskSpec::kUnitTestCustomTask):
+            case TaskSpec::kUnitTestCustomTask:
                 UnitTestCustomTaskCreator<F>::Create(
                         task_spec.num_train_examples(),
                         task_spec.num_valid_examples(),
