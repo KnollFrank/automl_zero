@@ -1007,8 +1007,8 @@ namespace automl_zero {
 
     template<FeatureIndexT F>
     struct LabelAssigner {
-        inline static void Assign(const Scalar &label, Memory<F> *memory) {
-            memory->scalar_[kLabelsScalarAddress] = label;
+        inline static void Assign(const Label &label, Memory<F> *memory) {
+            memory->scalar_[kLabelsScalarAddress] = label.scalar_;
         }
     };
 
@@ -1035,8 +1035,8 @@ namespace automl_zero {
 
     template<FeatureIndexT F>
     struct ErrorComputer {
-        inline static double Compute(const Memory<F> &memory, const Scalar &label) {
-            return std::abs(label - memory.scalar_[kPredictionsScalarAddress]);
+        inline static double Compute(const Memory<F> &memory, const Label &label) {
+            return std::abs(label.scalar_ - memory.scalar_[kPredictionsScalarAddress]);
         }
     };
 
@@ -1119,7 +1119,7 @@ namespace automl_zero {
         // Iterators that tracks the progresss of training.
         typename std::vector<Vector<F>>::const_iterator train_feature_it =
                 dataset_.train_features_.begin();
-        typename std::vector<Scalar>::const_iterator train_label_it =
+        typename std::vector<Label>::const_iterator train_label_it =
                 dataset_.train_labels_.begin();
         const IntegerT num_all_train_examples =
                 std::min(num_all_train_examples_,
@@ -1179,7 +1179,7 @@ namespace automl_zero {
             }
 
             // Check whether we should stop early.
-            const Scalar &label = train_it->GetLabel();
+            const Label &label = train_it->GetLabel();
             const double abs_error = ErrorComputer<F>::Compute(memory_, label);
             if (isnan(abs_error) || abs_error > max_abs_error_) {
                 return false;
@@ -1257,7 +1257,7 @@ namespace automl_zero {
             }
 
             // Check whether we should stop early.
-            const Scalar &label = train_it->GetLabel();
+            const Label &label = train_it->GetLabel();
             const double abs_error = ErrorComputer<F>::Compute(memory_, label);
             if (isnan(abs_error) || abs_error > max_abs_error_) {
                 return false;
@@ -1293,9 +1293,9 @@ namespace automl_zero {
     template<FeatureIndexT F>
     struct SquashedRmseLossAccumulator {
         inline static void Accumulate(
-                const Memory<F> &memory, const Scalar &label,
+                const Memory<F> &memory, const Label &label,
                 double *error, double *loss) {
-            *error = label - memory.scalar_[kPredictionsScalarAddress];
+            *error = label.scalar_ - memory.scalar_[kPredictionsScalarAddress];
             *loss += *error * *error;
         }
     };
@@ -1303,14 +1303,14 @@ namespace automl_zero {
     template<FeatureIndexT F>
     struct ProbAccuracyLossAccumulator {
         inline static void Accumulate(
-                const Memory<F> &memory, const Scalar &label,
+                const Memory<F> &memory, const Label &label,
                 double *error, double *loss) {
             double logit = memory.scalar_[kPredictionsScalarAddress];
             double pred_prob = Sigmoid(logit);
             if ((pred_prob > 1.0) || (pred_prob < 0.0)) {
                 *error = std::numeric_limits<double>::infinity();
             } else {
-                bool is_correct = ((label > 0.5) == (pred_prob > 0.5));
+                bool is_correct = ((label.scalar_ > 0.5) == (pred_prob > 0.5));
                 *error = is_correct ? 0.0 : 1.0;
             }
             *loss += *error;
@@ -1344,7 +1344,7 @@ namespace automl_zero {
 
             // Accumulate the loss.
             double error = 0.0;
-            const Scalar &label = valid_it.GetLabel();
+            const Label &label = valid_it.GetLabel();
             switch (dataset_.eval_type_) {
                 case RMS_ERROR: {
                     SquashedRmseLossAccumulator<F>::Accumulate(memory_, label, &error,

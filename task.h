@@ -367,8 +367,8 @@ namespace automl_zero {
             return features_->at(epochs_->at(current_epoch_).at(current_example_));
         }
 
-        inline const Scalar &GetLabel() const {
-            return labels_->at(epochs_->at(current_epoch_).at(current_example_)).scalar_;
+        inline const Label &GetLabel() const {
+            return labels_->at(epochs_->at(current_epoch_).at(current_example_));
         }
 
     private:
