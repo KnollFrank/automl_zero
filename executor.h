@@ -1014,8 +1014,8 @@ namespace automl_zero {
 
     template<FeatureIndexT F>
     struct PredictionGetter {
-        inline static Scalar Get(Memory<F> *memory) {
-            return memory->scalar_[kPredictionsScalarAddress];
+        inline static Label Get(Memory<F> *memory) {
+            return Label(memory->scalar_[kPredictionsScalarAddress]);
         }
     };
 
@@ -1416,7 +1416,7 @@ namespace automl_zero {
                     algorithm.predict_) {
                 ExecuteInstruction(*instruction, rand_gen, memory);
             }
-            *train_label_it = Label(PredictionGetter<F>::Get(memory));
+            *train_label_it = PredictionGetter<F>::Get(memory);
             ++train_label_it;
         }
 
@@ -1430,7 +1430,7 @@ namespace automl_zero {
                     algorithm.predict_) {
                 ExecuteInstruction(*instruction, rand_gen, memory);
             }
-            *valid_label_it = Label(PredictionGetter<F>::Get(memory));
+            *valid_label_it = PredictionGetter<F>::Get(memory);
             ++valid_label_it;
         }
     }
