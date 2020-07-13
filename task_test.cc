@@ -65,7 +65,7 @@ TEST(TaskTest, EpochsContainCorrectTrainExamples) {
     Vector<4> features = train_it.GetFeatures();
     Label label = train_it.GetLabel();
     Vector<5> curr_features_and_labels;
-    curr_features_and_labels << features, label.scalar_;
+    curr_features_and_labels << features, label.getScalar();
     features_and_labels.push_back(curr_features_and_labels);
     train_it.Next();
   }
@@ -108,7 +108,7 @@ TEST(TaskTest, EpochsContainShuffledTrainExamples) {
     Vector<4> features = train_it.GetFeatures();
     Label label = train_it.GetLabel();
     Vector<5> curr_features_and_labels;
-    curr_features_and_labels << features, label.scalar_;
+    curr_features_and_labels << features, label.getScalar();
     features_and_labels.push_back(curr_features_and_labels);
     train_it.Next();
   }

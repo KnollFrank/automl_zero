@@ -90,18 +90,27 @@ namespace automl_zero {
 
     typedef double Scalar;
 
-    class Label {
-    public:
-        Label(const Scalar scalar = 0.0) : scalar_(scalar) {}
-
-        Scalar scalar_;
-    };
-
     template<FeatureIndexT F>
     using Vector = ::Eigen::Matrix<double, F, 1>;
 
     template<FeatureIndexT F>
     using Matrix = ::Eigen::Matrix<double, F, F, ::Eigen::RowMajor>;
+
+    class Label {
+    public:
+        Label(const Scalar scalar = 0.0) : scalar_(scalar) {}
+
+        Scalar getScalar() const {
+            return scalar_;
+        }
+
+        void setScalar(Scalar scalar) {
+            scalar_ = scalar;
+        }
+
+    private:
+        Scalar scalar_;
+    };
 
     enum Choice2T : IntegerT {
         kChoice0of2 = 0,

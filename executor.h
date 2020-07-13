@@ -1008,7 +1008,7 @@ namespace automl_zero {
     template<FeatureIndexT F>
     struct LabelAssigner {
         inline static void Assign(const Label &label, Memory<F> *memory) {
-            memory->scalar_[kLabelsScalarAddress] = label.scalar_;
+            memory->scalar_[kLabelsScalarAddress] = label.getScalar();
         }
     };
 
@@ -1036,7 +1036,7 @@ namespace automl_zero {
     template<FeatureIndexT F>
     struct ErrorComputer {
         inline static double Compute(const Memory<F> &memory, const Label &label) {
-            return std::abs(label.scalar_ - memory.scalar_[kPredictionsScalarAddress]);
+            return std::abs(label.getScalar() - memory.scalar_[kPredictionsScalarAddress]);
         }
     };
 
@@ -1295,7 +1295,7 @@ namespace automl_zero {
         inline static void Accumulate(
                 const Memory<F> &memory, const Label &label,
                 double *error, double *loss) {
-            *error = label.scalar_ - memory.scalar_[kPredictionsScalarAddress];
+            *error = label.getScalar() - memory.scalar_[kPredictionsScalarAddress];
             *loss += *error * *error;
         }
     };
@@ -1310,7 +1310,7 @@ namespace automl_zero {
             if ((pred_prob > 1.0) || (pred_prob < 0.0)) {
                 *error = std::numeric_limits<double>::infinity();
             } else {
-                bool is_correct = ((label.scalar_ > 0.5) == (pred_prob > 0.5));
+                bool is_correct = ((label.getScalar() > 0.5) == (pred_prob > 0.5));
                 *error = is_correct ? 0.0 : 1.0;
             }
             *loss += *error;

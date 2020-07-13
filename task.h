@@ -98,7 +98,7 @@ namespace automl_zero {
 
     template<>
     inline bool ItemEquals<Label>(const Label &data1, const Label &data2) {
-        return ItemEquals<Scalar>(data1.scalar_, data2.scalar_);
+        return ItemEquals<Scalar>(data1.getScalar(), data2.getScalar());
     }
 
     template<typename RankT>

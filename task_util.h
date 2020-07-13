@@ -406,13 +406,13 @@ namespace automl_zero {
                 feature.setZero();
             }
             for (Label &label : buffer->train_labels_) {
-                label.scalar_ = 0.0;
+                label.setScalar(0.0);
             }
             for (Vector<F> &feature : buffer->valid_features_) {
                 feature.setZero();
             }
             for (Label &label : buffer->valid_labels_) {
-                label.scalar_ = 0.0;
+                label.setScalar(0.0);
             }
         }
     };
@@ -428,13 +428,13 @@ namespace automl_zero {
                 feature.setOnes();
             }
             for (Label &label : buffer->train_labels_) {
-                label.scalar_ = 1.0;
+                label.setScalar(1.0);
             }
             for (Vector<F> &feature : buffer->valid_features_) {
                 feature.setOnes();
             }
             for (Label &label : buffer->valid_labels_) {
-                label.scalar_ = 1.0;
+                label.setScalar(1.0);
             }
         }
     };
@@ -458,7 +458,7 @@ namespace automl_zero {
                 incrementing_vector += ones_vector;
             }
             for (Label &label : buffer->train_labels_) {
-                label.scalar_ = incrementing_scalar;
+                label.setScalar(incrementing_scalar);
                 incrementing_scalar += increment;
             }
 
@@ -470,7 +470,7 @@ namespace automl_zero {
                 incrementing_vector += ones_vector;
             }
             for (Label &label : buffer->valid_labels_) {
-                label.scalar_ = incrementing_scalar;
+                label.setScalar(incrementing_scalar);
                 incrementing_scalar += increment;
             }
         }
