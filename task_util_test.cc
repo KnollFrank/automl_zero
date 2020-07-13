@@ -131,20 +131,20 @@ TEST(FillTasksTest, WorksCorrectly) {
       kDataTolerance);
 
   EXPECT_LT(
-      abs(tasks[0]->train_labels_[478] -
-          expected_task_0.train_labels_[478]),
+      abs(tasks[0]->train_labels_[478].scalar_-
+          expected_task_0.train_labels_[478].scalar_),
       kDataTolerance);
   EXPECT_LT(
-      abs(tasks[1]->train_labels_[478] -
-          expected_task_1.train_labels_[478]),
+      abs(tasks[1]->train_labels_[478].scalar_ -
+          expected_task_1.train_labels_[478].scalar_),
       kDataTolerance);
   EXPECT_LT(
-      abs(tasks[0]->valid_labels_[94] -
-          expected_task_0.valid_labels_[94]),
+      abs(tasks[0]->valid_labels_[94].scalar_ -
+          expected_task_0.valid_labels_[94].scalar_),
       kDataTolerance);
   EXPECT_LT(
-      abs(tasks[1]->valid_labels_[94] -
-          expected_task_1.valid_labels_[94]),
+      abs(tasks[1]->valid_labels_[94].scalar_ -
+          expected_task_1.valid_labels_[94].scalar_),
       kDataTolerance);
 
   EXPECT_EQ(tasks[0]->index_, 0);
@@ -177,14 +177,14 @@ TEST(FillTaskWithZerosTest, WorksCorrectly) {
                                 " "
                                 "num_tasks: 1 "
                                 "features_size: 4 "));
-  for (const Scalar& label : dataset.train_labels_) {
-    EXPECT_FLOAT_EQ(label, 0.0);
+  for (const Label& label : dataset.train_labels_) {
+    EXPECT_FLOAT_EQ(label.scalar_, 0.0);
   }
   for (const Vector<4>& feature : dataset.valid_features_) {
     EXPECT_TRUE(feature.isApprox(kZeroVector));
   }
-  for (const Scalar& label : dataset.valid_labels_) {
-    EXPECT_FLOAT_EQ(label, 0.0);
+  for (const Label& label : dataset.valid_labels_) {
+    EXPECT_FLOAT_EQ(label.scalar_, 0.0);
   }
 }
 
@@ -203,14 +203,14 @@ TEST(FillTaskWithOnesTest, WorksCorrectly) {
   for (const Vector<4>& feature : dataset.train_features_) {
     EXPECT_TRUE(feature.isApprox(kOnesVector));
   }
-  for (const Scalar& label : dataset.train_labels_) {
-    EXPECT_FLOAT_EQ(label, 1.0);
+  for (const Label& label : dataset.train_labels_) {
+    EXPECT_FLOAT_EQ(label.scalar_, 1.0);
   }
   for (const Vector<4>& feature : dataset.valid_features_) {
     EXPECT_TRUE(feature.isApprox(kOnesVector));
   }
-  for (const Scalar& label : dataset.valid_labels_) {
-    EXPECT_FLOAT_EQ(label, 1.0);
+  for (const Label& label : dataset.valid_labels_) {
+    EXPECT_FLOAT_EQ(label.scalar_, 1.0);
   }
 }
 
@@ -232,9 +232,9 @@ TEST(FillTaskWithIncrementingIntegersTest, WorksCorrectly) {
       dataset.train_features_[kNumTrainExamples - 1].isApprox(
           kOnesVector * static_cast<double>(kNumTrainExamples - 1)));
 
-  EXPECT_FLOAT_EQ(dataset.train_labels_[0], 0.0);
+  EXPECT_FLOAT_EQ(dataset.train_labels_[0].scalar_, 0.0);
   EXPECT_FLOAT_EQ(
-      dataset.train_labels_[kNumTrainExamples - 1],
+      dataset.train_labels_[kNumTrainExamples - 1].scalar_,
       static_cast<double>(kNumTrainExamples - 1));
 
   EXPECT_TRUE(dataset.valid_features_[0].isApprox(kZeroVector));
@@ -242,9 +242,9 @@ TEST(FillTaskWithIncrementingIntegersTest, WorksCorrectly) {
       dataset.valid_features_[kNumValidExamples - 1].isApprox(
           kOnesVector * static_cast<double>(kNumValidExamples - 1)));
 
-  EXPECT_FLOAT_EQ(dataset.valid_labels_[0], 0.0);
+  EXPECT_FLOAT_EQ(dataset.valid_labels_[0].scalar_, 0.0);
   EXPECT_FLOAT_EQ(
-      dataset.valid_labels_[kNumValidExamples - 1],
+      dataset.valid_labels_[kNumValidExamples - 1].scalar_,
       static_cast<double>(kNumValidExamples - 1));
 }
 
@@ -337,10 +337,10 @@ TEST(FillTaskWithNonlinearDataTest, PermanenceTest) {
   EXPECT_TRUE(VectorEq<4>(
       dataset.valid_features_[94],
       {-0.224309, 1.78054, 1.24783, 0.54083}));
-  EXPECT_TRUE(ScalarEq(dataset.train_labels_[0], 1.508635));
-  EXPECT_TRUE(ScalarEq(dataset.train_labels_[994], -2.8410525));
-  EXPECT_TRUE(ScalarEq(dataset.valid_labels_[0], 0.0));
-  EXPECT_TRUE(ScalarEq(dataset.valid_labels_[98], -0.66133333));
+  EXPECT_TRUE(ScalarEq(dataset.train_labels_[0].scalar_, 1.508635));
+  EXPECT_TRUE(ScalarEq(dataset.train_labels_[994].scalar_, -2.8410525));
+  EXPECT_TRUE(ScalarEq(dataset.valid_labels_[0].scalar_, 0.0));
+  EXPECT_TRUE(ScalarEq(dataset.valid_labels_[98].scalar_, -0.66133333));
 }
 
 void ClearSeeds(TaskCollection* task_collection) {

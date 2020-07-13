@@ -1406,7 +1406,7 @@ namespace automl_zero {
                               TaskBuffer<F> *buffer,
                               RandomGenerator *rand_gen) {
         // Fill training labels.
-        typename std::vector<Scalar>::iterator train_label_it =
+        typename std::vector<Label>::iterator train_label_it =
                 buffer->train_labels_.begin();
         for (const Vector<F> &train_features : buffer->train_features_) {
             // Run predict component function for this example.
@@ -1416,13 +1416,12 @@ namespace automl_zero {
                     algorithm.predict_) {
                 ExecuteInstruction(*instruction, rand_gen, memory);
             }
-            *train_label_it = PredictionGetter<F>::Get(memory);
+            *train_label_it = Label(PredictionGetter<F>::Get(memory));
             ++train_label_it;
         }
 
         // Fill validation labels.
-        std::vector<Scalar>::iterator valid_label_it =
-                buffer->valid_labels_.begin();
+        std::vector<Label>::iterator valid_label_it = buffer->valid_labels_.begin();
         for (const Vector<F> &valid_features : buffer->valid_features_) {
             // Run predict component function for this example.
             memory->vector_[kFeaturesVectorAddress] = valid_features;
@@ -1431,7 +1430,7 @@ namespace automl_zero {
                     algorithm.predict_) {
                 ExecuteInstruction(*instruction, rand_gen, memory);
             }
-            *valid_label_it = PredictionGetter<F>::Get(memory);
+            *valid_label_it = Label(PredictionGetter<F>::Get(memory));
             ++valid_label_it;
         }
     }

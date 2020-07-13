@@ -90,6 +90,13 @@ namespace automl_zero {
 
     typedef double Scalar;
 
+    class Label {
+    public:
+        Label(const Scalar scalar = 0.0) : scalar_(scalar) {}
+
+        Scalar scalar_;
+    };
+
     template<FeatureIndexT F>
     using Vector = ::Eigen::Matrix<double, F, 1>;
 

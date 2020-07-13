@@ -232,8 +232,7 @@ namespace automl_zero {
                     buffer->train_features_[k][i_dim] =
                             saved_dataset.train_features(k).features(i_dim);
                 }
-                buffer->train_labels_[k] =
-                        saved_dataset.train_labels(k);
+                buffer->train_labels_[k] = Label(saved_dataset.train_labels(k));
             }
 
             CHECK_GE(saved_dataset.valid_features_size(),
@@ -381,7 +380,7 @@ namespace automl_zero {
                         &buffer->train_features_[example]);
                 CHECK_EQ(task_spec.train_labels(example).elements_size(), 1);
                 buffer->train_labels_[example] =
-                        task_spec.train_labels(example).elements(0);
+                        Label(task_spec.train_labels(example).elements(0));
             }
 
             // Copy the validation features and labels.
@@ -406,14 +405,14 @@ namespace automl_zero {
             for (Vector<F> &feature : buffer->train_features_) {
                 feature.setZero();
             }
-            for (Scalar &label : buffer->train_labels_) {
-                label = 0.0;
+            for (Label &label : buffer->train_labels_) {
+                label.scalar_ = 0.0;
             }
             for (Vector<F> &feature : buffer->valid_features_) {
                 feature.setZero();
             }
-            for (Scalar &label : buffer->valid_labels_) {
-                label = 0.0;
+            for (Label &label : buffer->valid_labels_) {
+                label.scalar_ = 0.0;
             }
         }
     };
@@ -428,14 +427,14 @@ namespace automl_zero {
             for (Vector<F> &feature : buffer->train_features_) {
                 feature.setOnes();
             }
-            for (Scalar &label : buffer->train_labels_) {
-                label = 1.0;
+            for (Label &label : buffer->train_labels_) {
+                label.scalar_ = 1.0;
             }
             for (Vector<F> &feature : buffer->valid_features_) {
                 feature.setOnes();
             }
-            for (Scalar &label : buffer->valid_labels_) {
-                label = 1.0;
+            for (Label &label : buffer->valid_labels_) {
+                label.scalar_ = 1.0;
             }
         }
     };
@@ -458,8 +457,8 @@ namespace automl_zero {
                 feature = incrementing_vector;
                 incrementing_vector += ones_vector;
             }
-            for (Scalar &label : buffer->train_labels_) {
-                label = incrementing_scalar;
+            for (Label &label : buffer->train_labels_) {
+                label.scalar_ = incrementing_scalar;
                 incrementing_scalar += increment;
             }
 
@@ -470,8 +469,8 @@ namespace automl_zero {
                 feature = incrementing_vector;
                 incrementing_vector += ones_vector;
             }
-            for (Scalar &label : buffer->valid_labels_) {
-                label = incrementing_scalar;
+            for (Label &label : buffer->valid_labels_) {
+                label.scalar_ = incrementing_scalar;
                 incrementing_scalar += increment;
             }
         }
@@ -494,7 +493,7 @@ namespace automl_zero {
                 for (IntegerT i_dim = 0; i_dim < F; ++i_dim) {
                     buffer->train_features_[k][i_dim] = task_gen.UniformDouble(0, 100);
                 }
-                buffer->train_labels_[k] = buffer->train_features_[k].mean();
+                buffer->train_labels_[k] = Label(buffer->train_features_[k].mean());
             }
 
             for (IntegerT k = 0; k < buffer->valid_features_.size(); ++k) {
