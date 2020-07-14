@@ -96,6 +96,7 @@ namespace automl_zero {
     template<FeatureIndexT F>
     using Matrix = ::Eigen::Matrix<double, F, F, ::Eigen::RowMajor>;
 
+    template<FeatureIndexT F>
     class Label {
     public:
         Label(const Scalar scalar = 0.0) : scalar_(scalar) {}
@@ -106,6 +107,15 @@ namespace automl_zero {
 
         void setScalar(Scalar scalar) {
             scalar_ = scalar;
+        }
+
+        Label operator-(const Label &label) const {
+            Label result(scalar_ - label.scalar_);
+            return result;
+        }
+
+        double norm() {
+            return abs(scalar_);
         }
 
     private:

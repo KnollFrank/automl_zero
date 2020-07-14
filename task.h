@@ -49,8 +49,8 @@ namespace automl_zero {
         std::vector<Vector<F>> train_features_;
         std::vector<Vector<F>> valid_features_;
         EvalType eval_type_;
-        std::vector<Label> train_labels_;
-        std::vector<Label> valid_labels_;
+        std::vector<Label<F>> train_labels_;
+        std::vector<Label<F>> valid_labels_;
 
     private:
         // Whether this object has already been consumed by moving the data into
@@ -94,11 +94,6 @@ namespace automl_zero {
     template<>
     inline bool ItemEquals<Scalar>(const Scalar &data1, const Scalar &data2) {
         return abs(data1 - data2) < kDataTolerance;
-    }
-
-    template<>
-    inline bool ItemEquals<Label>(const Label &data1, const Label &data2) {
-        return ItemEquals<Scalar>(data1.getScalar(), data2.getScalar());
     }
 
     template<typename RankT>
@@ -311,10 +306,10 @@ namespace automl_zero {
         // The xx_epochs_ is a list of lists where the outer index is the epoch number
         // and the inner list is the order of the examples in that epoch.
         const std::vector<Vector<F>> train_features_;
-        const std::vector<Label> train_labels_;
+        const std::vector<Label<F>> train_labels_;
         const std::vector<std::vector<IntegerT>> train_epochs_;
         const std::vector<Vector<F>> valid_features_;
-        const std::vector<Label> valid_labels_;
+        const std::vector<Label<F>> valid_labels_;
         const std::vector<std::vector<IntegerT>> valid_epochs_;
     };
 
@@ -322,7 +317,7 @@ namespace automl_zero {
     class TaskIterator {
     public:
         TaskIterator(const std::vector<Vector<F>> *features,
-                     const std::vector<Label> *labels,
+                     const std::vector<Label<F>> *labels,
                      const std::vector<std::vector<IntegerT>> *epochs)
                 : features_(features),
                   labels_(labels),
@@ -367,13 +362,13 @@ namespace automl_zero {
             return features_->at(epochs_->at(current_epoch_).at(current_example_));
         }
 
-        inline const Label &GetLabel() const {
+        inline const Label<F> &GetLabel() const {
             return labels_->at(epochs_->at(current_epoch_).at(current_example_));
         }
 
     private:
         const std::vector<Vector<F>> *features_;
-        const std::vector<Label> *labels_;
+        const std::vector<Label<F>> *labels_;
         const std::vector<std::vector<IntegerT>> *epochs_;
         IntegerT current_example_;
         IntegerT current_epoch_;

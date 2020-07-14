@@ -1007,15 +1007,15 @@ namespace automl_zero {
 
     template<FeatureIndexT F>
     struct LabelAssigner {
-        inline static void Assign(const Label &label, Memory<F> *memory) {
+        inline static void Assign(const Label<F> &label, Memory<F> *memory) {
             memory->scalar_[kLabelsScalarAddress] = label.getScalar();
         }
     };
 
     template<FeatureIndexT F>
     struct PredictionGetter {
-        inline static Label Get(Memory<F> *memory) {
-            return Label(memory->scalar_[kPredictionsScalarAddress]);
+        inline static Label<F> Get(Memory<F> *memory) {
+            return Label<F>(memory->scalar_[kPredictionsScalarAddress]);
         }
     };
 
@@ -1035,7 +1035,7 @@ namespace automl_zero {
 
     template<FeatureIndexT F>
     struct ErrorComputer {
-        inline static double Compute(const Memory<F> &memory, const Label &label) {
+        inline static double Compute(const Memory<F> &memory, const Label<F> &label) {
             return std::abs(label.getScalar() - memory.scalar_[kPredictionsScalarAddress]);
         }
     };
@@ -1119,7 +1119,7 @@ namespace automl_zero {
         // Iterators that tracks the progresss of training.
         typename std::vector<Vector<F>>::const_iterator train_feature_it =
                 dataset_.train_features_.begin();
-        typename std::vector<Label>::const_iterator train_label_it =
+        typename std::vector<Label<F>>::const_iterator train_label_it =
                 dataset_.train_labels_.begin();
         const IntegerT num_all_train_examples =
                 std::min(num_all_train_examples_,
@@ -1179,7 +1179,7 @@ namespace automl_zero {
             }
 
             // Check whether we should stop early.
-            const Label &label = train_it->GetLabel();
+            const Label<F> &label = train_it->GetLabel();
             const double abs_error = ErrorComputer<F>::Compute(memory_, label);
             if (isnan(abs_error) || abs_error > max_abs_error_) {
                 return false;
@@ -1257,7 +1257,7 @@ namespace automl_zero {
             }
 
             // Check whether we should stop early.
-            const Label &label = train_it->GetLabel();
+            const Label<F> &label = train_it->GetLabel();
             const double abs_error = ErrorComputer<F>::Compute(memory_, label);
             if (isnan(abs_error) || abs_error > max_abs_error_) {
                 return false;
@@ -1293,7 +1293,7 @@ namespace automl_zero {
     template<FeatureIndexT F>
     struct SquashedRmseLossAccumulator {
         inline static void Accumulate(
-                const Memory<F> &memory, const Label &label,
+                const Memory<F> &memory, const Label<F> &label,
                 double *error, double *loss) {
             *error = label.getScalar() - memory.scalar_[kPredictionsScalarAddress];
             *loss += *error * *error;
@@ -1303,7 +1303,7 @@ namespace automl_zero {
     template<FeatureIndexT F>
     struct ProbAccuracyLossAccumulator {
         inline static void Accumulate(
-                const Memory<F> &memory, const Label &label,
+                const Memory<F> &memory, const Label<F> &label,
                 double *error, double *loss) {
             double logit = memory.scalar_[kPredictionsScalarAddress];
             double pred_prob = Sigmoid(logit);
@@ -1344,7 +1344,7 @@ namespace automl_zero {
 
             // Accumulate the loss.
             double error = 0.0;
-            const Label &label = valid_it.GetLabel();
+            const Label<F> &label = valid_it.GetLabel();
             switch (dataset_.eval_type_) {
                 case RMS_ERROR: {
                     SquashedRmseLossAccumulator<F>::Accumulate(memory_, label, &error,
@@ -1406,8 +1406,7 @@ namespace automl_zero {
                               TaskBuffer<F> *buffer,
                               RandomGenerator *rand_gen) {
         // Fill training labels.
-        typename std::vector<Label>::iterator train_label_it =
-                buffer->train_labels_.begin();
+        typename std::vector<Label<F>>::iterator train_label_it = buffer->train_labels_.begin();
         for (const Vector<F> &train_features : buffer->train_features_) {
             // Run predict component function for this example.
             memory->vector_[kFeaturesVectorAddress] = train_features;
@@ -1421,7 +1420,7 @@ namespace automl_zero {
         }
 
         // Fill validation labels.
-        std::vector<Label>::iterator valid_label_it = buffer->valid_labels_.begin();
+        typename std::vector<Label<F>>::iterator valid_label_it = buffer->valid_labels_.begin();
         for (const Vector<F> &valid_features : buffer->valid_features_) {
             // Run predict component function for this example.
             memory->vector_[kFeaturesVectorAddress] = valid_features;

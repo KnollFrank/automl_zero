@@ -177,13 +177,13 @@ TEST(FillTaskWithZerosTest, WorksCorrectly) {
                                 " "
                                 "num_tasks: 1 "
                                 "features_size: 4 "));
-  for (const Label& label : dataset.train_labels_) {
+  for (const Label<4>& label : dataset.train_labels_) {
     EXPECT_FLOAT_EQ(label.getScalar(), 0.0);
   }
   for (const Vector<4>& feature : dataset.valid_features_) {
     EXPECT_TRUE(feature.isApprox(kZeroVector));
   }
-  for (const Label& label : dataset.valid_labels_) {
+  for (const Label<4>& label : dataset.valid_labels_) {
     EXPECT_FLOAT_EQ(label.getScalar(), 0.0);
   }
 }
@@ -203,13 +203,13 @@ TEST(FillTaskWithOnesTest, WorksCorrectly) {
   for (const Vector<4>& feature : dataset.train_features_) {
     EXPECT_TRUE(feature.isApprox(kOnesVector));
   }
-  for (const Label& label : dataset.train_labels_) {
+  for (const Label<4>& label : dataset.train_labels_) {
     EXPECT_FLOAT_EQ(label.getScalar(), 1.0);
   }
   for (const Vector<4>& feature : dataset.valid_features_) {
     EXPECT_TRUE(feature.isApprox(kOnesVector));
   }
-  for (const Label& label : dataset.valid_labels_) {
+  for (const Label<4>& label : dataset.valid_labels_) {
     EXPECT_FLOAT_EQ(label.getScalar(), 1.0);
   }
 }
