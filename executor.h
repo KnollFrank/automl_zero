@@ -1008,14 +1008,14 @@ namespace automl_zero {
     template<FeatureIndexT F>
     struct LabelAssigner {
         inline static void Assign(const Label<F> &label, Memory<F> *memory) {
-            memory->scalar_[kLabelsScalarAddress] = label.getScalar();
+            memory->vector_[kLabelsVectorAddress] = label.getVector();
         }
     };
 
     template<FeatureIndexT F>
     struct PredictionGetter {
         inline static Label<F> Get(Memory<F> *memory) {
-            return Label<F>(memory->scalar_[kPredictionsScalarAddress]);
+            return Label<F>(memory->vector_[kPredictionsVectorAddress]);
         }
     };
 
@@ -1036,7 +1036,7 @@ namespace automl_zero {
     template<FeatureIndexT F>
     struct ErrorComputer {
         inline static double Compute(const Memory<F> &memory, const Label<F> &label) {
-            return std::abs(label.getScalar() - memory.scalar_[kPredictionsScalarAddress]);
+            return (label.getVector() - memory.vector_[kPredictionsVectorAddress]).norm();
         }
     };
 
@@ -1295,8 +1295,9 @@ namespace automl_zero {
         inline static void Accumulate(
                 const Memory<F> &memory, const Label<F> &label,
                 double *error, double *loss) {
-            *error = label.getScalar() - memory.scalar_[kPredictionsScalarAddress];
-            *loss += *error * *error;
+            const Vector<F> errors = label.getVector() - memory.vector_[kPredictionsVectorAddress];
+            *error = errors.dot(errors);
+            *loss += *error;
         }
     };
 
@@ -1305,15 +1306,16 @@ namespace automl_zero {
         inline static void Accumulate(
                 const Memory<F> &memory, const Label<F> &label,
                 double *error, double *loss) {
-            double logit = memory.scalar_[kPredictionsScalarAddress];
-            double pred_prob = Sigmoid(logit);
-            if ((pred_prob > 1.0) || (pred_prob < 0.0)) {
-                *error = std::numeric_limits<double>::infinity();
-            } else {
-                bool is_correct = ((label.getScalar() > 0.5) == (pred_prob > 0.5));
-                *error = is_correct ? 0.0 : 1.0;
-            }
-            *loss += *error;
+            LOG(FATAL) << "Not yet implemented" << std::endl;
+//            double logit = memory.scalar_[kPredictionsScalarAddress];
+//            double pred_prob = Sigmoid(logit);
+//            if ((pred_prob > 1.0) || (pred_prob < 0.0)) {
+//                *error = std::numeric_limits<double>::infinity();
+//            } else {
+//                bool is_correct = ((label.getVector() > 0.5) == (pred_prob > 0.5));
+//                *error = is_correct ? 0.0 : 1.0;
+//            }
+//            *loss += *error;
         }
     };
 

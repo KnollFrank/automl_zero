@@ -44,13 +44,13 @@ TEST(TaskTest, EpochsContainCorrectTrainExamples) {
       "  train_features {elements: [0.41, 0.42, 0.43, 0.44]} "
       "  train_features {elements: [0.51, 0.52, 0.53, 0.54]} "
       "  train_features {elements: [0.61, 0.62, 0.63, 0.64]} "
-      "  train_labels {elements: [4.1]} "
-      "  train_labels {elements: [5.1]} "
-      "  train_labels {elements: [6.1]} "
+      "  train_labels {elements: [4.1, 0.0, 0.0, 0.0]} "
+      "  train_labels {elements: [5.1, 0.0, 0.0, 0.0]} "
+      "  train_labels {elements: [6.1, 0.0, 0.0, 0.0]} "
       "  valid_features {elements: [0.71, 0.72, 0.73, 0.74]} "
       "  valid_features {elements: [0.81, 0.82, 0.83, 0.84]} "
-      "  valid_labels {elements: [7.1]} "
-      "  valid_labels {elements: [8.1]} "
+      "  valid_labels {elements: [7.1, 0.0, 0.0, 0.0]} "
+      "  valid_labels {elements: [8.1, 0.0, 0.0, 0.0]} "
       "} "
       "eval_type: RMS_ERROR "
       "num_train_examples: 3 "
@@ -65,7 +65,7 @@ TEST(TaskTest, EpochsContainCorrectTrainExamples) {
     Vector<4> features = train_it.GetFeatures();
     Label<4> label = train_it.GetLabel();
     Vector<5> curr_features_and_labels;
-    curr_features_and_labels << features, label.getScalar();
+    curr_features_and_labels << features, label.getVector()[0];
     features_and_labels.push_back(curr_features_and_labels);
     train_it.Next();
   }
@@ -87,13 +87,13 @@ TEST(TaskTest, EpochsContainShuffledTrainExamples) {
       "  train_features {elements: [0.41, 0.42, 0.43, 0.44]} "
       "  train_features {elements: [0.51, 0.52, 0.53, 0.54]} "
       "  train_features {elements: [0.61, 0.62, 0.63, 0.64]} "
-      "  train_labels {elements: [4.1]} "
-      "  train_labels {elements: [5.1]} "
-      "  train_labels {elements: [6.1]} "
+      "  train_labels {elements: [4.1, 0.0, 0.0, 0.0]} "
+      "  train_labels {elements: [5.1, 0.0, 0.0, 0.0]} "
+      "  train_labels {elements: [6.1, 0.0, 0.0, 0.0]} "
       "  valid_features {elements: [0.71, 0.72, 0.73, 0.74]} "
       "  valid_features {elements: [0.81, 0.82, 0.83, 0.84]} "
-      "  valid_labels {elements: [7.1]} "
-      "  valid_labels {elements: [8.1]} "
+      "  valid_labels {elements: [7.1, 0.0, 0.0, 0.0]} "
+      "  valid_labels {elements: [8.1, 0.0, 0.0, 0.0]} "
       "} "
       "eval_type: RMS_ERROR "
       "num_train_examples: 3 "
@@ -108,7 +108,7 @@ TEST(TaskTest, EpochsContainShuffledTrainExamples) {
     Vector<4> features = train_it.GetFeatures();
     Label<4> label = train_it.GetLabel();
     Vector<5> curr_features_and_labels;
-    curr_features_and_labels << features, label.getScalar();
+    curr_features_and_labels << features, label.getVector()[0];
     features_and_labels.push_back(curr_features_and_labels);
     train_it.Next();
   }

@@ -99,27 +99,27 @@ namespace automl_zero {
     template<FeatureIndexT F>
     class Label {
     public:
-        Label(const Scalar scalar = 0.0) : scalar_(scalar) {}
+        Label(const Vector<F> vector = {}) : vector_(vector) {}
 
-        Scalar getScalar() const {
-            return scalar_;
+        Vector<F> getVector() const {
+            return vector_;
         }
 
-        void setScalar(Scalar scalar) {
-            scalar_ = scalar;
+        void setVector(Vector<F> scalar) {
+            vector_ = scalar;
         }
 
         Label operator-(const Label &label) const {
-            Label result(scalar_ - label.scalar_);
+            Label result(vector_ - label.vector_);
             return result;
         }
 
         double norm() {
-            return abs(scalar_);
+            return vector_.norm();
         }
 
     private:
-        Scalar scalar_;
+        Vector<F> vector_;
     };
 
     enum Choice2T : IntegerT {
