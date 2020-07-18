@@ -80,15 +80,15 @@ namespace automl_zero {
                                        "features_size: 4 "));
 
         // Create a Algorithm that counts the examples in the
-        // kPredictionsScalarAddress.
+        // k_PREDICTIONS_SCALAR_ADDRESS.
         Algorithm algorithm = SimpleNoOpAlgorithm();
         constexpr AddressT temp_scalar_address = 2;
         algorithm.predict_[0] = make_shared<const Instruction>(
                 SCALAR_CONST_SET_OP, temp_scalar_address, ActivationDataSetter(1.0));
         algorithm.predict_[2] = make_shared<const Instruction>(
                 SCALAR_SUM_OP,
-                temp_scalar_address, kPredictionsScalarAddress,
-                kPredictionsScalarAddress);
+                temp_scalar_address, k_PREDICTIONS_SCALAR_ADDRESS,
+                k_PREDICTIONS_SCALAR_ADDRESS);
 
         RandomGenerator rand_gen;
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
@@ -97,7 +97,7 @@ namespace automl_zero {
         Memory<4> memory;
         executor.GetMemory(&memory);
         EXPECT_FLOAT_EQ(
-                memory.scalar_[kPredictionsScalarAddress],
+                memory.scalar_[k_PREDICTIONS_SCALAR_ADDRESS],
                 static_cast<double>(kNumTrainExamples + kNumValidExamples));
     }
 
@@ -115,15 +115,15 @@ namespace automl_zero {
                                        "features_size: 4 "));
 
         // Create a Algorithm that counts the examples in the
-        // kPredictionsScalarAddress.
+        // k_PREDICTIONS_SCALAR_ADDRESS.
         Algorithm algorithm = SimpleNoOpAlgorithm();
         constexpr AddressT temp_scalar_address = 2;
         algorithm.learn_[0] = make_shared<const Instruction>(
                 SCALAR_CONST_SET_OP, temp_scalar_address, ActivationDataSetter(1.0));
         algorithm.learn_[2] = make_shared<const Instruction>(
                 SCALAR_SUM_OP,
-                temp_scalar_address, kPredictionsScalarAddress,
-                kPredictionsScalarAddress);
+                temp_scalar_address, k_PREDICTIONS_SCALAR_ADDRESS,
+                k_PREDICTIONS_SCALAR_ADDRESS);
 
         RandomGenerator rand_gen;
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
@@ -132,7 +132,7 @@ namespace automl_zero {
         Memory<4> memory;
         executor.GetMemory(&memory);
         EXPECT_FLOAT_EQ(
-                memory.scalar_[kPredictionsScalarAddress],
+                memory.scalar_[k_PREDICTIONS_SCALAR_ADDRESS],
                 static_cast<double>(kNumTrainExamples));
     }
 
@@ -153,7 +153,7 @@ namespace automl_zero {
         Algorithm algorithm = SimpleNoOpAlgorithm();
         algorithm.predict_[0] = make_shared<const Instruction>(
                 SCALAR_CONST_SET_OP,
-                kPredictionsScalarAddress,
+                k_PREDICTIONS_SCALAR_ADDRESS,
                 ActivationDataSetter(0.9));
 
         RandomGenerator rand_gen;
@@ -180,7 +180,7 @@ namespace automl_zero {
         Algorithm algorithm_0 = SimpleNoOpAlgorithm();
         algorithm_0.predict_[0] = make_shared<const Instruction>(
                 SCALAR_CONST_SET_OP,
-                kPredictionsScalarAddress,
+                k_PREDICTIONS_SCALAR_ADDRESS,
                 ActivationDataSetter(-3.0));
 
         RandomGenerator rand_gen;
@@ -194,7 +194,7 @@ namespace automl_zero {
         Algorithm algorithm_1 = SimpleNoOpAlgorithm();
         algorithm_1.predict_[0] = make_shared<const Instruction>(
                 SCALAR_CONST_SET_OP,
-                kPredictionsScalarAddress,
+                k_PREDICTIONS_SCALAR_ADDRESS,
                 ActivationDataSetter(3.0));
 
         Executor<4> executor_1(
@@ -207,7 +207,7 @@ namespace automl_zero {
         Algorithm algorithm_inf = SimpleNoOpAlgorithm();
         algorithm_inf.predict_[0] = make_shared<const Instruction>(
                 SCALAR_CONST_SET_OP,
-                kPredictionsScalarAddress,
+                k_PREDICTIONS_SCALAR_ADDRESS,
                 ActivationDataSetter(std::numeric_limits<double>::infinity()));
 
         Executor<4> executor_inf(algorithm_inf, dataset, kNumTrainExamples,
@@ -219,7 +219,7 @@ namespace automl_zero {
         Algorithm algorithm_ninf = SimpleNoOpAlgorithm();
         algorithm_ninf.predict_[0] = make_shared<const Instruction>(
                 SCALAR_CONST_SET_OP,
-                kPredictionsScalarAddress,
+                k_PREDICTIONS_SCALAR_ADDRESS,
                 ActivationDataSetter(-std::numeric_limits<double>::infinity()));
 
         Executor<4> executor_ninf(algorithm_ninf, dataset, kNumTrainExamples,
@@ -277,11 +277,11 @@ namespace automl_zero {
         Algorithm algorithm = SimpleNoOpAlgorithm();
         constexpr AddressT temp_scalar_address = 2;
         algorithm.predict_[0] = make_shared<const Instruction>(
-                VECTOR_MEAN_OP, kFeaturesVectorAddress, temp_scalar_address);
+                VECTOR_MEAN_OP, k_FEATURES_VECTOR_ADDRESS, temp_scalar_address);
         algorithm.predict_[2] = make_shared<const Instruction>(
                 SCALAR_SUM_OP,
-                temp_scalar_address, kPredictionsScalarAddress,
-                kPredictionsScalarAddress);
+                temp_scalar_address, k_PREDICTIONS_SCALAR_ADDRESS,
+                k_PREDICTIONS_SCALAR_ADDRESS);
 
         RandomGenerator rand_gen;
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
@@ -289,7 +289,7 @@ namespace automl_zero {
         executor.Execute();
         Memory<4> memory;
         executor.GetMemory(&memory);
-        EXPECT_FLOAT_EQ(memory.scalar_[kPredictionsScalarAddress], 504450.0);
+        EXPECT_FLOAT_EQ(memory.scalar_[k_PREDICTIONS_SCALAR_ADDRESS], 504450.0);
     }
 
     TEST(ExecutorTest, ItereatesThroughLabelsDuringTraining) {
@@ -309,8 +309,8 @@ namespace automl_zero {
         Algorithm algorithm = SimpleNoOpAlgorithm();
         algorithm.learn_[0] = make_shared<const Instruction>(
                 SCALAR_SUM_OP,
-                kLabelsScalarAddress, kPredictionsScalarAddress,
-                kPredictionsScalarAddress);
+                k_LABELS_SCALAR_ADDRESS, k_PREDICTIONS_SCALAR_ADDRESS,
+                k_PREDICTIONS_SCALAR_ADDRESS);
 
         RandomGenerator rand_gen;
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
@@ -318,7 +318,7 @@ namespace automl_zero {
         executor.Execute();
         Memory<4> memory;
         executor.GetMemory(&memory);
-        EXPECT_FLOAT_EQ(memory.scalar_[kPredictionsScalarAddress], 499500.0);
+        EXPECT_FLOAT_EQ(memory.scalar_[k_PREDICTIONS_SCALAR_ADDRESS], 499500.0);
     }
 
     TEST(ExecutorTest, ItereatesThroughLabelsDuringValidation) {
@@ -360,8 +360,8 @@ namespace automl_zero {
         Algorithm algorithm = SimpleNoOpAlgorithm();
         algorithm.predict_[0] = make_shared<const Instruction>(
                 SCALAR_SUM_OP,
-                kLabelsScalarAddress, kPredictionsScalarAddress,
-                kPredictionsScalarAddress);
+                k_LABELS_SCALAR_ADDRESS, k_PREDICTIONS_SCALAR_ADDRESS,
+                k_PREDICTIONS_SCALAR_ADDRESS);
 
         RandomGenerator rand_gen;
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
@@ -369,7 +369,7 @@ namespace automl_zero {
         executor.Execute();
         Memory<4> memory;
         executor.GetMemory(&memory);
-        EXPECT_FLOAT_EQ(memory.scalar_[kPredictionsScalarAddress], 0.0);
+        EXPECT_FLOAT_EQ(memory.scalar_[k_PREDICTIONS_SCALAR_ADDRESS], 0.0);
     }
 
     TEST(ExecutorTest, StopsEarlyIfLargeErrorInSetupComponentFunction) {
@@ -389,7 +389,7 @@ namespace automl_zero {
         Algorithm algorithm = SimpleNoOpAlgorithm();
         algorithm.setup_[0] = make_shared<const Instruction>(
                 SCALAR_CONST_SET_OP,
-                kPredictionsScalarAddress,
+                k_PREDICTIONS_SCALAR_ADDRESS,
                 ActivationDataSetter(kMaxAbsError + 10.0));
 
         RandomGenerator rand_gen;
@@ -417,7 +417,7 @@ namespace automl_zero {
         Algorithm algorithm = SimpleNoOpAlgorithm();
         algorithm.predict_[0] = make_shared<const Instruction>(
                 SCALAR_CONST_SET_OP,
-                kPredictionsScalarAddress,
+                k_PREDICTIONS_SCALAR_ADDRESS,
                 ActivationDataSetter(kMaxAbsError + 10.0));
 
         RandomGenerator rand_gen;
@@ -445,7 +445,7 @@ namespace automl_zero {
         Algorithm algorithm = SimpleNoOpAlgorithm();
         algorithm.learn_[0] = make_shared<const Instruction>(
                 SCALAR_CONST_SET_OP,
-                kPredictionsScalarAddress,
+                k_PREDICTIONS_SCALAR_ADDRESS,
                 ActivationDataSetter(kMaxAbsError + 10.0));
 
         RandomGenerator rand_gen;
@@ -477,7 +477,7 @@ namespace automl_zero {
                 SCALAR_CONST_SET_OP, one_address, ActivationDataSetter(1.0));
         algorithm.setup_[1] = make_shared<const Instruction>(
                 SCALAR_DIVISION_OP,
-                one_address, zero_address, kPredictionsScalarAddress);
+                one_address, zero_address, k_PREDICTIONS_SCALAR_ADDRESS);
 
         RandomGenerator rand_gen;
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
@@ -508,7 +508,7 @@ namespace automl_zero {
                 SCALAR_CONST_SET_OP, one_address, ActivationDataSetter(1.0));
         algorithm.predict_[0] = make_shared<const Instruction>(
                 SCALAR_DIVISION_OP,
-                one_address, zero_address, kPredictionsScalarAddress);
+                one_address, zero_address, k_PREDICTIONS_SCALAR_ADDRESS);
 
         RandomGenerator rand_gen;
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
@@ -539,7 +539,7 @@ namespace automl_zero {
                 SCALAR_CONST_SET_OP, one_address, ActivationDataSetter(1.0));
         algorithm.learn_[0] = make_shared<const Instruction>(
                 SCALAR_DIVISION_OP,
-                one_address, zero_address, kPredictionsScalarAddress);
+                one_address, zero_address, k_PREDICTIONS_SCALAR_ADDRESS);
 
         RandomGenerator rand_gen;
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
@@ -567,7 +567,7 @@ namespace automl_zero {
         AddressT zero_address = 2;
         algorithm.setup_[1] = make_shared<const Instruction>(
                 SCALAR_DIVISION_OP,
-                zero_address, zero_address, kPredictionsScalarAddress);
+                zero_address, zero_address, k_PREDICTIONS_SCALAR_ADDRESS);
 
         RandomGenerator rand_gen;
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
@@ -595,7 +595,7 @@ namespace automl_zero {
         AddressT zero_address = 2;
         algorithm.predict_[0] = make_shared<const Instruction>(
                 SCALAR_DIVISION_OP,
-                zero_address, zero_address, kPredictionsScalarAddress);
+                zero_address, zero_address, k_PREDICTIONS_SCALAR_ADDRESS);
 
         RandomGenerator rand_gen;
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
@@ -623,7 +623,7 @@ namespace automl_zero {
         AddressT zero_address = 2;
         algorithm.learn_[0] = make_shared<const Instruction>(
                 SCALAR_DIVISION_OP,
-                zero_address, zero_address, kPredictionsScalarAddress);
+                zero_address, zero_address, k_PREDICTIONS_SCALAR_ADDRESS);
 
         RandomGenerator rand_gen;
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,

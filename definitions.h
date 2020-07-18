@@ -164,22 +164,22 @@ namespace automl_zero {
 
 // Scalar addresses.
 // <scalar output branch>.
-    constexpr AddressT kLabelsScalarAddress = 0;
-    constexpr AddressT kPredictionsScalarAddress = 1;
-    constexpr AddressT kFirstOutScalarAddress = 1;
-    constexpr AddressT kMaxScalarAddresses = MAX_SCALAR_ADDRESSES;
+    constexpr AddressT k_LABELS_SCALAR_ADDRESS = 0;
+    constexpr AddressT k_PREDICTIONS_SCALAR_ADDRESS = 1;
+    constexpr AddressT k_FIRST_OUT_SCALAR_ADDRESS = 1;
+    constexpr AddressT k_MAX_SCALAR_ADDRESSES = MAX_SCALAR_ADDRESSES;
 
 // Vector addresses.
-    constexpr AddressT kFeaturesVectorAddress = 0;
-    constexpr AddressT kFirstOutVectorAddress = 1;
+    constexpr AddressT k_FEATURES_VECTOR_ADDRESS = 0;
+    constexpr AddressT k_FIRST_OUT_VECTOR_ADDRESS = 1;
 // <vector output branch>.
-    constexpr AddressT kLabelsVectorAddress = 1;
-    constexpr AddressT kPredictionsVectorAddress = 2;
-    constexpr AddressT kMaxVectorAddresses = MAX_VECTOR_ADDRESSES;
+    constexpr AddressT k_LABELS_VECTOR_ADDRESS = 1;
+    constexpr AddressT k_PREDICTIONS_VECTOR_ADDRESS = 2;
+    constexpr AddressT k_MAX_VECTOR_ADDRESSES = MAX_VECTOR_ADDRESSES;
 
 // Matrix addresses.
-    constexpr AddressT kFirstOutMatrixAddress = 0;
-    constexpr AddressT kMaxMatrixAddresses = MAX_MATRIX_ADDRESSES;
+    constexpr AddressT k_FIRST_OUT_MATRIX_ADDRESS = 0;
+    constexpr AddressT k_MAX_MATRIX_ADDRESSES = MAX_MATRIX_ADDRESSES;
 
     template<FeatureIndexT F>
     std::string VectorToString(const Vector<F> &value) {

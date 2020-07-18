@@ -1001,50 +1001,50 @@ namespace automl_zero {
     template<FeatureIndexT F>
     struct ZeroLabelAssigner {
         inline static void Assign(Memory<F> *memory) {
-            memory->scalar_[kLabelsScalarAddress] = 0.0;
+            memory->vector_[k_LABELS_VECTOR_ADDRESS] = Vector<F>::Zero(F, 1);
         }
     };
 
     template<FeatureIndexT F>
     struct LabelAssigner {
         inline static void Assign(const Label<F> &label, Memory<F> *memory) {
-            memory->vector_[kLabelsVectorAddress] = label.getVector();
+            memory->vector_[k_LABELS_VECTOR_ADDRESS] = label.getVector();
         }
     };
 
     template<FeatureIndexT F>
     struct PredictionGetter {
         inline static Label<F> Get(Memory<F> *memory) {
-            return Label<F>(memory->vector_[kPredictionsVectorAddress]);
+            return Label<F>(memory->vector_[k_PREDICTIONS_VECTOR_ADDRESS]);
         }
     };
 
     template<FeatureIndexT F>
     struct VectorPredictionGetter {
         inline static Vector<F> Get(Memory<F> *memory) {
-            return memory->vector_[kFeaturesVectorAddress];
+            return memory->vector_[k_FEATURES_VECTOR_ADDRESS];
         }
     };
 
     template<FeatureIndexT F>
     struct VectorInputPredictionAssigner {
         inline static void Assign(const Vector<F> &input, Memory<F> *memory) {
-            memory->vector_[kFeaturesVectorAddress] = input;
+            memory->vector_[k_FEATURES_VECTOR_ADDRESS] = input;
         }
     };
 
     template<FeatureIndexT F>
     struct ErrorComputer {
         inline static double Compute(const Memory<F> &memory, const Label<F> &label) {
-            return (label.getVector() - memory.vector_[kPredictionsVectorAddress]).norm();
+            return (label.getVector() - memory.vector_[k_PREDICTIONS_VECTOR_ADDRESS]).norm();
         }
     };
 
     template<FeatureIndexT F>
     struct ProbabilityConverter {
         inline static void Convert(Memory<F> *memory) {
-            memory->scalar_[kPredictionsScalarAddress] =
-                    Sigmoid(memory->scalar_[kPredictionsScalarAddress]);
+            memory->vector_[k_PREDICTIONS_VECTOR_ADDRESS][0] =
+                    Sigmoid(memory->vector_[k_PREDICTIONS_VECTOR_ADDRESS][0]);
         }
     };
 
@@ -1167,7 +1167,7 @@ namespace automl_zero {
             num_train_steps_completed_++;
             // Run predict component function for this example.
             const Vector<F> &features = train_it->GetFeatures();
-            memory_.vector_[kFeaturesVectorAddress] = features;
+            memory_.vector_[k_FEATURES_VECTOR_ADDRESS] = features;
             ZeroLabelAssigner<F>::Assign(&memory_);
             for (const std::shared_ptr<const Instruction> &instruction :
                     algorithm_.predict_) {
@@ -1189,7 +1189,7 @@ namespace automl_zero {
             }
 
             // Run learn component function for this example.
-            memory_.vector_[kFeaturesVectorAddress] = features;
+            memory_.vector_[k_FEATURES_VECTOR_ADDRESS] = features;
             LabelAssigner<F>::Assign(label, &memory_);
             for (const std::shared_ptr<const Instruction> &instruction :
                     algorithm_.learn_) {
@@ -1240,7 +1240,7 @@ namespace automl_zero {
             num_train_steps_completed_++;
             // Run predict component function for this example.
             const Vector<F> &features = train_it->GetFeatures();
-            memory_.vector_[kFeaturesVectorAddress] = features;
+            memory_.vector_[k_FEATURES_VECTOR_ADDRESS] = features;
             ZeroLabelAssigner<F>::Assign(&memory_);
             IntegerT predict_instr_num = 0;
             for (const Instruction &instruction :
@@ -1267,7 +1267,7 @@ namespace automl_zero {
             }
 
             // Run learn component function for this example.
-            memory_.vector_[kFeaturesVectorAddress] = features;
+            memory_.vector_[k_FEATURES_VECTOR_ADDRESS] = features;
             LabelAssigner<F>::Assign(label, &memory_);
             IntegerT learn_instr_num = 0;
             for (const Instruction &instruction : optimized_learn_component_function) {
@@ -1295,7 +1295,7 @@ namespace automl_zero {
         inline static void Accumulate(
                 const Memory<F> &memory, const Label<F> &label,
                 double *error, double *loss) {
-            const Vector<F> errors = label.getVector() - memory.vector_[kPredictionsVectorAddress];
+            const Vector<F> errors = label.getVector() - memory.vector_[k_PREDICTIONS_VECTOR_ADDRESS];
             *error = errors.dot(errors);
             *loss += *error;
         }
@@ -1307,7 +1307,7 @@ namespace automl_zero {
                 const Memory<F> &memory, const Label<F> &label,
                 double *error, double *loss) {
             LOG(FATAL) << "Not yet implemented" << std::endl;
-//            double logit = memory.scalar_[kPredictionsScalarAddress];
+//            double logit = memory.scalar_[k_PREDICTIONS_SCALAR_ADDRESS];
 //            double pred_prob = Sigmoid(logit);
 //            if ((pred_prob > 1.0) || (pred_prob < 0.0)) {
 //                *error = std::numeric_limits<double>::infinity();
@@ -1337,7 +1337,7 @@ namespace automl_zero {
         for (IntegerT step = 0; step < num_steps; ++step) {
             // Run predict component function for this example.
             const Vector<F> &features = valid_it.GetFeatures();
-            memory_.vector_[kFeaturesVectorAddress] = features;
+            memory_.vector_[k_FEATURES_VECTOR_ADDRESS] = features;
             ZeroLabelAssigner<F>::Assign(&memory_);
             for (const std::shared_ptr<const Instruction> &instruction :
                     algorithm_.predict_) {
@@ -1411,7 +1411,7 @@ namespace automl_zero {
         typename std::vector<Label<F>>::iterator train_label_it = buffer->train_labels_.begin();
         for (const Vector<F> &train_features : buffer->train_features_) {
             // Run predict component function for this example.
-            memory->vector_[kFeaturesVectorAddress] = train_features;
+            memory->vector_[k_FEATURES_VECTOR_ADDRESS] = train_features;
             ZeroLabelAssigner<F>::Assign(memory);
             for (const std::shared_ptr<const Instruction> &instruction :
                     algorithm.predict_) {
@@ -1425,7 +1425,7 @@ namespace automl_zero {
         typename std::vector<Label<F>>::iterator valid_label_it = buffer->valid_labels_.begin();
         for (const Vector<F> &valid_features : buffer->valid_features_) {
             // Run predict component function for this example.
-            memory->vector_[kFeaturesVectorAddress] = valid_features;
+            memory->vector_[k_FEATURES_VECTOR_ADDRESS] = valid_features;
             ZeroLabelAssigner<F>::Assign(memory);
             for (const std::shared_ptr<const Instruction> &instruction :
                     algorithm.predict_) {

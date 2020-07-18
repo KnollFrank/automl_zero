@@ -164,7 +164,7 @@ namespace automl_zero {
         // Scalar addresses
         constexpr AddressT kLearningRateAddress = 2;
         constexpr AddressT kPredictionErrorAddress = 3;
-        CHECK_GE(kMaxScalarAddresses, 4);
+        CHECK_GE(k_MAX_SCALAR_ADDRESSES, 4);
 
         // Vector addresses.
         constexpr AddressT kFinalLayerWeightsAddress = 1;
@@ -177,11 +177,11 @@ namespace automl_zero {
         constexpr AddressT kGradientWrtFinalLayerWeightsAddress = 5;
         constexpr AddressT kGradientWrtActivationsAddress = 6;
         constexpr AddressT kGradientOfReluAddress = 7;
-        constexpr AddressT kOneFollowedByZeroesVectorAddress = 8;
+        constexpr AddressT kOneFollowedByZeroesVectorAddress = 9;
         CHECK_EQ(
                 kOneFollowedByZeroesVectorAddress,
                 Generator::kOneFollowedByZeroesVectorAddress);
-        CHECK_GE(kMaxVectorAddresses, 9);
+        CHECK_GE(k_MAX_VECTOR_ADDRESSES, 10);
 
         // Matrix addresses.
         constexpr AddressT kFirstLayerWeightsAddress = 0;
@@ -189,7 +189,7 @@ namespace automl_zero {
                 kFirstLayerWeightsAddress,
                 Generator::kUnitTestNeuralNetNoBiasNoGradientFirstLayerWeightsAddress);
         constexpr AddressT kGradientWrtFirstLayerWeightsAddress = 1;
-        CHECK_GE(kMaxMatrixAddresses, 2);
+        CHECK_GE(k_MAX_MATRIX_ADDRESSES, 2);
 
         shared_ptr<const Instruction> no_op_instruction =
                 make_shared<const Instruction>();
@@ -198,6 +198,12 @@ namespace automl_zero {
                 SCALAR_CONST_SET_OP,
                 kLearningRateAddress,
                 ActivationDataSetter(learning_rate)));
+        // memory.vector_[Generator::kOneFollowedByZeroesVectorAddress](0) = 1;
+        algorithm.setup_.emplace_back(make_shared<const Instruction>(
+                VECTOR_CONST_SET_OP,
+                kOneFollowedByZeroesVectorAddress,
+                FloatDataSetter(0),
+                FloatDataSetter(1)));
         PadComponentFunctionWithInstruction(
                 setup_size_init_, no_op_instruction, &algorithm.setup_);
 
@@ -206,7 +212,7 @@ namespace automl_zero {
         // Multiply with first layer weight matrix.
         algorithm.predict_.emplace_back(make_shared<const Instruction>(
                 MATRIX_VECTOR_PRODUCT_OP,
-                kFirstLayerWeightsAddress, kFeaturesVectorAddress,
+                kFirstLayerWeightsAddress, k_FEATURES_VECTOR_ADDRESS,
                 kFirstLayerOutputBeforeReluAddress));
         // Apply RELU.
         algorithm.predict_.emplace_back(make_shared<const Instruction>(
@@ -215,20 +221,31 @@ namespace automl_zero {
         // Dot product with final layer weight vector.
         algorithm.predict_.emplace_back(make_shared<const Instruction>(
                 VECTOR_INNER_PRODUCT_OP, kFirstLayerOutputAfterReluAddress,
-                kFinalLayerWeightsAddress, kPredictionsScalarAddress));
-        // memory->vector_[kPredictionsVectorAddress] = memory->scalar_[kPredictionsScalarAddress] * {1, 0, 0, ...}
+                kFinalLayerWeightsAddress, k_PREDICTIONS_SCALAR_ADDRESS));
+        // memory->vector_[k_PREDICTIONS_VECTOR_ADDRESS] = memory->scalar_[k_PREDICTIONS_SCALAR_ADDRESS] * {1, 0, 0, ...}
         algorithm.predict_.emplace_back(make_shared<const Instruction>(
                 SCALAR_VECTOR_PRODUCT_OP,
-                kPredictionsScalarAddress,
+                k_PREDICTIONS_SCALAR_ADDRESS,
                 kOneFollowedByZeroesVectorAddress,
-                kPredictionsVectorAddress));
-
+                k_PREDICTIONS_VECTOR_ADDRESS));
         PadComponentFunctionWithInstruction(
                 predict_size_init_, no_op_instruction, &algorithm.predict_);
 
         algorithm.learn_.reserve(11);
+        // memory->scalar_[k_PREDICTIONS_SCALAR_ADDRESS] = memory->vector_[k_PREDICTIONS_VECTOR_ADDRESS][0]
         algorithm.learn_.emplace_back(make_shared<const Instruction>(
-                SCALAR_DIFF_OP, kLabelsScalarAddress, kPredictionsScalarAddress,
+                SCALAR_VECTOR_AT_INDEX_SET_OP,
+                k_PREDICTIONS_SCALAR_ADDRESS,
+                k_PREDICTIONS_VECTOR_ADDRESS,
+                FloatDataSetter(0)));
+        // memory->scalar_[k_LABELS_SCALAR_ADDRESS] = memory->vector_[k_LABELS_VECTOR_ADDRESS][0]
+        algorithm.learn_.emplace_back(make_shared<const Instruction>(
+                SCALAR_VECTOR_AT_INDEX_SET_OP,
+                k_LABELS_SCALAR_ADDRESS,
+                k_LABELS_VECTOR_ADDRESS,
+                FloatDataSetter(0)));
+        algorithm.learn_.emplace_back(make_shared<const Instruction>(
+                SCALAR_DIFF_OP, k_LABELS_SCALAR_ADDRESS, k_PREDICTIONS_SCALAR_ADDRESS,
                 kPredictionErrorAddress));
         algorithm.learn_.emplace_back(make_shared<const Instruction>(
                 SCALAR_PRODUCT_OP,
@@ -253,7 +270,7 @@ namespace automl_zero {
                 kGradientWrtActivationsAddress));
         algorithm.learn_.emplace_back(make_shared<const Instruction>(
                 VECTOR_OUTER_PRODUCT_OP,
-                kGradientWrtActivationsAddress, kFeaturesVectorAddress,
+                kGradientWrtActivationsAddress, k_FEATURES_VECTOR_ADDRESS,
                 kGradientWrtFirstLayerWeightsAddress));
         algorithm.learn_.emplace_back(make_shared<const Instruction>(
                 MATRIX_SUM_OP,
@@ -275,7 +292,7 @@ namespace automl_zero {
         constexpr AddressT kFinalLayerBiasAddress = 2;
         constexpr AddressT kLearningRateAddress = 3;
         constexpr AddressT kPredictionErrorAddress = 4;
-        CHECK_GE(kMaxScalarAddresses, 5);
+        CHECK_GE(k_MAX_SCALAR_ADDRESSES, 5);
 
         // Vector addresses.
         constexpr AddressT kFirstLayerBiasAddress = 1;
@@ -286,12 +303,16 @@ namespace automl_zero {
         constexpr AddressT kGradientWrtFinalLayerWeightsAddress = 6;
         constexpr AddressT kGradientWrtActivationsAddress = 7;
         constexpr AddressT kGradientOfReluAddress = 8;
-        CHECK_GE(kMaxVectorAddresses, 9);
+        constexpr AddressT kOneFollowedByZeroesVectorAddress = 9;
+        CHECK_EQ(
+                kOneFollowedByZeroesVectorAddress,
+                Generator::kOneFollowedByZeroesVectorAddress);
+        CHECK_GE(k_MAX_VECTOR_ADDRESSES, 9);
 
         // Matrix addresses.
         constexpr AddressT kFirstLayerWeightsAddress = 0;
         constexpr AddressT kGradientWrtFirstLayerWeightsAddress = 1;
-        CHECK_GE(kMaxMatrixAddresses, 2);
+        CHECK_GE(k_MAX_MATRIX_ADDRESSES, 2);
 
         shared_ptr<const Instruction> no_op_instruction =
                 make_shared<const Instruction>();
@@ -310,75 +331,125 @@ namespace automl_zero {
                 SCALAR_CONST_SET_OP,
                 kLearningRateAddress,
                 ActivationDataSetter(learning_rate)));
+        // memory.vector_[Generator::kOneFollowedByZeroesVectorAddress](0) = 1;
+        algorithm.setup_.emplace_back(make_shared<const Instruction>(
+                VECTOR_CONST_SET_OP,
+                kOneFollowedByZeroesVectorAddress,
+                FloatDataSetter(0),
+                FloatDataSetter(1)));
         PadComponentFunctionWithInstruction(
                 setup_size_init_, no_op_instruction, &algorithm.setup_);
 
         // Multiply with first layer weight matrix.
         algorithm.predict_.emplace_back(make_shared<const Instruction>(
                 MATRIX_VECTOR_PRODUCT_OP,
-                kFirstLayerWeightsAddress, kFeaturesVectorAddress,
+                kFirstLayerWeightsAddress,
+                k_FEATURES_VECTOR_ADDRESS,
                 kFirstLayerOutputBeforeReluAddress));
         // Add first layer bias.
         algorithm.predict_.emplace_back(make_shared<const Instruction>(
-                VECTOR_SUM_OP, kFirstLayerOutputBeforeReluAddress, kFirstLayerBiasAddress,
+                VECTOR_SUM_OP,
+                kFirstLayerOutputBeforeReluAddress,
+                kFirstLayerBiasAddress,
                 kFirstLayerOutputBeforeReluAddress));
         // Apply RELU.
         algorithm.predict_.emplace_back(make_shared<const Instruction>(
-                VECTOR_MAX_OP, kFirstLayerOutputBeforeReluAddress, kZerosAddress,
+                VECTOR_MAX_OP,
+                kFirstLayerOutputBeforeReluAddress,
+                kZerosAddress,
                 kFirstLayerOutputAfterReluAddress));
         // Dot product with final layer weight vector.
         algorithm.predict_.emplace_back(make_shared<const Instruction>(
-                VECTOR_INNER_PRODUCT_OP, kFirstLayerOutputAfterReluAddress,
-                kFinalLayerWeightsAddress, kPredictionsScalarAddress));
+                VECTOR_INNER_PRODUCT_OP,
+                kFirstLayerOutputAfterReluAddress,
+                kFinalLayerWeightsAddress,
+                k_PREDICTIONS_SCALAR_ADDRESS));
         // Add final layer bias.
-        CHECK_LE(kFinalLayerBiasAddress, kMaxScalarAddresses);
+        CHECK_LE(kFinalLayerBiasAddress, k_MAX_SCALAR_ADDRESSES);
         algorithm.predict_.emplace_back(make_shared<const Instruction>(
-                SCALAR_SUM_OP, kPredictionsScalarAddress, kFinalLayerBiasAddress,
-                kPredictionsScalarAddress));
+                SCALAR_SUM_OP,
+                k_PREDICTIONS_SCALAR_ADDRESS,
+                kFinalLayerBiasAddress,
+                k_PREDICTIONS_SCALAR_ADDRESS));
+        // memory->vector_[k_PREDICTIONS_VECTOR_ADDRESS] = memory->scalar_[k_PREDICTIONS_SCALAR_ADDRESS] * {1, 0, 0, ...}
+        algorithm.predict_.emplace_back(make_shared<const Instruction>(
+                SCALAR_VECTOR_PRODUCT_OP,
+                k_PREDICTIONS_SCALAR_ADDRESS,
+                kOneFollowedByZeroesVectorAddress,
+                k_PREDICTIONS_VECTOR_ADDRESS));
         PadComponentFunctionWithInstruction(
                 predict_size_init_, no_op_instruction, &algorithm.predict_);
 
         algorithm.learn_.reserve(11);
+        // memory->scalar_[k_PREDICTIONS_SCALAR_ADDRESS] = memory->vector_[k_PREDICTIONS_VECTOR_ADDRESS][0]
         algorithm.learn_.emplace_back(make_shared<const Instruction>(
-                SCALAR_DIFF_OP, kLabelsScalarAddress, kPredictionsScalarAddress,
+                SCALAR_VECTOR_AT_INDEX_SET_OP,
+                k_PREDICTIONS_SCALAR_ADDRESS,
+                k_PREDICTIONS_VECTOR_ADDRESS,
+                FloatDataSetter(0)));
+        // memory->scalar_[k_LABELS_SCALAR_ADDRESS] = memory->vector_[k_LABELS_VECTOR_ADDRESS][0]
+        algorithm.learn_.emplace_back(make_shared<const Instruction>(
+                SCALAR_VECTOR_AT_INDEX_SET_OP,
+                k_LABELS_SCALAR_ADDRESS,
+                k_LABELS_VECTOR_ADDRESS,
+                FloatDataSetter(0)));
+        algorithm.learn_.emplace_back(make_shared<const Instruction>(
+                SCALAR_DIFF_OP,
+                k_LABELS_SCALAR_ADDRESS,
+                k_PREDICTIONS_SCALAR_ADDRESS,
                 kPredictionErrorAddress));
         algorithm.learn_.emplace_back(make_shared<const Instruction>(
                 SCALAR_PRODUCT_OP,
-                kLearningRateAddress, kPredictionErrorAddress, kPredictionErrorAddress));
-        CHECK_LE(kFinalLayerBiasAddress, kMaxScalarAddresses);
+                kLearningRateAddress,
+                kPredictionErrorAddress,
+                kPredictionErrorAddress));
+        CHECK_LE(kFinalLayerBiasAddress, k_MAX_SCALAR_ADDRESSES);
         // Update final layer bias.
         algorithm.learn_.emplace_back(make_shared<const Instruction>(
-                SCALAR_SUM_OP, kFinalLayerBiasAddress, kPredictionErrorAddress,
+                SCALAR_SUM_OP,
+                kFinalLayerBiasAddress,
+                kPredictionErrorAddress,
                 kFinalLayerBiasAddress));
         algorithm.learn_.emplace_back(make_shared<const Instruction>(
-                SCALAR_VECTOR_PRODUCT_OP, kPredictionErrorAddress,
-                kFirstLayerOutputAfterReluAddress, kGradientWrtFinalLayerWeightsAddress));
+                SCALAR_VECTOR_PRODUCT_OP,
+                kPredictionErrorAddress,
+                kFirstLayerOutputAfterReluAddress,
+                kGradientWrtFinalLayerWeightsAddress));
         algorithm.learn_.emplace_back(make_shared<const Instruction>(
                 VECTOR_SUM_OP,
-                kFinalLayerWeightsAddress, kGradientWrtFinalLayerWeightsAddress,
+                kFinalLayerWeightsAddress,
+                kGradientWrtFinalLayerWeightsAddress,
                 kFinalLayerWeightsAddress));
         algorithm.learn_.emplace_back(make_shared<const Instruction>(
                 SCALAR_VECTOR_PRODUCT_OP,
-                kPredictionErrorAddress, kFinalLayerWeightsAddress,
+                kPredictionErrorAddress,
+                kFinalLayerWeightsAddress,
                 kGradientWrtActivationsAddress));
         algorithm.learn_.emplace_back(make_shared<const Instruction>(
                 VECTOR_HEAVYSIDE_OP,
-                kFirstLayerOutputBeforeReluAddress, 0, kGradientOfReluAddress));
+                kFirstLayerOutputBeforeReluAddress,
+                0,
+                kGradientOfReluAddress));
         algorithm.learn_.emplace_back(make_shared<const Instruction>(
                 VECTOR_PRODUCT_OP,
-                kGradientOfReluAddress, kGradientWrtActivationsAddress,
+                kGradientOfReluAddress,
+                kGradientWrtActivationsAddress,
                 kGradientWrtActivationsAddress));
         // Update first layer bias.
         algorithm.learn_.emplace_back(make_shared<const Instruction>(
-                VECTOR_SUM_OP, kFirstLayerBiasAddress, kGradientWrtActivationsAddress,
+                VECTOR_SUM_OP,
+                kFirstLayerBiasAddress,
+                kGradientWrtActivationsAddress,
                 kFirstLayerBiasAddress));
         algorithm.learn_.emplace_back(make_shared<const Instruction>(
                 VECTOR_OUTER_PRODUCT_OP,
-                kGradientWrtActivationsAddress, kFeaturesVectorAddress,
+                kGradientWrtActivationsAddress,
+                k_FEATURES_VECTOR_ADDRESS,
                 kGradientWrtFirstLayerWeightsAddress));
         algorithm.learn_.emplace_back(make_shared<const Instruction>(
                 MATRIX_SUM_OP,
-                kFirstLayerWeightsAddress, kGradientWrtFirstLayerWeightsAddress,
+                kFirstLayerWeightsAddress,
+                kGradientWrtFirstLayerWeightsAddress,
                 kFirstLayerWeightsAddress));
         PadComponentFunctionWithInstruction(
                 learn_size_init_, no_op_instruction, &algorithm.learn_);
@@ -392,14 +463,14 @@ namespace automl_zero {
         // Scalar addresses
         constexpr AddressT kLearningRateAddress = 2;
         constexpr AddressT kPredictionErrorAddress = 3;
-        CHECK_GE(kMaxScalarAddresses, 4);
+        CHECK_GE(k_MAX_SCALAR_ADDRESSES, 4);
 
         // Vector addresses.
         constexpr AddressT kWeightsAddress = 1;
         constexpr AddressT kCorrectionAddress = 2;
-        CHECK_GE(kMaxVectorAddresses, 3);
+        CHECK_GE(k_MAX_VECTOR_ADDRESSES, 3);
 
-        CHECK_GE(kMaxMatrixAddresses, 0);
+        CHECK_GE(k_MAX_MATRIX_ADDRESSES, 0);
 
         shared_ptr<const Instruction> no_op_instruction =
                 make_shared<const Instruction>();
@@ -413,13 +484,13 @@ namespace automl_zero {
 
         algorithm.predict_.emplace_back(make_shared<const Instruction>(
                 VECTOR_INNER_PRODUCT_OP,
-                kWeightsAddress, kFeaturesVectorAddress, kPredictionsScalarAddress));
+                kWeightsAddress, k_FEATURES_VECTOR_ADDRESS, k_PREDICTIONS_SCALAR_ADDRESS));
         PadComponentFunctionWithInstruction(
                 predict_size_init_, no_op_instruction, &algorithm.predict_);
 
         algorithm.learn_.emplace_back(make_shared<const Instruction>(
                 SCALAR_DIFF_OP,
-                kLabelsScalarAddress, kPredictionsScalarAddress,
+                k_LABELS_SCALAR_ADDRESS, k_PREDICTIONS_SCALAR_ADDRESS,
                 kPredictionErrorAddress));
         algorithm.learn_.emplace_back(make_shared<const Instruction>(
                 SCALAR_PRODUCT_OP,
@@ -427,7 +498,7 @@ namespace automl_zero {
                 kPredictionErrorAddress));
         algorithm.learn_.emplace_back(make_shared<const Instruction>(
                 SCALAR_VECTOR_PRODUCT_OP,
-                kPredictionErrorAddress, kFeaturesVectorAddress, kCorrectionAddress));
+                kPredictionErrorAddress, k_FEATURES_VECTOR_ADDRESS, kCorrectionAddress));
         algorithm.learn_.emplace_back(make_shared<const Instruction>(
                 VECTOR_SUM_OP,
                 kWeightsAddress, kCorrectionAddress, kWeightsAddress));
@@ -440,10 +511,10 @@ namespace automl_zero {
         Algorithm algorithm;
 
         // Scalar addresses
-        CHECK_GE(kMaxScalarAddresses, 1);
+        CHECK_GE(k_MAX_SCALAR_ADDRESSES, 1);
 
         // Vector addresses.
-        CHECK_GE(kMaxVectorAddresses, 2);
+        CHECK_GE(k_MAX_VECTOR_ADDRESSES, 2);
 
         shared_ptr<const Instruction> no_op_instruction =
                 make_shared<const Instruction>();
@@ -475,7 +546,7 @@ namespace automl_zero {
         // s1 = arg_min(v0, s0)
         algorithm.predict_.emplace_back(std::make_shared<const Instruction>(
                 VECTOR_ARG_MIN_OP,
-                kFeaturesVectorAddress,
+                k_FEATURES_VECTOR_ADDRESS,
                 0,
                 1));
         // swap(v0, s0, s1)
@@ -483,6 +554,6 @@ namespace automl_zero {
                 VECTOR_SWAP_OP,
                 0,
                 1,
-                kFeaturesVectorAddress));
+                k_FEATURES_VECTOR_ADDRESS));
     }
 }  // namespace automl_zero

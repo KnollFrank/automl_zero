@@ -92,30 +92,30 @@ FeatureIndexT RandomGenerator::FeatureIndex(
 }
 
 AddressT RandomGenerator::ScalarInAddress() {
-  return absl::Uniform<AddressT>(*bit_gen_, 0, kMaxScalarAddresses);
+  return absl::Uniform<AddressT>(*bit_gen_, 0, k_MAX_SCALAR_ADDRESSES);
 }
 
 AddressT RandomGenerator::VectorInAddress() {
-  return absl::Uniform<AddressT>(*bit_gen_, 0, kMaxVectorAddresses);
+  return absl::Uniform<AddressT>(*bit_gen_, 0, k_MAX_VECTOR_ADDRESSES);
 }
 
 AddressT RandomGenerator::MatrixInAddress() {
-  return absl::Uniform<AddressT>(*bit_gen_, 0, kMaxMatrixAddresses);
+  return absl::Uniform<AddressT>(*bit_gen_, 0, k_MAX_MATRIX_ADDRESSES);
 }
 
 AddressT RandomGenerator::ScalarOutAddress() {
   return absl::Uniform<AddressT>(
-      *bit_gen_, kFirstOutScalarAddress, kMaxScalarAddresses);
+          *bit_gen_, k_FIRST_OUT_SCALAR_ADDRESS, k_MAX_SCALAR_ADDRESSES);
 }
 
 AddressT RandomGenerator::VectorOutAddress() {
   return absl::Uniform<AddressT>(
-      *bit_gen_, kFirstOutVectorAddress, kMaxVectorAddresses);
+          *bit_gen_, k_FIRST_OUT_VECTOR_ADDRESS, k_MAX_VECTOR_ADDRESSES);
 }
 
 AddressT RandomGenerator::MatrixOutAddress() {
   return absl::Uniform<AddressT>(
-      *bit_gen_, kFirstOutMatrixAddress, kMaxMatrixAddresses);
+          *bit_gen_, k_FIRST_OUT_MATRIX_ADDRESS, k_MAX_MATRIX_ADDRESSES);
 }
 
 Choice2T RandomGenerator::Choice2() {

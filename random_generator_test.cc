@@ -122,8 +122,8 @@ TEST(RandomGeneratorTest, ScalarAddressTest) {
   RandomGenerator rand_gen(&bit_gen);
   EXPECT_TRUE(IsEventually(
       function<AddressT(void)>([&](){return rand_gen.ScalarInAddress();}),
-      Range<AddressT>(0, kMaxScalarAddresses),
-      Range<AddressT>(0, kMaxScalarAddresses)));
+      Range<AddressT>(0, k_MAX_SCALAR_ADDRESSES),
+      Range<AddressT>(0, k_MAX_SCALAR_ADDRESSES)));
 }
 
 TEST(RandomGeneratorTest, VectorAddressTest) {
@@ -131,8 +131,8 @@ TEST(RandomGeneratorTest, VectorAddressTest) {
   RandomGenerator rand_gen(&bit_gen);
   EXPECT_TRUE(IsEventually(
       function<AddressT(void)>([&](){return rand_gen.VectorInAddress();}),
-      Range<AddressT>(0, kMaxVectorAddresses),
-      Range<AddressT>(0, kMaxVectorAddresses)));
+      Range<AddressT>(0, k_MAX_VECTOR_ADDRESSES),
+      Range<AddressT>(0, k_MAX_VECTOR_ADDRESSES)));
 }
 
 TEST(RandomGeneratorTest, MatrixAddressTest) {
@@ -140,8 +140,8 @@ TEST(RandomGeneratorTest, MatrixAddressTest) {
   RandomGenerator rand_gen(&bit_gen);
   EXPECT_TRUE(IsEventually(
       function<AddressT(void)>([&](){return rand_gen.MatrixInAddress();}),
-      Range<AddressT>(0, kMaxMatrixAddresses),
-      Range<AddressT>(0, kMaxMatrixAddresses)));
+      Range<AddressT>(0, k_MAX_MATRIX_ADDRESSES),
+      Range<AddressT>(0, k_MAX_MATRIX_ADDRESSES)));
 }
 
 TEST(RandomGeneratorTest, ScalarOutAddressTest) {
@@ -150,9 +150,9 @@ TEST(RandomGeneratorTest, ScalarOutAddressTest) {
   EXPECT_TRUE(IsEventually(
       function<AddressT(void)>([&](){return rand_gen.ScalarOutAddress();}),
       Range<AddressT>(
-          kFirstOutScalarAddress, kMaxScalarAddresses),
+              k_FIRST_OUT_SCALAR_ADDRESS, k_MAX_SCALAR_ADDRESSES),
       Range<AddressT>(
-          kFirstOutScalarAddress, kMaxScalarAddresses)));
+              k_FIRST_OUT_SCALAR_ADDRESS, k_MAX_SCALAR_ADDRESSES)));
 }
 
 TEST(RandomGeneratorTest, VectorOutAddressTest) {
@@ -161,9 +161,9 @@ TEST(RandomGeneratorTest, VectorOutAddressTest) {
   EXPECT_TRUE(IsEventually(
       function<AddressT(void)>([&](){return rand_gen.VectorOutAddress();}),
       Range<AddressT>(
-          kFirstOutVectorAddress, kMaxVectorAddresses),
+              k_FIRST_OUT_VECTOR_ADDRESS, k_MAX_VECTOR_ADDRESSES),
       Range<AddressT>(
-          kFirstOutVectorAddress, kMaxVectorAddresses)));
+              k_FIRST_OUT_VECTOR_ADDRESS, k_MAX_VECTOR_ADDRESSES)));
 }
 
 TEST(RandomGeneratorTest, MatrixOutAddressTest) {
@@ -172,9 +172,9 @@ TEST(RandomGeneratorTest, MatrixOutAddressTest) {
   EXPECT_TRUE(IsEventually(
       function<AddressT(void)>([&](){return rand_gen.MatrixOutAddress();}),
       Range<AddressT>(
-          kFirstOutMatrixAddress, kMaxMatrixAddresses),
+              k_FIRST_OUT_MATRIX_ADDRESS, k_MAX_MATRIX_ADDRESSES),
       Range<AddressT>(
-          kFirstOutMatrixAddress, kMaxMatrixAddresses)));
+              k_FIRST_OUT_MATRIX_ADDRESS, k_MAX_MATRIX_ADDRESSES)));
 }
 
 TEST(RandomGeneratorTest, Choice2Test) {

@@ -5,3 +5,30 @@ bazel test //:mutator_test
 alle Tests ausführen:
 bazel test //...
 (oder: bazel query //... | xargs bazel test)
+
+# (Setup, Predict, Learn) is the input ML algorithm.
+# Dtrain / Dvalid is the training / validation set.
+# sX/vX/mX: scalar/vector/matrix var at address X.
+def Evaluate(Setup, Predict, Learn, Dtrain, Dvalid):
+    # Zero-initialize all the variables (sX/vX/mX).
+    initialize_memory()
+    SETUP() # Execute setup instructions.
+    for (x, y) in Dtrain:
+        v_k_LABELS_VECTOR_ADDRESS = {0, ...}
+        v_k_FEATURES_VECTOR_ADDRESS = x # x will now be accessible to Predict.
+        PREDICT() # Execute prediction instructions.
+        # v_k_PREDICTIONS_VECTOR_ADDRESS will now be used as the prediction.
+        v_k_PREDICTIONS_VECTOR_ADDRESS = Normalize(v_k_PREDICTIONS_VECTOR_ADDRESS) # Normalize the prediction.
+
+        v_k_LABELS_VECTOR_ADDRESS = y # y will now be accessible to Learn.
+        LEARN() # Execute learning instructions.
+    sum_loss = 0.0
+    for (x, y) in Dvalid:
+        v_k_LABELS_VECTOR_ADDRESS = {0, ...}
+        v_k_FEATURES_VECTOR_ADDRESS = x
+        PREDICT() # Only execute Predict(), not Learn().
+        v_k_PREDICTIONS_VECTOR_ADDRESS = Normalize(v_k_PREDICTIONS_VECTOR_ADDRESS)
+        sum_loss += Loss(y, v_k_PREDICTIONS_VECTOR_ADDRESS)
+    mean_loss = sum_loss / len(Dvalid)
+    # Use validation loss to evaluate the algorithm.
+    return mean_loss

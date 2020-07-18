@@ -38,9 +38,9 @@ class Memory {
   void Wipe();
 
   // Three typed-memory spaces.
-  ::std::array<Scalar, kMaxScalarAddresses> scalar_;
-  ::std::array<Vector<F>, kMaxVectorAddresses> vector_;
-  ::std::array<Matrix<F>, kMaxMatrixAddresses> matrix_;
+  ::std::array<Scalar, k_MAX_SCALAR_ADDRESSES> scalar_;
+  ::std::array<Vector<F>, k_MAX_VECTOR_ADDRESSES> vector_;
+  ::std::array<Matrix<F>, k_MAX_MATRIX_ADDRESSES> matrix_;
 };
 
 // Does NOT serve as a way to initialize the Memory.

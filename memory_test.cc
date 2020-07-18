@@ -25,9 +25,9 @@ namespace automl_zero {
 
 TEST(MemoryTest, NumAddressesAreWithinLimits) {
   const size_t max_addresses = Pow2(8 * sizeof(AddressT));
-  EXPECT_LE(kMaxScalarAddresses, max_addresses);
-  EXPECT_LE(kMaxVectorAddresses, max_addresses);
-  EXPECT_LE(kMaxMatrixAddresses, max_addresses);
+  EXPECT_LE(k_MAX_SCALAR_ADDRESSES, max_addresses);
+  EXPECT_LE(k_MAX_VECTOR_ADDRESSES, max_addresses);
+  EXPECT_LE(k_MAX_MATRIX_ADDRESSES, max_addresses);
 }
 
 TEST(MemoryTest, WipeSetsValuesToZero) {

@@ -405,14 +405,14 @@ namespace automl_zero {
     }
 
     TEST(InstructionTest, RandomizesIn1) {
-        CHECK_GE(kMaxScalarAddresses, 4);
-        CHECK_GE(kMaxVectorAddresses, 3);
-        CHECK_GE(kMaxMatrixAddresses, 2);
+        CHECK_GE(k_MAX_SCALAR_ADDRESSES, 4);
+        CHECK_GE(k_MAX_VECTOR_ADDRESSES, 3);
+        CHECK_GE(k_MAX_MATRIX_ADDRESSES, 2);
         RandomGenerator rand_gen;
         const AddressT range_start = 0;
-        auto scalar_range = Range(range_start, kMaxScalarAddresses);
-        auto vector_range = Range(range_start, kMaxVectorAddresses);
-        auto matrix_range = Range(range_start, kMaxMatrixAddresses);
+        auto scalar_range = Range(range_start, k_MAX_SCALAR_ADDRESSES);
+        auto vector_range = Range(range_start, k_MAX_VECTOR_ADDRESSES);
+        auto matrix_range = Range(range_start, k_MAX_MATRIX_ADDRESSES);
         for (const Op op : TestableOps()) {
             switch (op) {
                 case NO_OP:
@@ -510,14 +510,14 @@ namespace automl_zero {
     }
 
     TEST(InstructionTest, RandomizesIn2) {
-        CHECK_GE(kMaxScalarAddresses, 4);
-        CHECK_GE(kMaxVectorAddresses, 3);
-        CHECK_GE(kMaxMatrixAddresses, 2);
+        CHECK_GE(k_MAX_SCALAR_ADDRESSES, 4);
+        CHECK_GE(k_MAX_VECTOR_ADDRESSES, 3);
+        CHECK_GE(k_MAX_MATRIX_ADDRESSES, 2);
         RandomGenerator rand_gen;
         const AddressT range_start = 0;
-        auto scalar_range = Range(range_start, kMaxScalarAddresses);
-        auto vector_range = Range(range_start, kMaxVectorAddresses);
-        auto matrix_range = Range(range_start, kMaxMatrixAddresses);
+        auto scalar_range = Range(range_start, k_MAX_SCALAR_ADDRESSES);
+        auto vector_range = Range(range_start, k_MAX_VECTOR_ADDRESSES);
+        auto matrix_range = Range(range_start, k_MAX_MATRIX_ADDRESSES);
         for (const Op op : TestableOps()) {
             switch (op) {
                 case NO_OP:
@@ -615,16 +615,16 @@ namespace automl_zero {
     }
 
     TEST(InstructionTest, RandomizesOut) {
-        CHECK_GE(kMaxScalarAddresses, 4);
-        CHECK_GE(kMaxVectorAddresses, 3);
-        CHECK_GE(kMaxMatrixAddresses, 2);
+        CHECK_GE(k_MAX_SCALAR_ADDRESSES, 4);
+        CHECK_GE(k_MAX_VECTOR_ADDRESSES, 3);
+        CHECK_GE(k_MAX_MATRIX_ADDRESSES, 2);
         RandomGenerator rand_gen;
         auto scalar_range =
-                Range(kFirstOutScalarAddress, kMaxScalarAddresses);
+                Range(k_FIRST_OUT_SCALAR_ADDRESS, k_MAX_SCALAR_ADDRESSES);
         auto vector_range =
-                Range(kFirstOutVectorAddress, kMaxVectorAddresses);
+                Range(k_FIRST_OUT_VECTOR_ADDRESS, k_MAX_VECTOR_ADDRESSES);
         auto matrix_range =
-                Range(kFirstOutMatrixAddress, kMaxMatrixAddresses);
+                Range(k_FIRST_OUT_MATRIX_ADDRESS, k_MAX_MATRIX_ADDRESSES);
         for (const Op op : TestableOps()) {
             switch (op) {
                 case NO_OP:

@@ -337,10 +337,10 @@ namespace automl_zero {
         EXPECT_TRUE(VectorEq<4>(
                 dataset.valid_features_[94],
                 {-0.224309, 1.78054, 1.24783, 0.54083}));
-        EXPECT_TRUE(ScalarEq(dataset.train_labels_[0].getVector()[0], 1.508635));
-        EXPECT_TRUE(ScalarEq(dataset.train_labels_[994].getVector()[0], -2.8410525));
-        EXPECT_TRUE(ScalarEq(dataset.valid_labels_[0].getVector()[0], 0.0));
-        EXPECT_TRUE(ScalarEq(dataset.valid_labels_[98].getVector()[0], -0.66133333));
+        EXPECT_FLOAT_EQ(dataset.train_labels_[0].getVector()[0], 1.508635);
+        EXPECT_FLOAT_EQ(dataset.train_labels_[994].getVector()[0], -2.8410525);
+        EXPECT_FLOAT_EQ(dataset.valid_labels_[0].getVector()[0], 0.0);
+        EXPECT_FLOAT_EQ(dataset.valid_labels_[98].getVector()[0], -0.66133333);
     }
 
     void ClearSeeds(TaskCollection *task_collection) {

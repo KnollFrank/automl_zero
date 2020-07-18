@@ -93,7 +93,7 @@ namespace automl_zero {
                 kUnitTestNeuralNetNoBiasNoGradientFinalLayerWeightsAddress = 1;
         static constexpr AddressT
                 kUnitTestNeuralNetNoBiasNoGradientFirstLayerWeightsAddress = 0;
-        static constexpr AddressT kOneFollowedByZeroesVectorAddress = 8;
+        static constexpr AddressT kOneFollowedByZeroesVectorAddress = 9;
 
         Algorithm UnitTestNeuralNetNoBiasNoGradient(const double learning_rate);
 
