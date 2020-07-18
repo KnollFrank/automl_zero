@@ -1043,8 +1043,10 @@ namespace automl_zero {
     template<FeatureIndexT F>
     struct ProbabilityConverter {
         inline static void Convert(Memory<F> *memory) {
-            memory->vector_[k_PREDICTIONS_VECTOR_ADDRESS][0] =
-                    Sigmoid(memory->vector_[k_PREDICTIONS_VECTOR_ADDRESS][0]);
+            for (int i = 0; i < F; i++) {
+                memory->vector_[k_PREDICTIONS_VECTOR_ADDRESS][i] =
+                        Sigmoid(memory->vector_[k_PREDICTIONS_VECTOR_ADDRESS][i]);
+            }
         }
     };
 
@@ -1307,16 +1309,22 @@ namespace automl_zero {
         inline static void Accumulate(
                 const Memory<F> &memory, const Label<F> &label,
                 double *error, double *loss) {
-            LOG(FATAL) << "Not yet implemented" << std::endl;
-//            double logit = memory.scalar_[k_PREDICTIONS_SCALAR_ADDRESS];
-//            double pred_prob = Sigmoid(logit);
-//            if ((pred_prob > 1.0) || (pred_prob < 0.0)) {
-//                *error = std::numeric_limits<double>::infinity();
-//            } else {
-//                bool is_correct = ((label.getVector() > 0.5) == (pred_prob > 0.5));
-//                *error = is_correct ? 0.0 : 1.0;
-//            }
-//            *loss += *error;
+            *error = 0;
+            for (int i = 0; i < F; ++i) {
+                *error += getError(memory.vector_[k_PREDICTIONS_VECTOR_ADDRESS][i], label.getVector()[i]);
+            }
+            *error /= F;
+            *loss += *error;
+        }
+
+        static double getError(const double logit, const double label) {
+            double pred_prob = Sigmoid(logit);
+            if ((pred_prob > 1.0) || (pred_prob < 0.0)) {
+                return std::numeric_limits<double>::infinity();
+            } else {
+                bool is_correct = ((label > 0.5) == (pred_prob > 0.5));
+                return is_correct ? 0.0 : 1.0;
+            }
         }
     };
 

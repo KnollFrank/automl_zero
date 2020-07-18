@@ -450,13 +450,17 @@ namespace automl_zero {
                 feature.setOnes();
             }
             for (Label<F> &label : buffer->train_labels_) {
-                label.setVector(Vector<F>::Ones(F, 1));
+                Vector<F> vec;
+                vec[0] = 1;
+                label.setVector(vec);
             }
             for (Vector<F> &feature : buffer->valid_features_) {
                 feature.setOnes();
             }
             for (Label<F> &label : buffer->valid_labels_) {
-                label.setVector(Vector<F>::Ones(F, 1));
+                Vector<F> vec;
+                vec[0] = 1;
+                label.setVector(vec);
             }
         }
     };
@@ -480,7 +484,9 @@ namespace automl_zero {
                 incrementing_vector += ones_vector;
             }
             for (Label<F> &label : buffer->train_labels_) {
-                label.setVector(Vector<F>::Constant(F, 1, typename Vector<F>::Scalar(incrementing_scalar)));
+                Vector<F> vec;
+                vec[0] = incrementing_scalar;
+                label.setVector(vec);
                 incrementing_scalar += increment;
             }
 
@@ -492,7 +498,9 @@ namespace automl_zero {
                 incrementing_vector += ones_vector;
             }
             for (Label<F> &label : buffer->valid_labels_) {
-                label.setVector(Vector<F>::Constant(F, 1, typename Vector<F>::Scalar(incrementing_scalar)));
+                Vector<F> vec;
+                vec[0] = incrementing_scalar;
+                label.setVector(vec);
                 incrementing_scalar += increment;
             }
         }

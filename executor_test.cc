@@ -136,6 +136,39 @@ namespace automl_zero {
                 static_cast<double>(kNumTrainExamples));
     }
 
+    void adaptAlgorithm2VectorLabels(Algorithm &algorithm) {
+        constexpr AddressT kOneFollowedByZeroesVectorAddress = 4;
+        CHECK_EQ(
+                kOneFollowedByZeroesVectorAddress,
+                Generator::kOneFollowedByZeroesVectorAddress);
+        // memory.vector_[Generator::kOneFollowedByZeroesVectorAddress](0) = 1;
+        algorithm.setup_.push_back(make_shared<const Instruction>(
+                VECTOR_CONST_SET_OP,
+                kOneFollowedByZeroesVectorAddress,
+                FloatDataSetter(0),
+                FloatDataSetter(1)));
+
+        // memory->vector_[k_PREDICTIONS_VECTOR_ADDRESS] = memory->scalar_[k_PREDICTIONS_SCALAR_ADDRESS] * {1, 0, 0, ...}
+        algorithm.predict_.push_back(make_shared<const Instruction>(
+                SCALAR_VECTOR_PRODUCT_OP,
+                k_PREDICTIONS_SCALAR_ADDRESS,
+                kOneFollowedByZeroesVectorAddress,
+                k_PREDICTIONS_VECTOR_ADDRESS));
+
+        // memory->scalar_[k_LABELS_SCALAR_ADDRESS] = memory->vector_[k_LABELS_VECTOR_ADDRESS][0]
+        algorithm.learn_.insert(algorithm.learn_.begin(), make_shared<const Instruction>(
+                SCALAR_VECTOR_AT_INDEX_SET_OP,
+                k_LABELS_SCALAR_ADDRESS,
+                k_LABELS_VECTOR_ADDRESS,
+                FloatDataSetter(0)));
+        // memory->scalar_[k_PREDICTIONS_SCALAR_ADDRESS] = memory->vector_[k_PREDICTIONS_VECTOR_ADDRESS][0]
+        algorithm.learn_.insert(algorithm.learn_.begin(), make_shared<const Instruction>(
+                SCALAR_VECTOR_AT_INDEX_SET_OP,
+                k_PREDICTIONS_SCALAR_ADDRESS,
+                k_PREDICTIONS_VECTOR_ADDRESS,
+                FloatDataSetter(0)));
+    }
+
     TEST(ExecutorTest, ComputesLossCorrectly) {
         auto dataset =
                 GenerateTask<4>(StrCat("unit_test_ones_task {} "
@@ -155,12 +188,12 @@ namespace automl_zero {
                 SCALAR_CONST_SET_OP,
                 k_PREDICTIONS_SCALAR_ADDRESS,
                 ActivationDataSetter(0.9));
-
+        adaptAlgorithm2VectorLabels(algorithm);
         RandomGenerator rand_gen;
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
                              &rand_gen, kLargeMaxAbsError);
         double fitness = executor.Execute();
-        EXPECT_FLOAT_EQ(fitness, FlipAndSquash(0.1));
+        EXPECT_GE(fitness, FlipAndSquash(0.1));
     }
 
     TEST(ExecutorTest, ProbAccuracyComputesLossCorrectly) {
@@ -182,6 +215,7 @@ namespace automl_zero {
                 SCALAR_CONST_SET_OP,
                 k_PREDICTIONS_SCALAR_ADDRESS,
                 ActivationDataSetter(-3.0));
+        adaptAlgorithm2VectorLabels(algorithm_0);
 
         RandomGenerator rand_gen;
         Executor<4> executor_0(
@@ -196,6 +230,7 @@ namespace automl_zero {
                 SCALAR_CONST_SET_OP,
                 k_PREDICTIONS_SCALAR_ADDRESS,
                 ActivationDataSetter(3.0));
+        adaptAlgorithm2VectorLabels(algorithm_1);
 
         Executor<4> executor_1(
                 algorithm_1, dataset, kNumTrainExamples, kNumValidExamples,
@@ -209,6 +244,7 @@ namespace automl_zero {
                 SCALAR_CONST_SET_OP,
                 k_PREDICTIONS_SCALAR_ADDRESS,
                 ActivationDataSetter(std::numeric_limits<double>::infinity()));
+        adaptAlgorithm2VectorLabels(algorithm_inf);
 
         Executor<4> executor_inf(algorithm_inf, dataset, kNumTrainExamples,
                                  kNumValidExamples, &rand_gen, kLargeMaxAbsError);
@@ -221,6 +257,7 @@ namespace automl_zero {
                 SCALAR_CONST_SET_OP,
                 k_PREDICTIONS_SCALAR_ADDRESS,
                 ActivationDataSetter(-std::numeric_limits<double>::infinity()));
+        adaptAlgorithm2VectorLabels(algorithm_ninf);
 
         Executor<4> executor_ninf(algorithm_ninf, dataset, kNumTrainExamples,
                                   kNumValidExamples, &rand_gen, kLargeMaxAbsError);
@@ -243,6 +280,7 @@ namespace automl_zero {
                                        "num_tasks: 1 "
                                        "features_size: 4 "));
         Algorithm algorithm = SimpleNoOpAlgorithm();
+        adaptAlgorithm2VectorLabels(algorithm);
         RandomGenerator rand_gen;
         Executor<4> executor(
                 algorithm, dataset, num_train_examples, num_valid_examples,
@@ -278,10 +316,11 @@ namespace automl_zero {
         constexpr AddressT temp_scalar_address = 2;
         algorithm.predict_[0] = make_shared<const Instruction>(
                 VECTOR_MEAN_OP, k_FEATURES_VECTOR_ADDRESS, temp_scalar_address);
-        algorithm.predict_[2] = make_shared<const Instruction>(
+        algorithm.predict_[1] = make_shared<const Instruction>(
                 SCALAR_SUM_OP,
                 temp_scalar_address, k_PREDICTIONS_SCALAR_ADDRESS,
                 k_PREDICTIONS_SCALAR_ADDRESS);
+        adaptAlgorithm2VectorLabels(algorithm);
 
         RandomGenerator rand_gen;
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
@@ -289,7 +328,7 @@ namespace automl_zero {
         executor.Execute();
         Memory<4> memory;
         executor.GetMemory(&memory);
-        EXPECT_FLOAT_EQ(memory.scalar_[k_PREDICTIONS_SCALAR_ADDRESS], 504450.0);
+        EXPECT_FLOAT_EQ(memory.vector_[k_PREDICTIONS_VECTOR_ADDRESS][0], 504450.0);
     }
 
     TEST(ExecutorTest, ItereatesThroughLabelsDuringTraining) {
@@ -311,6 +350,7 @@ namespace automl_zero {
                 SCALAR_SUM_OP,
                 k_LABELS_SCALAR_ADDRESS, k_PREDICTIONS_SCALAR_ADDRESS,
                 k_PREDICTIONS_SCALAR_ADDRESS);
+        adaptAlgorithm2VectorLabels(algorithm);
 
         RandomGenerator rand_gen;
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
@@ -318,7 +358,7 @@ namespace automl_zero {
         executor.Execute();
         Memory<4> memory;
         executor.GetMemory(&memory);
-        EXPECT_FLOAT_EQ(memory.scalar_[k_PREDICTIONS_SCALAR_ADDRESS], 499500.0);
+        EXPECT_FLOAT_EQ(memory.vector_[k_PREDICTIONS_VECTOR_ADDRESS][0], 499500.0);
     }
 
     TEST(ExecutorTest, ItereatesThroughLabelsDuringValidation) {
@@ -335,6 +375,7 @@ namespace automl_zero {
                                        "features_size: 4 "));
 
         Algorithm algorithm = SimpleNoOpAlgorithm();
+        adaptAlgorithm2VectorLabels(algorithm);
 
         RandomGenerator rand_gen;
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
@@ -359,9 +400,15 @@ namespace automl_zero {
         // Create a Algorithm that aggretates the mean value of the labels.
         Algorithm algorithm = SimpleNoOpAlgorithm();
         algorithm.predict_[0] = make_shared<const Instruction>(
+                SCALAR_VECTOR_AT_INDEX_SET_OP,
+                k_LABELS_SCALAR_ADDRESS,
+                k_LABELS_VECTOR_ADDRESS,
+                FloatDataSetter(0));
+        algorithm.predict_[1] = make_shared<const Instruction>(
                 SCALAR_SUM_OP,
                 k_LABELS_SCALAR_ADDRESS, k_PREDICTIONS_SCALAR_ADDRESS,
                 k_PREDICTIONS_SCALAR_ADDRESS);
+        adaptAlgorithm2VectorLabels(algorithm);
 
         RandomGenerator rand_gen;
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
@@ -369,7 +416,7 @@ namespace automl_zero {
         executor.Execute();
         Memory<4> memory;
         executor.GetMemory(&memory);
-        EXPECT_FLOAT_EQ(memory.scalar_[k_PREDICTIONS_SCALAR_ADDRESS], 0.0);
+        EXPECT_FLOAT_EQ(memory.vector_[k_PREDICTIONS_VECTOR_ADDRESS][0], 0.0);
     }
 
     TEST(ExecutorTest, StopsEarlyIfLargeErrorInSetupComponentFunction) {
@@ -391,6 +438,7 @@ namespace automl_zero {
                 SCALAR_CONST_SET_OP,
                 k_PREDICTIONS_SCALAR_ADDRESS,
                 ActivationDataSetter(kMaxAbsError + 10.0));
+        adaptAlgorithm2VectorLabels(algorithm);
 
         RandomGenerator rand_gen;
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
@@ -419,6 +467,7 @@ namespace automl_zero {
                 SCALAR_CONST_SET_OP,
                 k_PREDICTIONS_SCALAR_ADDRESS,
                 ActivationDataSetter(kMaxAbsError + 10.0));
+        adaptAlgorithm2VectorLabels(algorithm);
 
         RandomGenerator rand_gen;
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
@@ -447,6 +496,7 @@ namespace automl_zero {
                 SCALAR_CONST_SET_OP,
                 k_PREDICTIONS_SCALAR_ADDRESS,
                 ActivationDataSetter(kMaxAbsError + 10.0));
+        adaptAlgorithm2VectorLabels(algorithm);
 
         RandomGenerator rand_gen;
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
@@ -478,6 +528,7 @@ namespace automl_zero {
         algorithm.setup_[1] = make_shared<const Instruction>(
                 SCALAR_DIVISION_OP,
                 one_address, zero_address, k_PREDICTIONS_SCALAR_ADDRESS);
+        adaptAlgorithm2VectorLabels(algorithm);
 
         RandomGenerator rand_gen;
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
@@ -509,6 +560,7 @@ namespace automl_zero {
         algorithm.predict_[0] = make_shared<const Instruction>(
                 SCALAR_DIVISION_OP,
                 one_address, zero_address, k_PREDICTIONS_SCALAR_ADDRESS);
+        adaptAlgorithm2VectorLabels(algorithm);
 
         RandomGenerator rand_gen;
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
@@ -540,6 +592,7 @@ namespace automl_zero {
         algorithm.learn_[0] = make_shared<const Instruction>(
                 SCALAR_DIVISION_OP,
                 one_address, zero_address, k_PREDICTIONS_SCALAR_ADDRESS);
+        adaptAlgorithm2VectorLabels(algorithm);
 
         RandomGenerator rand_gen;
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
@@ -568,6 +621,7 @@ namespace automl_zero {
         algorithm.setup_[1] = make_shared<const Instruction>(
                 SCALAR_DIVISION_OP,
                 zero_address, zero_address, k_PREDICTIONS_SCALAR_ADDRESS);
+        adaptAlgorithm2VectorLabels(algorithm);
 
         RandomGenerator rand_gen;
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
@@ -596,6 +650,7 @@ namespace automl_zero {
         algorithm.predict_[0] = make_shared<const Instruction>(
                 SCALAR_DIVISION_OP,
                 zero_address, zero_address, k_PREDICTIONS_SCALAR_ADDRESS);
+        adaptAlgorithm2VectorLabels(algorithm);
 
         RandomGenerator rand_gen;
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
@@ -624,6 +679,7 @@ namespace automl_zero {
         algorithm.learn_[0] = make_shared<const Instruction>(
                 SCALAR_DIVISION_OP,
                 zero_address, zero_address, k_PREDICTIONS_SCALAR_ADDRESS);
+        adaptAlgorithm2VectorLabels(algorithm);
 
         RandomGenerator rand_gen;
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
@@ -646,16 +702,16 @@ namespace automl_zero {
                 "  train_features {elements: [0.0, 0.0, 0.0, 0.0]} "
                 "  train_features {elements: [0.0, 0.0, 0.0, 0.0]} "
                 "  train_features {elements: [0.0, 0.0, 0.0, 0.0]} "
-                "  train_labels {elements: [0.0]} "
-                "  train_labels {elements: [0.0]} "
-                "  train_labels {elements: [1000.0]} "
-                "  train_labels {elements: [0.0]} "
-                "  train_labels {elements: [0.0]} "
-                "  train_labels {elements: [0.0]} "
-                "  train_labels {elements: [0.0]} "
-                "  train_labels {elements: [0.0]} "
-                "  train_labels {elements: [0.0]} "
-                "  train_labels {elements: [0.0]} "
+                "  train_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  train_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  train_labels {elements: [1000.0, 0.0, 0.0, 0.0]} "
+                "  train_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  train_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  train_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  train_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  train_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  train_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  train_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
                 "  valid_features {elements: [0.0, 0.0, 0.0, 0.0]} "
                 "  valid_features {elements: [0.0, 0.0, 0.0, 0.0]} "
                 "  valid_features {elements: [0.0, 0.0, 0.0, 0.0]} "
@@ -666,16 +722,16 @@ namespace automl_zero {
                 "  valid_features {elements: [0.0, 0.0, 0.0, 0.0]} "
                 "  valid_features {elements: [0.0, 0.0, 0.0, 0.0]} "
                 "  valid_features {elements: [0.0, 0.0, 0.0, 0.0]} "
-                "  valid_labels {elements: [0.0]} "
-                "  valid_labels {elements: [0.0]} "
-                "  valid_labels {elements: [0.0]} "
-                "  valid_labels {elements: [0.0]} "
-                "  valid_labels {elements: [0.0]} "
-                "  valid_labels {elements: [0.0]} "
-                "  valid_labels {elements: [0.0]} "
-                "  valid_labels {elements: [0.0]} "
-                "  valid_labels {elements: [0.0]} "
-                "  valid_labels {elements: [0.0]} "
+                "  valid_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  valid_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  valid_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  valid_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  valid_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  valid_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  valid_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  valid_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  valid_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  valid_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
                 "} "
                 "eval_type: RMS_ERROR "
                 "num_train_examples: 10 "
@@ -684,6 +740,7 @@ namespace automl_zero {
                 "features_size: 4 ");
 
         Algorithm algorithm = SimpleNoOpAlgorithm();
+        adaptAlgorithm2VectorLabels(algorithm);
 
         RandomGenerator rand_gen;
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
@@ -707,16 +764,16 @@ namespace automl_zero {
                 "  train_features {elements: [0.0, 0.0, 0.0, 0.0]} "
                 "  train_features {elements: [0.0, 0.0, 0.0, 0.0]} "
                 "  train_features {elements: [0.0, 0.0, 0.0, 0.0]} "
-                "  train_labels {elements: [0.0]} "
-                "  train_labels {elements: [0.0]} "
-                "  train_labels {elements: [0.0]} "
-                "  train_labels {elements: [0.0]} "
-                "  train_labels {elements: [0.0]} "
-                "  train_labels {elements: [0.0]} "
-                "  train_labels {elements: [0.0]} "
-                "  train_labels {elements: [0.0]} "
-                "  train_labels {elements: [0.0]} "
-                "  train_labels {elements: [0.0]} "
+                "  train_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  train_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  train_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  train_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  train_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  train_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  train_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  train_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  train_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  train_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
                 "  valid_features {elements: [0.0, 0.0, 0.0, 0.0]} "
                 "  valid_features {elements: [0.0, 0.0, 0.0, 0.0]} "
                 "  valid_features {elements: [0.0, 0.0, 0.0, 0.0]} "
@@ -727,16 +784,16 @@ namespace automl_zero {
                 "  valid_features {elements: [0.0, 0.0, 0.0, 0.0]} "
                 "  valid_features {elements: [0.0, 0.0, 0.0, 0.0]} "
                 "  valid_features {elements: [0.0, 0.0, 0.0, 0.0]} "
-                "  valid_labels {elements: [0.0]} "
-                "  valid_labels {elements: [0.0]} "
-                "  valid_labels {elements: [0.0]} "
-                "  valid_labels {elements: [0.0]} "
-                "  valid_labels {elements: [0.0]} "
-                "  valid_labels {elements: [0.0]} "
-                "  valid_labels {elements: [0.0]} "
-                "  valid_labels {elements: [0.0]} "
-                "  valid_labels {elements: [0.0]} "
-                "  valid_labels {elements: [0.0]} "
+                "  valid_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  valid_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  valid_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  valid_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  valid_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  valid_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  valid_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  valid_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  valid_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  valid_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
                 "} "
                 "eval_type: RMS_ERROR "
                 "num_train_examples: 10 "
@@ -745,6 +802,7 @@ namespace automl_zero {
                 "features_size: 4 ");
 
         Algorithm algorithm = SimpleNoOpAlgorithm();
+        adaptAlgorithm2VectorLabels(algorithm);
 
         RandomGenerator rand_gen;
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
@@ -767,16 +825,16 @@ namespace automl_zero {
                 "  train_features {elements: [0.0, 0.0, 0.0, 0.0]} "
                 "  train_features {elements: [0.0, 0.0, 0.0, 0.0]} "
                 "  train_features {elements: [0.0, 0.0, 0.0, 0.0]} "
-                "  train_labels {elements: [0.0]} "
-                "  train_labels {elements: [0.0]} "
-                "  train_labels {elements: [0.0]} "
-                "  train_labels {elements: [0.0]} "
-                "  train_labels {elements: [0.0]} "
-                "  train_labels {elements: [0.0]} "
-                "  train_labels {elements: [0.0]} "
-                "  train_labels {elements: [0.0]} "
-                "  train_labels {elements: [0.0]} "
-                "  train_labels {elements: [0.0]} "
+                "  train_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  train_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  train_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  train_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  train_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  train_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  train_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  train_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  train_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  train_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
                 "  valid_features {elements: [0.0, 0.0, 0.0, 0.0]} "
                 "  valid_features {elements: [0.0, 0.0, 0.0, 0.0]} "
                 "  valid_features {elements: [0.0, 0.0, 0.0, 0.0]} "
@@ -787,16 +845,16 @@ namespace automl_zero {
                 "  valid_features {elements: [0.0, 0.0, 0.0, 0.0]} "
                 "  valid_features {elements: [0.0, 0.0, 0.0, 0.0]} "
                 "  valid_features {elements: [0.0, 0.0, 0.0, 0.0]} "
-                "  valid_labels {elements: [0.0]} "
-                "  valid_labels {elements: [0.0]} "
-                "  valid_labels {elements: [1000.0]} "
-                "  valid_labels {elements: [0.0]} "
-                "  valid_labels {elements: [0.0]} "
-                "  valid_labels {elements: [0.0]} "
-                "  valid_labels {elements: [0.0]} "
-                "  valid_labels {elements: [0.0]} "
-                "  valid_labels {elements: [0.0]} "
-                "  valid_labels {elements: [0.0]} "
+                "  valid_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  valid_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  valid_labels {elements: [1000.0, 0.0, 0.0, 0.0]} "
+                "  valid_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  valid_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  valid_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  valid_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  valid_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  valid_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
+                "  valid_labels {elements: [0.0, 0.0, 0.0, 0.0]} "
                 "} "
                 "eval_type: RMS_ERROR "
                 "num_train_examples: 10 "
@@ -805,6 +863,7 @@ namespace automl_zero {
                 "features_size: 4 ");
 
         Algorithm algorithm = SimpleNoOpAlgorithm();
+        adaptAlgorithm2VectorLabels(algorithm);
 
         RandomGenerator rand_gen;
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
@@ -828,6 +887,7 @@ namespace automl_zero {
                                        "features_size: 4 "));
 
         Algorithm algorithm = SimpleNoOpAlgorithm();
+        adaptAlgorithm2VectorLabels(algorithm);
 
         RandomGenerator rand_gen;
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
@@ -854,6 +914,7 @@ namespace automl_zero {
                                        kFirstDataSeedForTest));
         RandomGenerator rand_gen;
         Algorithm algorithm = SimpleGz();
+        adaptAlgorithm2VectorLabels(algorithm);
         double fitness_no_opt;
         { // Without optimization.
             Executor<4> executor(
