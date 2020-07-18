@@ -1297,6 +1297,7 @@ namespace automl_zero {
                 double *error, double *loss) {
             const Vector<F> errors = label.getVector() - memory.vector_[k_PREDICTIONS_VECTOR_ADDRESS];
             *error = errors.dot(errors);
+            *error /= F;
             *loss += *error;
         }
     };

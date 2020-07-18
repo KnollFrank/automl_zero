@@ -167,7 +167,7 @@ namespace automl_zero {
         CHECK_GE(k_MAX_SCALAR_ADDRESSES, 4);
 
         // Vector addresses.
-        constexpr AddressT kFinalLayerWeightsAddress = 1;
+        constexpr AddressT kFinalLayerWeightsAddress = 11;
         CHECK_EQ(
                 kFinalLayerWeightsAddress,
                 Generator::kUnitTestNeuralNetNoBiasNoGradientFinalLayerWeightsAddress);
@@ -181,10 +181,10 @@ namespace automl_zero {
         CHECK_EQ(
                 kOneFollowedByZeroesVectorAddress,
                 Generator::kOneFollowedByZeroesVectorAddress);
-        CHECK_GE(k_MAX_VECTOR_ADDRESSES, 10);
+        CHECK_GE(k_MAX_VECTOR_ADDRESSES, 12);
 
         // Matrix addresses.
-        constexpr AddressT kFirstLayerWeightsAddress = 0;
+        constexpr AddressT kFirstLayerWeightsAddress = 10;
         CHECK_EQ(
                 kFirstLayerWeightsAddress,
                 Generator::kUnitTestNeuralNetNoBiasNoGradientFirstLayerWeightsAddress);
@@ -307,7 +307,7 @@ namespace automl_zero {
         CHECK_EQ(
                 kOneFollowedByZeroesVectorAddress,
                 Generator::kOneFollowedByZeroesVectorAddress);
-        CHECK_GE(k_MAX_VECTOR_ADDRESSES, 9);
+        CHECK_GE(k_MAX_VECTOR_ADDRESSES, 12);
 
         // Matrix addresses.
         constexpr AddressT kFirstLayerWeightsAddress = 0;
@@ -466,9 +466,9 @@ namespace automl_zero {
         CHECK_GE(k_MAX_SCALAR_ADDRESSES, 4);
 
         // Vector addresses.
-        constexpr AddressT kWeightsAddress = 1;
-        constexpr AddressT kCorrectionAddress = 2;
-        CHECK_GE(k_MAX_VECTOR_ADDRESSES, 3);
+        constexpr AddressT kWeightsAddress = 3;
+        constexpr AddressT kCorrectionAddress = 4;
+        CHECK_GE(k_MAX_VECTOR_ADDRESSES, 5);
 
         CHECK_GE(k_MAX_MATRIX_ADDRESSES, 0);
 
@@ -514,7 +514,7 @@ namespace automl_zero {
         CHECK_GE(k_MAX_SCALAR_ADDRESSES, 1);
 
         // Vector addresses.
-        CHECK_GE(k_MAX_VECTOR_ADDRESSES, 2);
+        CHECK_GE(k_MAX_VECTOR_ADDRESSES, 5);
 
         shared_ptr<const Instruction> no_op_instruction =
                 make_shared<const Instruction>();

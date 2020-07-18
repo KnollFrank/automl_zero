@@ -90,9 +90,9 @@ namespace automl_zero {
 
         // A 2-layer neural network without bias and no learning.
         static constexpr AddressT
-                kUnitTestNeuralNetNoBiasNoGradientFinalLayerWeightsAddress = 1;
+                kUnitTestNeuralNetNoBiasNoGradientFinalLayerWeightsAddress = 11;
         static constexpr AddressT
-                kUnitTestNeuralNetNoBiasNoGradientFirstLayerWeightsAddress = 0;
+                kUnitTestNeuralNetNoBiasNoGradientFirstLayerWeightsAddress = 10;
         static constexpr AddressT kOneFollowedByZeroesVectorAddress = 9;
 
         Algorithm UnitTestNeuralNetNoBiasNoGradient(const double learning_rate);
