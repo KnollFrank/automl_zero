@@ -113,8 +113,18 @@ namespace automl_zero {
             for (Vector<F> &value : buffer->train_features_) {
                 value.resize(F, 1);
             }
+            for (Label<F> &label : buffer->train_labels_) {
+                Vector<F> v = label.getVector();
+                v.resize(F, 1);
+                label.setVector(v);
+            }
             for (Vector<F> &value : buffer->valid_features_) {
                 value.resize(F, 1);
+            }
+            for (Label<F> &label : buffer->valid_labels_) {
+                Vector<F> v = label.getVector();
+                v.resize(F, 1);
+                label.setVector(v);
             }
         }
     };
@@ -344,6 +354,7 @@ namespace automl_zero {
             memory.vector_[
                     Generator::kUnitTestNeuralNetNoBiasNoGradientFinalLayerWeightsAddress]
                     (2) = 0.0;
+            memory.vector_[Generator::kOneFollowedByZeroesVectorAddress](0) = 1;
 
             // Fill in the labels by executing the Algorithm.
             ExecuteAndFillLabels<F>(algorithm, &memory, buffer, &data_gen);

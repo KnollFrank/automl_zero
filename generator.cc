@@ -177,7 +177,11 @@ namespace automl_zero {
         constexpr AddressT kGradientWrtFinalLayerWeightsAddress = 5;
         constexpr AddressT kGradientWrtActivationsAddress = 6;
         constexpr AddressT kGradientOfReluAddress = 7;
-        CHECK_GE(kMaxVectorAddresses, 8);
+        constexpr AddressT kOneFollowedByZeroesVectorAddress = 8;
+        CHECK_EQ(
+                kOneFollowedByZeroesVectorAddress,
+                Generator::kOneFollowedByZeroesVectorAddress);
+        CHECK_GE(kMaxVectorAddresses, 9);
 
         // Matrix addresses.
         constexpr AddressT kFirstLayerWeightsAddress = 0;
@@ -212,6 +216,13 @@ namespace automl_zero {
         algorithm.predict_.emplace_back(make_shared<const Instruction>(
                 VECTOR_INNER_PRODUCT_OP, kFirstLayerOutputAfterReluAddress,
                 kFinalLayerWeightsAddress, kPredictionsScalarAddress));
+        // memory->vector_[kPredictionsVectorAddress] = memory->scalar_[kPredictionsScalarAddress] * {1, 0, 0, ...}
+        algorithm.predict_.emplace_back(make_shared<const Instruction>(
+                SCALAR_VECTOR_PRODUCT_OP,
+                kPredictionsScalarAddress,
+                kOneFollowedByZeroesVectorAddress,
+                kPredictionsVectorAddress));
+
         PadComponentFunctionWithInstruction(
                 predict_size_init_, no_op_instruction, &algorithm.predict_);
 
