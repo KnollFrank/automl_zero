@@ -89,11 +89,14 @@ namespace automl_zero {
                 double learning_rate, double first_init_scale, double final_init_scale);
 
         // A 2-layer neural network without bias and no learning.
+        // vector address:
         static constexpr AddressT
-                kUnitTestNeuralNetNoBiasNoGradientFinalLayerWeightsAddress = 11;
+                kUnitTestNeuralNetNoBiasNoGradientFinalLayerWeightsAddress = 3;
+        // vector address:
+        static constexpr AddressT kOneFollowedByZeroesVectorAddress = 4;
+        // matrix address:
         static constexpr AddressT
-                kUnitTestNeuralNetNoBiasNoGradientFirstLayerWeightsAddress = 10;
-        static constexpr AddressT kOneFollowedByZeroesVectorAddress = 9;
+                kUnitTestNeuralNetNoBiasNoGradientFirstLayerWeightsAddress = 1;
 
         Algorithm UnitTestNeuralNetNoBiasNoGradient(const double learning_rate);
 

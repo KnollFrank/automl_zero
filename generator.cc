@@ -167,28 +167,28 @@ namespace automl_zero {
         CHECK_GE(k_MAX_SCALAR_ADDRESSES, 4);
 
         // Vector addresses.
-        constexpr AddressT kFinalLayerWeightsAddress = 11;
+        constexpr AddressT kFinalLayerWeightsAddress = 3;
         CHECK_EQ(
                 kFinalLayerWeightsAddress,
                 Generator::kUnitTestNeuralNetNoBiasNoGradientFinalLayerWeightsAddress);
-        constexpr AddressT kFirstLayerOutputBeforeReluAddress = 2;
-        constexpr AddressT kFirstLayerOutputAfterReluAddress = 3;
-        constexpr AddressT kZerosAddress = 4;
-        constexpr AddressT kGradientWrtFinalLayerWeightsAddress = 5;
-        constexpr AddressT kGradientWrtActivationsAddress = 6;
-        constexpr AddressT kGradientOfReluAddress = 7;
-        constexpr AddressT kOneFollowedByZeroesVectorAddress = 9;
+        constexpr AddressT kOneFollowedByZeroesVectorAddress = 4;
         CHECK_EQ(
                 kOneFollowedByZeroesVectorAddress,
                 Generator::kOneFollowedByZeroesVectorAddress);
-        CHECK_GE(k_MAX_VECTOR_ADDRESSES, 12);
+        constexpr AddressT kFirstLayerOutputBeforeReluAddress = 5;
+        constexpr AddressT kFirstLayerOutputAfterReluAddress = 6;
+        constexpr AddressT kZerosAddress = 7;
+        constexpr AddressT kGradientWrtFinalLayerWeightsAddress = 8;
+        constexpr AddressT kGradientWrtActivationsAddress = 9;
+        constexpr AddressT kGradientOfReluAddress = 10;
+        CHECK_GE(k_MAX_VECTOR_ADDRESSES, 11);
 
         // Matrix addresses.
-        constexpr AddressT kFirstLayerWeightsAddress = 10;
+        constexpr AddressT kFirstLayerWeightsAddress = 1;
         CHECK_EQ(
                 kFirstLayerWeightsAddress,
                 Generator::kUnitTestNeuralNetNoBiasNoGradientFirstLayerWeightsAddress);
-        constexpr AddressT kGradientWrtFirstLayerWeightsAddress = 1;
+        constexpr AddressT kGradientWrtFirstLayerWeightsAddress = 2;
         CHECK_GE(k_MAX_MATRIX_ADDRESSES, 2);
 
         shared_ptr<const Instruction> no_op_instruction =
@@ -295,18 +295,18 @@ namespace automl_zero {
         CHECK_GE(k_MAX_SCALAR_ADDRESSES, 5);
 
         // Vector addresses.
-        constexpr AddressT kFirstLayerBiasAddress = 1;
-        constexpr AddressT kFinalLayerWeightsAddress = 2;
-        constexpr AddressT kFirstLayerOutputBeforeReluAddress = 3;
-        constexpr AddressT kFirstLayerOutputAfterReluAddress = 4;
-        constexpr AddressT kZerosAddress = 5;
-        constexpr AddressT kGradientWrtFinalLayerWeightsAddress = 6;
-        constexpr AddressT kGradientWrtActivationsAddress = 7;
-        constexpr AddressT kGradientOfReluAddress = 8;
-        constexpr AddressT kOneFollowedByZeroesVectorAddress = 9;
+        constexpr AddressT kFirstLayerBiasAddress = 3;
+        constexpr AddressT kOneFollowedByZeroesVectorAddress = 4;
         CHECK_EQ(
                 kOneFollowedByZeroesVectorAddress,
                 Generator::kOneFollowedByZeroesVectorAddress);
+        constexpr AddressT kFinalLayerWeightsAddress = 5;
+        constexpr AddressT kFirstLayerOutputBeforeReluAddress = 6;
+        constexpr AddressT kFirstLayerOutputAfterReluAddress = 7;
+        constexpr AddressT kZerosAddress = 8;
+        constexpr AddressT kGradientWrtFinalLayerWeightsAddress = 9;
+        constexpr AddressT kGradientWrtActivationsAddress = 10;
+        constexpr AddressT kGradientOfReluAddress = 11;
         CHECK_GE(k_MAX_VECTOR_ADDRESSES, 12);
 
         // Matrix addresses.
