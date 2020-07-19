@@ -175,8 +175,8 @@ namespace automl_zero {
         EXPECT_LE(fitness, 1.0);
         EXPECT_GT(fitness, 0.999);
     }
-
-    TEST(GeneratorTest, Sortalgorithm_Learns1) {
+    
+    TEST(GeneratorTest, Sortalgorithm_Predicts1) {
         // Given
         Generator generator(
                 NO_OP_ALGORITHM,  // Irrelevant.
@@ -199,7 +199,7 @@ namespace automl_zero {
         ASSERT_EQ(asStdVector(output), vector<double>({2, 5, 12, 30}));
     }
 
-    TEST(GeneratorTest, Sortalgorithm_Learns2) {
+    TEST(GeneratorTest, Sortalgorithm_Predicts2) {
         // Given
         Generator generator(
                 NO_OP_ALGORITHM,  // Irrelevant.
