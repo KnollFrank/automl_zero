@@ -440,13 +440,28 @@ namespace automl_zero {
         return result;
     }
 
+    template<FeatureIndexT F>
+    inline Scalar maybeCorrectIndex(const Scalar index) {
+        constexpr int lowerBound = 0;
+        if (index < lowerBound) {
+            return lowerBound;
+        }
+
+        constexpr int upperBound = F - 1;
+        if (index > upperBound) {
+            return upperBound;
+        }
+
+        return index;
+    }
+
     // s5 = arg_min(v3, s1)
     template<FeatureIndexT F>
     inline void ExecuteVectorArgMinOp(
             const Instruction &instruction, RandomGenerator *rand_gen,
             Memory<F> *memory) {
         const std::vector<double> v = asStdVector(memory->vector_[instruction.in1_]);
-        const FeatureIndexT index = memory->scalar_[instruction.in2_];
+        const FeatureIndexT index = maybeCorrectIndex<F>(memory->scalar_[instruction.in2_]);
         const auto begin = v.begin() + index;
         const auto minIndex = std::min_element(begin, v.end());
         memory->scalar_[instruction.out_] = minIndex - v.begin();
@@ -457,12 +472,13 @@ namespace automl_zero {
     inline void ExecuteVectorSwapOp(
             const Instruction &instruction, RandomGenerator *rand_gen,
             Memory<F> *memory) {
-        const FeatureIndexT index1 = memory->scalar_[instruction.in1_];
-        const FeatureIndexT index2 = memory->scalar_[instruction.in2_];
+        const FeatureIndexT index1 = maybeCorrectIndex<F>(memory->scalar_[instruction.in1_]);
+        const FeatureIndexT index2 = maybeCorrectIndex<F>(memory->scalar_[instruction.in2_]);
 
-        const double tmp = memory->vector_[instruction.out_](index1);
-        memory->vector_[instruction.out_](index1) = memory->vector_[instruction.out_](index2);
-        memory->vector_[instruction.out_](index2) = tmp;
+        Vector<F> &out = memory->vector_[instruction.out_];
+        const double tmp = out(index1);
+        out(index1) = out(index2);
+        out(index2) = tmp;
     }
 
     template<FeatureIndexT F>

@@ -1597,6 +1597,36 @@ namespace automl_zero {
         ASSERT_EQ(asStdVector(memory_.vector_[1]), vector<double>({20.0, 10.0, 0.0, 30.0}));
     }
 
+    // swap(v1, s2, s3)
+    TEST_F(ExecuteInstructionTest, VectorArithmeticRelated_VectorSwapOp_IndexOutOfBounds1) {
+        // Given
+        const Instruction &instruction = Instruction(VECTOR_SWAP_OP, 2, 3, 1);
+        memory_.vector_[1] = Vector<4>(((const vector<double>) {0.0, 10.0, 20.0, 30.0}).data());
+        memory_.scalar_[2] = -1; // => 0
+        memory_.scalar_[3] = 4; // => 3
+
+        // When
+        ExecuteInstruction(instruction, &train_rand_gen_, &memory_);
+
+        // Then
+        ASSERT_EQ(asStdVector(memory_.vector_[1]), vector<double>({30.0, 10.0, 20.0, 0.0}));
+    }
+
+    // swap(v1, s2, s3)
+    TEST_F(ExecuteInstructionTest, VectorArithmeticRelated_VectorSwapOp_IndexOutOfBounds2) {
+        // Given
+        const Instruction &instruction = Instruction(VECTOR_SWAP_OP, 2, 3, 1);
+        memory_.vector_[1] = Vector<4>(((const vector<double>) {0.0, 10.0, 20.0, 30.0}).data());
+        memory_.scalar_[2] = 4; // => 3
+        memory_.scalar_[3] = -1; // => 0
+
+        // When
+        ExecuteInstruction(instruction, &train_rand_gen_, &memory_);
+
+        // Then
+        ASSERT_EQ(asStdVector(memory_.vector_[1]), vector<double>({30.0, 10.0, 20.0, 0.0}));
+    }
+
     // s5 = arg_min(v3, s1):
     // v3 = {v3[0], v3[1], v3[2], v3[3]}
     // s5 is the index within v3 of the minimal element of v3 starting at index s1, e.g. {v3[1], v3[2], v3[3]}, if s1=1
@@ -1627,6 +1657,38 @@ namespace automl_zero {
 
         // Then
         EXPECT_DOUBLE_EQ(memory_.scalar_[5], 0);
+    }
+
+    // s5 = arg_min(v3, s0)
+    TEST_F(ExecuteInstructionTest, VectorArithmeticRelated_VectorArgMinOp_IndexOutOfBOunds1) {
+        // Given
+        const int indexTooLow = -1;
+        const Instruction &instruction = Instruction(VECTOR_ARG_MIN_OP, 3, 0, 5);
+        memory_.scalar_[0] = indexTooLow; // => 0
+        memory_.scalar_[5] = -1;
+        memory_.vector_[3] = Vector<4>(((const vector<double>) {0.0, 20.0, 10.0, 30.0}).data());
+
+        // When
+        ExecuteInstruction(instruction, &train_rand_gen_, &memory_);
+
+        // Then
+        EXPECT_DOUBLE_EQ(memory_.scalar_[5], 0);
+    }
+
+    // s5 = arg_min(v3, s0)
+    TEST_F(ExecuteInstructionTest, VectorArithmeticRelated_VectorArgMinOp_IndexOutOfBOunds2) {
+        // Given
+        const int indexTooHigh = 4;
+        const Instruction &instruction = Instruction(VECTOR_ARG_MIN_OP, 3, 0, 5);
+        memory_.scalar_[0] = indexTooHigh; // => 3
+        memory_.scalar_[5] = -1;
+        memory_.vector_[3] = Vector<4>(((const vector<double>) {0.0, 20.0, 10.0, 30.0}).data());
+
+        // When
+        ExecuteInstruction(instruction, &train_rand_gen_, &memory_);
+
+        // Then
+        EXPECT_DOUBLE_EQ(memory_.scalar_[5], 3);
     }
 
     TEST_F(ExecuteInstructionTest, MatrixArithmeticRelated_MatrixSumOp) {

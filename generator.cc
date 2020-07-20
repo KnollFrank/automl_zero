@@ -511,7 +511,7 @@ namespace automl_zero {
         Algorithm algorithm;
 
         // Scalar addresses
-        CHECK_GE(k_MAX_SCALAR_ADDRESSES, 1);
+        CHECK_GE(k_MAX_SCALAR_ADDRESSES, 3);
 
         // Vector addresses.
         CHECK_GE(k_MAX_VECTOR_ADDRESSES, 5);
