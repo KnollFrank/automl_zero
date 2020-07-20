@@ -507,6 +507,48 @@ namespace automl_zero {
     };
 
     template<FeatureIndexT F>
+    struct SortTaskCreator {
+        static void Create(IntegerT num_train_examples,
+                           IntegerT num_valid_examples,
+                           RandomSeedT param_seed,
+                           RandomSeedT data_seed,
+                           TaskBuffer<F> *buffer) {
+            std::mt19937 task_bit_gen(HashMix(
+                    static_cast<RandomSeedT>(856572777), data_seed));
+            RandomGenerator task_gen(&task_bit_gen);
+
+            ClearAndResize(num_train_examples, num_valid_examples, buffer);
+
+            std::mt19937 data_bit_gen(data_seed + 939723201);
+            RandomGenerator data_gen(&data_bit_gen);
+            std::mt19937 param_bit_gen(param_seed + 997958712);
+            RandomGenerator weights_gen(&param_bit_gen);
+            Generator generator(NO_OP_ALGORITHM, 0, 0, 0, {}, {}, {}, nullptr,
+                                nullptr);
+
+            // Fill the features.
+            for (Vector<F> &features : buffer->train_features_) {
+                data_gen.FillUniform<F>(0.0, 100.0, &features);
+            }
+            for (Vector<F> &features : buffer->valid_features_) {
+                data_gen.FillUniform<F>(0.0, 100.0, &features);
+            }
+
+            // Create a Algorithm and memory deterministically.
+            Algorithm algorithm = generator.SortAlgorithm();
+            ::std::cout << "SortAlgorithm: " << ::std::endl
+                        << algorithm.ToReadable() << ::std::endl;
+
+            Memory<F> memory;
+            memory.Wipe();
+            memory.scalar_[Generator::kConstOneAddress] = 1;
+
+            // Fill in the labels by executing the Algorithm.
+            ExecuteAndFillLabels<F>(algorithm, &memory, buffer, &data_gen);
+        }
+    };
+
+    template<FeatureIndexT F>
     struct UnitTestCustomTaskCreator {
         static void Create(
                 const IntegerT num_train_examples,
@@ -587,6 +629,14 @@ namespace automl_zero {
                 UnitTestIncrementTaskCreator<F>::Create(
                         task_spec.num_train_examples(), task_spec.num_valid_examples(),
                         task_spec.unit_test_increment_task(), &buffer);
+                break;
+            case TaskSpec::kSortTask:
+                SortTaskCreator<F>::Create(
+                        task_spec.num_train_examples(),
+                        task_spec.num_valid_examples(),
+                        param_seed,
+                        data_seed,
+                        &buffer);
                 break;
             case TaskSpec::kUnitTestCustomTask:
                 UnitTestCustomTaskCreator<F>::Create(

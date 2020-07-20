@@ -246,6 +246,8 @@ namespace automl_zero {
 
         FRIEND_TEST(FillTaskWithIncrementingIntegersTest, WorksCorrectly);
 
+        FRIEND_TEST(FillTaskWithSortedNumbersTest, WorksCorrectly);
+
         FRIEND_TEST(FillTaskWithNonlinearDataTest, PermanenceTest);
 
         FRIEND_TEST(FillTaskWithProjectedBinaryClassificationTaskTest,

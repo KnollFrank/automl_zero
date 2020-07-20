@@ -520,6 +520,14 @@ namespace automl_zero {
                 make_shared<const Instruction>();
 
         // define setup function
+        constexpr AddressT kConstOneAddress = 2;
+        CHECK_EQ(
+                kConstOneAddress,
+                Generator::kConstOneAddress);
+        algorithm.setup_.emplace_back(std::make_shared<const Instruction>(
+                SCALAR_CONST_SET_OP,
+                kConstOneAddress,
+                ActivationDataSetter(1.0)));
         PadComponentFunctionWithInstruction(
                 setup_size_init_, no_op_instruction, &algorithm.setup_);
 
@@ -527,6 +535,12 @@ namespace automl_zero {
         createPredictInstuctionsWhichSortUpToIndex(algorithm, 0);
         createPredictInstuctionsWhichSortUpToIndex(algorithm, 1);
         createPredictInstuctionsWhichSortUpToIndex(algorithm, 2);
+        // v_k_PREDICTIONS_VECTOR_ADDRESS = 1 * v_k_FEATURES_VECTOR_ADDRESS
+        algorithm.predict_.emplace_back(std::make_shared<const Instruction>(
+                SCALAR_VECTOR_PRODUCT_OP,
+                kConstOneAddress,
+                k_FEATURES_VECTOR_ADDRESS,
+                k_PREDICTIONS_VECTOR_ADDRESS));
         PadComponentFunctionWithInstruction(
                 predict_size_init_, no_op_instruction, &algorithm.predict_);
 

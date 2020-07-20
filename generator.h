@@ -81,6 +81,8 @@ namespace automl_zero {
 
         Algorithm LinearModel(double learning_rate);
 
+        static constexpr AddressT kConstOneAddress = 2;
+
         Algorithm SortAlgorithm();
 
         // A 2-layer neural network with one nonlinearity, where both layers implement

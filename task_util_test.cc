@@ -248,6 +248,37 @@ namespace automl_zero {
                         kOnesVector * static_cast<double>(kNumValidExamples - 1)));
     }
 
+    template<FeatureIndexT F>
+    void assertSortedFeaturesEqualLabels(const std::vector<Vector<F>> features, const std::vector<Label<F>> &labels) {
+        for (int i = 0; i < features.size(); ++i) {
+            assertSortedFeatureEqualsLabel(features[i], labels[i]);
+        }
+    }
+
+    template<FeatureIndexT F>
+    void assertSortedFeatureEqualsLabel(const Vector<F> &feature, const Label<F> &label) {
+        std::vector<double> sortedFeature = asStdVector(feature);
+        std::sort(sortedFeature.begin(), sortedFeature.end());
+        ASSERT_EQ(sortedFeature, asStdVector(label.getVector()));
+    }
+
+    TEST(FillTaskWithSortedNumbersTest, WorksCorrectly) {
+        auto dataset =
+                GenerateTask<4>(StrCat("sort_task {} "
+                                       "eval_type: ACCURACY "
+                                       "num_train_examples: ",
+                                       kNumTrainExamples,
+                                       " "
+                                       "num_valid_examples: ",
+                                       kNumValidExamples,
+                                       " "
+                                       "num_tasks: 1 "
+                                       "features_size: 4 "));
+
+        assertSortedFeaturesEqualLabels(dataset.train_features_, dataset.train_labels_);
+        assertSortedFeaturesEqualLabels(dataset.valid_features_, dataset.valid_labels_);
+    }
+
     TEST(FillTaskWithNonlinearDataTest, DifferentForDifferentSeeds) {
         Task<4> dataset_1000_10000 =
                 GenerateTask<4>(StrCat("scalar_2layer_nn_regression_task {} "
