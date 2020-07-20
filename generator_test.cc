@@ -175,7 +175,7 @@ namespace automl_zero {
         EXPECT_LE(fitness, 1.0);
         EXPECT_GT(fitness, 0.999);
     }
-    
+
     TEST(GeneratorTest, Sortalgorithm_Predicts1) {
         // Given
         Generator generator(
@@ -189,7 +189,7 @@ namespace automl_zero {
                 nullptr,  // bit_gen, irrelevant.
                 nullptr);  // rand_gen, irrelevant.
 
-        Algorithm algorithm = generator.SortAlgorithm();
+        Algorithm algorithm = generator.SortAlgorithm(4);
         const Vector<4> input = {12, 30, 5, 2};
 
         // When
@@ -212,7 +212,7 @@ namespace automl_zero {
                 nullptr,  // bit_gen, irrelevant.
                 nullptr);  // rand_gen, irrelevant.
 
-        Algorithm algorithm = generator.SortAlgorithm();
+        Algorithm algorithm = generator.SortAlgorithm(4);
         const Vector<4> input = {2, 1, 0, -1};
 
         // When

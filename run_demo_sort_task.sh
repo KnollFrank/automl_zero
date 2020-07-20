@@ -38,8 +38,8 @@ bazel run -c opt \
     predict_ops: [SCALAR_CONST_SET_OP, VECTOR_ARG_MIN_OP, VECTOR_SWAP_OP, SCALAR_VECTOR_PRODUCT_OP] \
     learn_ops: [] \
     learn_size_init: 0 \
-    setup_size_init: 10 \
-    predict_size_init: 2 \
+    setup_size_init: 1 \
+    predict_size_init: 10 \
     fec {num_train_examples: 3 num_valid_examples: 2} \
     fitness_combination_mode: MEAN_FITNESS_COMBINATION \
     population_size: 1000 \
@@ -65,7 +65,7 @@ bazel run -c opt \
       param_seeds: [2000000] \
     } \
     " \
-  --max_experiments=0 \
+  --max_experiments=20 \
   --randomize_task_seeds \
   --select_tasks=" \
     tasks { \
@@ -78,4 +78,4 @@ bazel run -c opt \
       eval_type: RMS_ERROR \
     } \
     " \
-  --sufficient_fitness=0.9999
+  --sufficient_fitness=0.75

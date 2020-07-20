@@ -535,9 +535,8 @@ namespace automl_zero {
             }
 
             // Create a Algorithm and memory deterministically.
-            Algorithm algorithm = generator.SortAlgorithm();
-            ::std::cout << "SortAlgorithm: " << ::std::endl
-                        << algorithm.ToReadable() << ::std::endl;
+            Algorithm algorithm = generator.SortAlgorithm(F);
+            ::std::cout << "SortAlgorithm: " << ::std::endl << algorithm.ToReadable() << ::std::endl;
 
             Memory<F> memory;
             memory.Wipe();

@@ -507,7 +507,7 @@ namespace automl_zero {
         return algorithm;
     }
 
-    Algorithm Generator::SortAlgorithm() {
+    Algorithm Generator::SortAlgorithm(int F) {
         Algorithm algorithm;
 
         // Scalar addresses
@@ -532,9 +532,9 @@ namespace automl_zero {
                 setup_size_init_, no_op_instruction, &algorithm.setup_);
 
         // define predict function
-        createPredictInstuctionsWhichSortUpToIndex(algorithm, 0);
-        createPredictInstuctionsWhichSortUpToIndex(algorithm, 1);
-        createPredictInstuctionsWhichSortUpToIndex(algorithm, 2);
+        for (int i = 0; i < F - 1; ++i) {
+            createPredictInstuctionsWhichSortUpToIndex(algorithm, i);
+        }
         // v_k_PREDICTIONS_VECTOR_ADDRESS = 1 * v_k_FEATURES_VECTOR_ADDRESS
         algorithm.predict_.emplace_back(std::make_shared<const Instruction>(
                 SCALAR_VECTOR_PRODUCT_OP,
