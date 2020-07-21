@@ -524,14 +524,14 @@ namespace automl_zero {
         CHECK_EQ(
                 kConstOneAddress,
                 Generator::kConstOneAddress);
-        algorithm.setup_.emplace_back(std::make_shared<const Instruction>(
-                SCALAR_CONST_SET_OP,
-                kConstOneAddress,
-                ActivationDataSetter(1.0)));
         PadComponentFunctionWithInstruction(
                 setup_size_init_, no_op_instruction, &algorithm.setup_);
 
         // define predict function
+        algorithm.predict_.emplace_back(std::make_shared<const Instruction>(
+                SCALAR_CONST_SET_OP,
+                kConstOneAddress,
+                ActivationDataSetter(1.0)));
         for (int i = 0; i < F - 1; ++i) {
             createPredictInstuctionsWhichSortUpToIndex(algorithm, i);
         }

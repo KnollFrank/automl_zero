@@ -1038,7 +1038,7 @@ namespace automl_zero {
     template<FeatureIndexT F>
     struct VectorPredictionGetter {
         inline static Vector<F> Get(Memory<F> *memory) {
-            return memory->vector_[k_FEATURES_VECTOR_ADDRESS];
+            return memory->vector_[k_PREDICTIONS_VECTOR_ADDRESS];
         }
     };
 
