@@ -417,11 +417,10 @@ namespace automl_zero {
 
     // v3[5]=-2.4
     template<FeatureIndexT F>
-    inline void ExecuteVectorConstSetOp(
-            const Instruction &instruction, RandomGenerator *rand_gen,
-            Memory<F> *memory) {
-        const FeatureIndexT index =
-                FloatToIndex(instruction.GetFloatData0(), F);
+    inline void ExecuteVectorConstSetOp(const Instruction &instruction,
+                                        RandomGenerator *rand_gen,
+                                        Memory<F> *memory) {
+        const FeatureIndexT index = FloatToIndex(instruction.GetFloatData0(), F);
         memory->vector_[instruction.out_](index) = instruction.GetFloatData1();
     }
 
@@ -461,10 +460,10 @@ namespace automl_zero {
             const Instruction &instruction, RandomGenerator *rand_gen,
             Memory<F> *memory) {
         const std::vector<double> v = asStdVector(memory->vector_[instruction.in1_]);
-        const FeatureIndexT index = maybeCorrectIndex<F>(memory->scalar_[instruction.in2_]);
+        const FeatureIndexT index = maybeCorrectIndex<F>(FloatToIndex(memory->scalar_[instruction.in2_], F));
         const auto begin = v.begin() + index;
         const auto minIndex = std::min_element(begin, v.end());
-        memory->scalar_[instruction.out_] = minIndex - v.begin();
+        memory->scalar_[instruction.out_] = IndexToFloat(minIndex - v.begin(), F);
     }
 
     // swap(v1, s2, s3)
@@ -472,8 +471,8 @@ namespace automl_zero {
     inline void ExecuteVectorSwapOp(
             const Instruction &instruction, RandomGenerator *rand_gen,
             Memory<F> *memory) {
-        const FeatureIndexT index1 = maybeCorrectIndex<F>(memory->scalar_[instruction.in1_]);
-        const FeatureIndexT index2 = maybeCorrectIndex<F>(memory->scalar_[instruction.in2_]);
+        const FeatureIndexT index1 = maybeCorrectIndex<F>(FloatToIndex(memory->scalar_[instruction.in1_], F));
+        const FeatureIndexT index2 = maybeCorrectIndex<F>(FloatToIndex(memory->scalar_[instruction.in2_], F));
 
         Vector<F> &out = memory->vector_[instruction.out_];
         const double tmp = out(index1);

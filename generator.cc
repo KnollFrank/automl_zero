@@ -507,7 +507,7 @@ namespace automl_zero {
         return algorithm;
     }
 
-    Algorithm Generator::SortAlgorithm(int F) {
+    Algorithm Generator::SortAlgorithm(const int F) {
         Algorithm algorithm;
 
         // Scalar addresses
@@ -533,7 +533,7 @@ namespace automl_zero {
                 kConstOneAddress,
                 ActivationDataSetter(1.0)));
         for (int i = 0; i < F - 1; ++i) {
-            createPredictInstuctionsWhichSortUpToIndex(algorithm, i);
+            createPredictInstuctionsWhichSortUpToIndex(algorithm, IndexToFloat(i, F));
         }
         // v_k_PREDICTIONS_VECTOR_ADDRESS = 1 * v_k_FEATURES_VECTOR_ADDRESS
         algorithm.predict_.emplace_back(std::make_shared<const Instruction>(
@@ -551,12 +551,12 @@ namespace automl_zero {
         return algorithm;
     }
 
-    void Generator::createPredictInstuctionsWhichSortUpToIndex(Algorithm &algorithm, const int i) const {
-        // s0 = i
+    void Generator::createPredictInstuctionsWhichSortUpToIndex(Algorithm &algorithm, const float relativeIndex) const {
+        // s0 = relativeIndex
         algorithm.predict_.emplace_back(std::make_shared<const Instruction>(
                 SCALAR_CONST_SET_OP,
                 0,
-                ActivationDataSetter(i)));
+                ActivationDataSetter(relativeIndex)));
         // s1 = arg_min(v0, s0)
         algorithm.predict_.emplace_back(std::make_shared<const Instruction>(
                 VECTOR_ARG_MIN_OP,

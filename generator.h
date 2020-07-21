@@ -83,7 +83,7 @@ namespace automl_zero {
 
         static constexpr AddressT kConstOneAddress = 2;
 
-        Algorithm SortAlgorithm(int F);
+        Algorithm SortAlgorithm(const int F);
 
         // A 2-layer neural network with one nonlinearity, where both layers implement
         // learning by gradient descent. The weights are initialized randomly.
@@ -121,7 +121,7 @@ namespace automl_zero {
         Randomizer randomizer_;
         std::shared_ptr<const Instruction> no_op_instruction_;
 
-        void createPredictInstuctionsWhichSortUpToIndex(Algorithm &algorithm, const int i) const;
+        void createPredictInstuctionsWhichSortUpToIndex(Algorithm &algorithm, const float relativeIndex) const;
     };
 
 }  // namespace automl_zero
