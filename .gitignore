@@ -1,8 +1,8 @@
 /bin/
 /.clwb/
 /.idea/
-/binary_cifar10_data/
-/bazel-bin/
-/bazel-out/
-/bazel-automl_zero/
-/bazel-testlogs/
+binary_cifar10_data
+bazel-out
+bazel-testlogs
+bazel-bin
+bazel-automl_zero
