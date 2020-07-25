@@ -13,7 +13,17 @@
             "sourceFileMap": {
                 "/proc/self/cwd/": "${workspaceFolder}",
             },
-            "args": ["--search_experiment_spec=\"     search_tasks {       tasks {         sort_task { }         features_size: 4         num_train_examples: 100         num_train_epochs: 8         num_valid_examples: 100         num_tasks: 10         eval_type: RMS_ERROR       }     }     setup_ops: [SCALAR_CONST_SET_OP]     predict_ops: [SCALAR_CONST_SET_OP, VECTOR_ARG_MIN_OP, VECTOR_SWAP_OP, SCALAR_VECTOR_PRODUCT_OP]     learn_ops: []     learn_size_init: 0     setup_size_init: 10     predict_size_init: 2     fec {num_train_examples: 3 num_valid_examples: 2}     fitness_combination_mode: MEAN_FITNESS_COMBINATION     population_size: 1000     tournament_size: 10     initial_population: RANDOM_ALGORITHM     max_train_steps: 2000000     allowed_mutation_types {      mutation_types: [ALTER_PARAM_MUTATION_TYPE, RANDOMIZE_INSTRUCTION_MUTATION_TYPE, RANDOMIZE_COMPONENT_FUNCTION_MUTATION_TYPE]     }     mutate_prob: 0.9     progress_every: 10000     \"   --final_tasks=\"     tasks {       sort_task { }       features_size: 4       num_train_examples: 1000       num_train_epochs: 8       num_valid_examples: 100       num_tasks: 100       eval_type: RMS_ERROR       data_seeds: [1000000]       param_seeds: [2000000]     }     \"   --max_experiments=0   --randomize_task_seeds   --select_tasks=\"     tasks {         sort_task { }       features_size: 4       num_train_examples: 1000       num_train_epochs: 8       num_valid_examples: 100       num_tasks: 100       eval_type: RMS_ERROR     }     \"  --sufficient_fitness=0.9999"],
+            "args": [
+                "--search_experiment_spec",
+                "     search_tasks {       tasks {         sort_task { }         features_size: 4         num_train_examples: 100         num_train_epochs: 8         num_valid_examples: 100         num_tasks: 10         eval_type: RMS_ERROR       }     }     setup_ops: [SCALAR_CONST_SET_OP]     predict_ops: [SCALAR_CONST_SET_OP, VECTOR_ARG_MIN_OP, VECTOR_SWAP_OP, SCALAR_VECTOR_PRODUCT_OP]     learn_ops: []     learn_size_init: 0     setup_size_init: 10     predict_size_init: 2     fec {num_train_examples: 3 num_valid_examples: 2}     fitness_combination_mode: MEAN_FITNESS_COMBINATION     population_size: 1000     tournament_size: 10     initial_population: RANDOM_ALGORITHM     max_train_steps: 2000000     allowed_mutation_types {      mutation_types: [ALTER_PARAM_MUTATION_TYPE, RANDOMIZE_INSTRUCTION_MUTATION_TYPE, RANDOMIZE_COMPONENT_FUNCTION_MUTATION_TYPE]     }     mutate_prob: 0.9     progress_every: 10000 ",
+                "--final_tasks",
+                "     tasks {       sort_task { }       features_size: 4       num_train_examples: 1000       num_train_epochs: 8       num_valid_examples: 100       num_tasks: 100       eval_type: RMS_ERROR       data_seeds: [1000000]       param_seeds: [2000000]     }     ",
+                "--max_experiments=0",
+                "--randomize_task_seeds",
+                "--select_tasks",
+                "     tasks {         sort_task { }       features_size: 4       num_train_examples: 1000       num_train_epochs: 8       num_valid_examples: 100       num_tasks: 100       eval_type: RMS_ERROR     }     ",
+                "--sufficient_fitness=0.9999"
+            ],
             "stopAtEntry": true,
             "cwd": "${workspaceFolder}/bazel-out/k8-dbg/bin/run_search_experiment.runfiles/__main__",
             "environment": [],
