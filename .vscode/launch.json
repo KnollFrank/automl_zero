@@ -11,7 +11,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/bazel-out/k8-dbg/bin/run_search_experiment.runfiles/__main__/run_search_experiment",
             "sourceFileMap": {
-                "/proc/self/cwd/": "${workspaceFolder}",
+                "/proc/self/cwd/": "${workspaceFolder}"
             },
             "args": [
                 "--search_experiment_spec",
@@ -44,7 +44,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/bazel-bin/executor_test.runfiles/__main__/executor_test",
             "sourceFileMap": {
-                "/proc/self/cwd/": "${workspaceFolder}",
+                "/proc/self/cwd/": "${workspaceFolder}"
             },
             "args": [],
             "stopAtEntry": false,
