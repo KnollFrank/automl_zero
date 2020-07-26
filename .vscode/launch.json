@@ -59,6 +59,29 @@
                     "ignoreFailures": true
                 }
             ]
+        },
+        {
+            "name": "Generator Test",
+            "preLaunchTask": "Build Generator Test",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/bazel-bin/generator_test.runfiles/__main__/generator_test",
+            "sourceFileMap": {
+                "/proc/self/cwd/": "${workspaceFolder}"
+            },
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Automatische Strukturierung und Einrückung für \"gdb\" aktivieren",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
         }
     ]
 }
