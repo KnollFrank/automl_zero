@@ -11,6 +11,21 @@
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "label": "Test all",
+            "type": "shell",
+            "command": "bazel test --compilation_mode=dbg //...",
+            "problemMatcher": []
+        },
+        {
+            "label": "Build Executor Test",
+            "type": "shell",
+            "command": "bazel build --compilation_mode=dbg //:executor_test",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
         }
     ]
 }

@@ -36,6 +36,31 @@
                     "ignoreFailures": true
                 }
             ]
+        },
+        {
+            "name": "Executor Test",
+            "preLaunchTask": "Build Executor Test",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/bazel-bin/executor_test.runfiles/__main__/executor_test",
+            "sourceFileMap": {
+                "/proc/self/cwd/": "${workspaceFolder}",
+            },
+            "args": [],
+            "stopAtEntry": true,
+            // FK--TODO: siehe https://stackoverflow.com/questions/57825915/how-to-debug-bazel-c-google-test-in-visual-studio-code
+            "cwd": "${workspaceFolder}/bazel-bin/executor_test.runfiles/__main__",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Automatische Strukturierung und Einrückung für \"gdb\" aktivieren",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
         }
     ]
 }
+// bazel-out/k8-dbg/bin/executor_test.runfiles/__main__/executor_test
