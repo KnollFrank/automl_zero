@@ -25,7 +25,7 @@
                 "--sufficient_fitness=0.9999"
             ],
             "stopAtEntry": true,
-            "cwd": "${workspaceFolder}/bazel-out/k8-dbg/bin/run_search_experiment.runfiles/__main__",
+            "cwd": "${workspaceFolder}",
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
@@ -48,7 +48,7 @@
             },
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}/bazel-bin/executor_test.runfiles/__main__",
+            "cwd": "${workspaceFolder}",
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
