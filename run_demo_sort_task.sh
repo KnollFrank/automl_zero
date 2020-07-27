@@ -39,7 +39,7 @@ bazel run -c opt \
     learn_ops: [] \
     learn_size_init: 0 \
     setup_size_init: 0 \
-    predict_size_init: 11 \
+    predict_size_init: 5 \
     fec {num_train_examples: 3 num_valid_examples: 2} \
     fitness_combination_mode: MEAN_FITNESS_COMBINATION \
     population_size: 1000 \
@@ -65,7 +65,7 @@ bazel run -c opt \
       param_seeds: [2000000] \
     } \
     " \
-  --max_experiments=20 \
+  --max_experiments=100 \
   --randomize_task_seeds \
   --select_tasks=" \
     tasks { \
