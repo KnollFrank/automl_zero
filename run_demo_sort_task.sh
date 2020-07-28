@@ -31,7 +31,7 @@ bazel run -c opt \
         num_train_epochs: 8 \
         num_valid_examples: 100 \
         num_tasks: 10 \
-        eval_type: RMS_ERROR \
+        eval_type: SORTED \
       } \
     } \
     setup_ops: [] \
@@ -60,7 +60,7 @@ bazel run -c opt \
       num_train_epochs: 8 \
       num_valid_examples: 100 \
       num_tasks: 100 \
-      eval_type: RMS_ERROR \
+      eval_type: SORTED \
       data_seeds: [1000000] \
       param_seeds: [2000000] \
     } \
@@ -75,7 +75,7 @@ bazel run -c opt \
       num_train_epochs: 8 \
       num_valid_examples: 100 \
       num_tasks: 100 \
-      eval_type: RMS_ERROR \
+      eval_type: SORTED \
     } \
     " \
   --sufficient_fitness=0.99

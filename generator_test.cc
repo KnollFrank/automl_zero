@@ -176,6 +176,40 @@ namespace automl_zero {
         EXPECT_GT(fitness, 0.999);
     }
 
+    TEST(GeneratorTest, Sortalgorithm_Learns) {
+        Generator generator(
+                NO_OP_ALGORITHM,  // Irrelevant.
+                10,  // setup_size_init, irrelevant
+                12,  // predict_size_init, irrelevant
+                13,  // learn_size_init, irrelevant
+                {},  // allowed_setup_ops, irrelevant.
+                {},  // allowed_predict_ops, irrelevant.
+                {},  // allowed_learn_ops, irrelevant.
+                nullptr,  // bit_gen, irrelevant.
+                nullptr);  // rand_gen, irrelevant.
+        Task<4> dataset =
+                GenerateTask<4>(StrCat("sort_task {} "
+                                       "num_train_examples: ",
+                                       kNumTrainExamples,
+                                       " "
+                                       "num_valid_examples: ",
+                                       kNumValidExamples,
+                                       " "
+                                       "eval_type: SORTED "
+                                       "param_seeds: 100 "
+                                       "data_seeds: 1000 "));
+        Algorithm algorithm = generator.SortAlgorithm(4);
+        mt19937 bit_gen(10000);
+        RandomGenerator rand_gen(&bit_gen);
+        Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
+                             &rand_gen, kLargeMaxAbsError);
+        double fitness = executor.Execute();
+        std::cout << "Sortalgorithm_Learns fitness = " << fitness << std::endl;
+        EXPECT_GE(fitness, 0.0);
+        EXPECT_LE(fitness, 1.0);
+        EXPECT_GT(fitness, 0.999);
+    }
+
     TEST(GeneratorTest, Sortalgorithm_Predicts1) {
         // Given
         Generator generator(

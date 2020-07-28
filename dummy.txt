@@ -1,0 +1,40 @@
+for (i = 0; i < v0.length()-1; i++)
+{
+    jMin = arg_min(v0, i);
+    swap(v0, i, jMin);
+}
+
+<=>
+generateBody(i)
+{
+  return
+    s0 = i;
+    s1 = arg_min(v0, s0);
+    swap(v0, s0, s1);
+}
+
+generateBody(0)
+generateBody(1)
+...
+generateBody(v0.length() - 2)
+
+def Setup():\n  NoOp()\n  NoOp()\n  NoOp()\n  NoOp()\n  NoOp()\n  NoOp()\n  NoOp()\n  NoOp()\n  NoOp()\n  NoOp()
+
+def Predict():
+    s0 = 0
+    s1 = arg_min(v0, s0)
+    swap(v0, s0, s1)
+
+    s0 = 1
+    s1 = arg_min(v0, s0)
+    swap(v0, s0, s1)
+
+    s0 = 2
+    s1 = arg_min(v0, s0)
+    swap(v0, s0, s1)
+
+    s0 = 3
+    s1 = arg_min(v0, s0)
+    swap(v0, s0, s1)
+
+def Learn():\n  NoOp()\n  NoOp()\n  NoOp()\n  NoOp()\n  NoOp()\n  NoOp()\n  NoOp()\n  NoOp()\n  NoOp()\n  NoOp()\n  NoOp()\n  NoOp()\n  NoOp()\n
