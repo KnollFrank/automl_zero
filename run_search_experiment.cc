@@ -210,6 +210,7 @@ void run() {
       best_select_fitness = select_fitness;
       best_algorithm = candidate_algorithm;
       cout << "Select fitness is the best so far. " << endl;
+      ::std::cout << "Best algorithm so far: " << ::std::endl << best_algorithm->ToReadable() << ::std::endl;
     }
 
     // Consider stopping experiments.
