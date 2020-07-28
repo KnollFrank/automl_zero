@@ -1467,9 +1467,7 @@ namespace automl_zero
             double *error,
             double *loss)
         {
-            const Vector<F> errors = label.getVector() - memory.vector_[k_PREDICTIONS_VECTOR_ADDRESS];
-            *error = errors.dot(errors);
-            *error /= F;
+            *error = getError(memory.vector_[k_PREDICTIONS_VECTOR_ADDRESS]);
             *loss += *error;
         }
 
@@ -1555,17 +1553,21 @@ namespace automl_zero
             {
             case RMS_ERROR:
             {
-                SquashedRmseLossAccumulator<F>::Accumulate(memory_, label, &error,
-                                                           &loss);
+                SquashedRmseLossAccumulator<F>::Accumulate(memory_, label, &error, &loss);
                 break;
             }
             case ACCURACY:
             {
-                ProbAccuracyLossAccumulator<F>::Accumulate(memory_, label, &error,
-                                                           &loss);
+                ProbAccuracyLossAccumulator<F>::Accumulate(memory_, label, &error, &loss);
+                break;
+            }
+            case SORTED:
+            {
+                SortedLossAccumulator<F>::Accumulate(memory_, label, &error, &loss);
                 break;
             }
             case INVALID_EVAL_TYPE:
+            default:
                 LOG(FATAL) << "Invalid eval type." << std::endl;
                 // Do not add default case here. All enum values should be supported.
             }
@@ -1592,16 +1594,18 @@ namespace automl_zero
         double fitness;
         switch (dataset_.eval_type_)
         {
-        case INVALID_EVAL_TYPE:
-            LOG(FATAL) << "Invalid eval type." << std::endl;
         case RMS_ERROR:
             loss /= static_cast<double>(dataset_.ValidSteps());
             fitness = FlipAndSquash(sqrt(loss));
             break;
+        case SORTED:
         case ACCURACY:
             loss /= static_cast<double>(dataset_.ValidSteps());
             fitness = 1.0 - loss;
             break;
+        case INVALID_EVAL_TYPE:
+        default:
+            LOG(FATAL) << "Invalid eval type." << std::endl;
         }
 
         return fitness;
