@@ -171,7 +171,8 @@ namespace automl_zero
                 &generator, &evaluator, &mutator);
 
             // Run one experiment.
-            cout << "Experiment " << num_experiments + 1 << "/" << max_experiments << ":" << endl;
+            cout << endl
+                 << "Experiment " << num_experiments + 1 << "/" << max_experiments << ":" << endl;
             cout << "Running evolution experiment (on the T_search tasks)..." << endl;
             regularized_evolution.Init();
             const IntegerT remaining_train_steps =
