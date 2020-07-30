@@ -20,7 +20,6 @@
 #include <memory>
 #include <random>
 
-
 #include "algorithm.h"
 #include "task_util.h"
 #include "task.pb.h"
@@ -77,183 +76,195 @@ ABSL_FLAG(
     "Experimentation stops when any experiment reaches this select fitness. "
     "If not specified, keeps experimenting until max_experiments is reached.");
 
-namespace automl_zero {
+namespace automl_zero
+{
 
-namespace {
-using ::absl::GetCurrentTimeNanos;  // NOLINT
-using ::absl::GetFlag;  // NOLINT
-using ::absl::make_unique;  // NOLINT
-using ::std::cout;  // NOLINT
-using ::std::endl;  // NOLINT
-using ::std::make_shared;  // NOLINT
-using ::std::mt19937;  // NOLINT
-using ::std::numeric_limits;  // NOLINT
-using ::std::shared_ptr;  // NOLINT
-using ::std::unique_ptr;  // NOLINT
-using ::std::vector;  // NOLINT
-}  // namespace
+    namespace
+    {
+        using ::absl::GetCurrentTimeNanos; // NOLINT
+        using ::absl::GetFlag;             // NOLINT
+        using ::absl::make_unique;         // NOLINT
+        using ::std::cout;                 // NOLINT
+        using ::std::endl;                 // NOLINT
+        using ::std::make_shared;          // NOLINT
+        using ::std::mt19937;              // NOLINT
+        using ::std::numeric_limits;       // NOLINT
+        using ::std::shared_ptr;           // NOLINT
+        using ::std::unique_ptr;           // NOLINT
+        using ::std::vector;               // NOLINT
+    }                                      // namespace
 
-void run() {
-  // Set random seed.
-  RandomSeedT random_seed = GetFlag(FLAGS_random_seed);
-  if (random_seed == 0) {
-    random_seed = GenerateRandomSeed();
-  }
-  mt19937 bit_gen(random_seed);
-  RandomGenerator rand_gen(&bit_gen);
-  cout << "Random seed = " << random_seed << endl;
+    void run()
+    {
+        // Set random seed.
+        RandomSeedT random_seed = GetFlag(FLAGS_random_seed);
+        if (random_seed == 0)
+        {
+            random_seed = GenerateRandomSeed();
+        }
+        mt19937 bit_gen(random_seed);
+        RandomGenerator rand_gen(&bit_gen);
+        cout << "Random seed = " << random_seed << endl;
 
-  // Build reusable search and select structures.
-  CHECK(!GetFlag(FLAGS_search_experiment_spec).empty());
-  auto experiment_spec = ParseTextFormat<SearchExperimentSpec>(
-      GetFlag(FLAGS_search_experiment_spec));
-  const double sufficient_fitness = GetFlag(FLAGS_sufficient_fitness);
-  const IntegerT max_experiments = GetFlag(FLAGS_max_experiments);
-  Generator generator(
-      experiment_spec.initial_population(),
-      experiment_spec.setup_size_init(),
-      experiment_spec.predict_size_init(),
-      experiment_spec.learn_size_init(),
-      ExtractOps(experiment_spec.setup_ops()),
-      ExtractOps(experiment_spec.predict_ops()),
-      ExtractOps(experiment_spec.learn_ops()), &bit_gen,
-      &rand_gen);
-  unique_ptr<TrainBudget> train_budget;
-  if (experiment_spec.has_train_budget()) {
-    train_budget =
-        BuildTrainBudget(experiment_spec.train_budget(), &generator);
-  }
-  Mutator mutator(
-      experiment_spec.allowed_mutation_types(),
-      experiment_spec.mutate_prob(),
-      ExtractOps(experiment_spec.setup_ops()),
-      ExtractOps(experiment_spec.predict_ops()),
-      ExtractOps(experiment_spec.learn_ops()),
-      experiment_spec.mutate_setup_size_min(),
-      experiment_spec.mutate_setup_size_max(),
-      experiment_spec.mutate_predict_size_min(),
-      experiment_spec.mutate_predict_size_max(),
-      experiment_spec.mutate_learn_size_min(),
-      experiment_spec.mutate_learn_size_max(),
-      &bit_gen, &rand_gen);
-  auto select_tasks =
-      ParseTextFormat<TaskCollection>(GetFlag(FLAGS_select_tasks));
+        // Build reusable search and select structures.
+        CHECK(!GetFlag(FLAGS_search_experiment_spec).empty());
+        auto experiment_spec = ParseTextFormat<SearchExperimentSpec>(
+            GetFlag(FLAGS_search_experiment_spec));
+        const double sufficient_fitness = GetFlag(FLAGS_sufficient_fitness);
+        const IntegerT max_experiments = GetFlag(FLAGS_max_experiments);
+        Generator generator(
+            experiment_spec.initial_population(),
+            experiment_spec.setup_size_init(),
+            experiment_spec.predict_size_init(),
+            experiment_spec.learn_size_init(),
+            ExtractOps(experiment_spec.setup_ops()),
+            ExtractOps(experiment_spec.predict_ops()),
+            ExtractOps(experiment_spec.learn_ops()), &bit_gen,
+            &rand_gen);
+        unique_ptr<TrainBudget> train_budget;
+        if (experiment_spec.has_train_budget())
+        {
+            train_budget =
+                BuildTrainBudget(experiment_spec.train_budget(), &generator);
+        }
+        Mutator mutator(
+            experiment_spec.allowed_mutation_types(),
+            experiment_spec.mutate_prob(),
+            ExtractOps(experiment_spec.setup_ops()),
+            ExtractOps(experiment_spec.predict_ops()),
+            ExtractOps(experiment_spec.learn_ops()),
+            experiment_spec.mutate_setup_size_min(),
+            experiment_spec.mutate_setup_size_max(),
+            experiment_spec.mutate_predict_size_min(),
+            experiment_spec.mutate_predict_size_max(),
+            experiment_spec.mutate_learn_size_min(),
+            experiment_spec.mutate_learn_size_max(),
+            &bit_gen, &rand_gen);
+        auto select_tasks =
+            ParseTextFormat<TaskCollection>(GetFlag(FLAGS_select_tasks));
 
-  // Run search experiments and select best algorithm.
-  IntegerT num_experiments = 0;
-  double best_select_fitness = numeric_limits<double>::lowest();
-  shared_ptr<const Algorithm> best_algorithm = make_shared<const Algorithm>();
-  while (true) {
-    // Randomize T_search tasks.
-    if (GetFlag(FLAGS_randomize_task_seeds)) {
-      RandomizeTaskSeeds(experiment_spec.mutable_search_tasks(),
-                            rand_gen.UniformRandomSeed());
+        // Run search experiments and select best algorithm.
+        IntegerT num_experiments = 0;
+        double best_select_fitness = numeric_limits<double>::lowest();
+        shared_ptr<const Algorithm> best_algorithm = make_shared<const Algorithm>();
+        while (true)
+        {
+            // Randomize T_search tasks.
+            if (GetFlag(FLAGS_randomize_task_seeds))
+            {
+                RandomizeTaskSeeds(experiment_spec.mutable_search_tasks(),
+                                   rand_gen.UniformRandomSeed());
+            }
+
+            // Build non-reusable search structures.
+            unique_ptr<FECCache> functional_cache =
+                experiment_spec.has_fec() ? make_unique<FECCache>(experiment_spec.fec()) : nullptr;
+            Evaluator evaluator(
+                experiment_spec.fitness_combination_mode(),
+                experiment_spec.search_tasks(),
+                &rand_gen, functional_cache.get(), train_budget.get(),
+                experiment_spec.max_abs_error());
+            RegularizedEvolution regularized_evolution(
+                &rand_gen, experiment_spec.population_size(),
+                experiment_spec.tournament_size(),
+                experiment_spec.progress_every(),
+                &generator, &evaluator, &mutator);
+
+            // Run one experiment.
+            cout << "Experiment " << num_experiments + 1 << "/" << max_experiments << ":" << endl;
+            cout << "Running evolution experiment (on the T_search tasks)..." << endl;
+            regularized_evolution.Init();
+            const IntegerT remaining_train_steps =
+                experiment_spec.max_train_steps() -
+                regularized_evolution.NumTrainSteps();
+            regularized_evolution.Run(remaining_train_steps, kUnlimitedTime);
+            cout << "Experiment done. Retrieving candidate algorithm." << endl;
+
+            // Extract best algorithm based on T_search.
+            double unused_pop_mean, unused_pop_stdev, search_fitness;
+            shared_ptr<const Algorithm> candidate_algorithm =
+                make_shared<const Algorithm>();
+            regularized_evolution.PopulationStats(
+                &unused_pop_mean, &unused_pop_stdev,
+                &candidate_algorithm, &search_fitness);
+            cout << "Search fitness for candidate algorithm = "
+                 << search_fitness << endl;
+
+            // Randomize T_select tasks.
+            if (GetFlag(FLAGS_randomize_task_seeds))
+            {
+                RandomizeTaskSeeds(&select_tasks, rand_gen.UniformRandomSeed());
+            }
+            mt19937 select_bit_gen(rand_gen.UniformRandomSeed());
+            RandomGenerator select_rand_gen(&select_bit_gen);
+
+            // Keep track of the best model on the T_select tasks.
+            cout << "Evaluating candidate algorithm from experiment "
+                 << "(on T_select tasks)... " << endl;
+            Evaluator select_evaluator(
+                MEAN_FITNESS_COMBINATION,
+                select_tasks,
+                &select_rand_gen,
+                nullptr, // functional_cache
+                nullptr, // train_budget
+                experiment_spec.max_abs_error());
+            const double select_fitness =
+                select_evaluator.Evaluate(*candidate_algorithm);
+            cout << "Select fitness for candidate algorithm = "
+                 << select_fitness << endl;
+            if (select_fitness >= best_select_fitness)
+            {
+                best_select_fitness = select_fitness;
+                best_algorithm = candidate_algorithm;
+                cout << "Select fitness is the best so far. " << endl;
+                ::std::cout << "Best algorithm so far: " << ::std::endl
+                            << best_algorithm->ToReadable() << ::std::endl;
+            }
+
+            // Consider stopping experiments.
+            if (sufficient_fitness > 0.0 &&
+                best_select_fitness > sufficient_fitness)
+            {
+                // Stop if we reached the specified `sufficient_fitness`.
+                break;
+            }
+            ++num_experiments;
+            if (max_experiments != 0 && num_experiments >= max_experiments)
+            {
+                // Stop if we reached the maximum number of experiments.
+                break;
+            }
+        }
+
+        // Do a final evaluation on unseen tasks.
+        cout << endl;
+        cout << "Final evaluation of best algorithm "
+             << "(on unseen tasks)..." << endl;
+        const auto final_tasks =
+            ParseTextFormat<TaskCollection>(GetFlag(FLAGS_final_tasks));
+        mt19937 final_bit_gen(rand_gen.UniformRandomSeed());
+        RandomGenerator final_rand_gen(&final_bit_gen);
+        Evaluator final_evaluator(
+            MEAN_FITNESS_COMBINATION,
+            final_tasks,
+            &final_rand_gen,
+            nullptr, // functional_cache
+            nullptr, // train_budget
+            experiment_spec.max_abs_error());
+        const double final_fitness =
+            final_evaluator.Evaluate(*best_algorithm);
+
+        cout << "Final evaluation fitness (on unseen data) = "
+             << final_fitness << endl;
+        cout << "Algorithm found: " << endl
+             << best_algorithm->ToReadable() << endl;
     }
 
-    // Build non-reusable search structures.
-    unique_ptr<FECCache> functional_cache =
-        experiment_spec.has_fec() ?
-            make_unique<FECCache>(experiment_spec.fec()) :
-            nullptr;
-    Evaluator evaluator(
-        experiment_spec.fitness_combination_mode(),
-        experiment_spec.search_tasks(),
-        &rand_gen, functional_cache.get(), train_budget.get(),
-        experiment_spec.max_abs_error());
-    RegularizedEvolution regularized_evolution(
-        &rand_gen, experiment_spec.population_size(),
-        experiment_spec.tournament_size(),
-        experiment_spec.progress_every(),
-        &generator, &evaluator, &mutator);
+} // namespace automl_zero
 
-    // Run one experiment.
-    cout << "Running evolution experiment (on the T_search tasks)..." << endl;
-    regularized_evolution.Init();
-    const IntegerT remaining_train_steps =
-        experiment_spec.max_train_steps() -
-        regularized_evolution.NumTrainSteps();
-    regularized_evolution.Run(remaining_train_steps, kUnlimitedTime);
-    cout << "Experiment done. Retrieving candidate algorithm." << endl;
-
-    // Extract best algorithm based on T_search.
-    double unused_pop_mean, unused_pop_stdev, search_fitness;
-    shared_ptr<const Algorithm> candidate_algorithm =
-        make_shared<const Algorithm>();
-    regularized_evolution.PopulationStats(
-        &unused_pop_mean, &unused_pop_stdev,
-        &candidate_algorithm, &search_fitness);
-    cout << "Search fitness for candidate algorithm = "
-         << search_fitness << endl;
-
-    // Randomize T_select tasks.
-    if (GetFlag(FLAGS_randomize_task_seeds)) {
-      RandomizeTaskSeeds(&select_tasks, rand_gen.UniformRandomSeed());
-    }
-    mt19937 select_bit_gen(rand_gen.UniformRandomSeed());
-    RandomGenerator select_rand_gen(&select_bit_gen);
-
-    // Keep track of the best model on the T_select tasks.
-    cout << "Evaluating candidate algorithm from experiment "
-         << "(on T_select tasks)... " << endl;
-    Evaluator select_evaluator(
-        MEAN_FITNESS_COMBINATION,
-        select_tasks,
-        &select_rand_gen,
-        nullptr,  // functional_cache
-        nullptr,  // train_budget
-        experiment_spec.max_abs_error());
-    const double select_fitness =
-        select_evaluator.Evaluate(*candidate_algorithm);
-    cout << "Select fitness for candidate algorithm = "
-         << select_fitness << endl;
-    if (select_fitness >= best_select_fitness) {
-      best_select_fitness = select_fitness;
-      best_algorithm = candidate_algorithm;
-      cout << "Select fitness is the best so far. " << endl;
-      ::std::cout << "Best algorithm so far: " << ::std::endl << best_algorithm->ToReadable() << ::std::endl;
-    }
-
-    // Consider stopping experiments.
-    if (sufficient_fitness > 0.0 &&
-        best_select_fitness > sufficient_fitness) {
-      // Stop if we reached the specified `sufficient_fitness`.
-      break;
-    }
-    ++num_experiments;
-    if (max_experiments != 0 && num_experiments >= max_experiments) {
-      // Stop if we reached the maximum number of experiments.
-      break;
-    }
-  }
-
-  // Do a final evaluation on unseen tasks.
-  cout << endl;
-  cout << "Final evaluation of best algorithm "
-       << "(on unseen tasks)..." << endl;
-  const auto final_tasks =
-      ParseTextFormat<TaskCollection>(GetFlag(FLAGS_final_tasks));
-  mt19937 final_bit_gen(rand_gen.UniformRandomSeed());
-  RandomGenerator final_rand_gen(&final_bit_gen);
-  Evaluator final_evaluator(
-      MEAN_FITNESS_COMBINATION,
-      final_tasks,
-      &final_rand_gen,
-      nullptr,  // functional_cache
-      nullptr,  // train_budget
-      experiment_spec.max_abs_error());
-  const double final_fitness =
-      final_evaluator.Evaluate(*best_algorithm);
-
-  cout << "Final evaluation fitness (on unseen data) = "
-       << final_fitness << endl;
-  cout << "Algorithm found: " << endl
-       << best_algorithm->ToReadable() << endl;
-}
-
-}  // namespace automl_zero
-
-int main(int argc, char** argv) {
-  absl::ParseCommandLine(argc, argv);
-  automl_zero::run();
-  return 0;
+int main(int argc, char **argv)
+{
+    absl::ParseCommandLine(argc, argv);
+    automl_zero::run();
+    return 0;
 }
