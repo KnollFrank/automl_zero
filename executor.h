@@ -514,6 +514,18 @@ namespace automl_zero
     }
 
     template <FeatureIndexT F>
+    inline void ExecuteLoopOp(
+        const Instruction &loop,
+        RandomGenerator *rand_gen,
+        Memory<F> *memory)
+    {
+        for (const std::shared_ptr<const Instruction> &instruction : loop.children_)
+        {
+            ExecuteInstruction(*instruction, rand_gen, memory);
+        }
+    }
+
+    template <FeatureIndexT F>
     inline void ExecuteVectorReciprocalOp(
         const Instruction &instruction, RandomGenerator *rand_gen,
         Memory<F> *memory)
@@ -1020,7 +1032,7 @@ namespace automl_zero
             &ExecuteScalarVectorAtIndexSetOp, // SCALAR_VECTOR_AT_INDEX_SET_OP = 65
             &ExecuteVectorArgMinOp,           // VECTOR_ARG_MIN_OP = 66
             &ExecuteVectorSwapOp,             // VECTOR_SWAP_OP = 67
-            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 68
+            &ExecuteLoopOp,                   // LOOP = 68
             &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 69
             &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 70
             &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 71
