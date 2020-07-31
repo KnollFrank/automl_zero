@@ -513,13 +513,28 @@ namespace automl_zero
         out(index2) = tmp;
     }
 
+    // for(s_out = 1..s_in1) { children_ }
     template <FeatureIndexT F>
     inline void ExecuteLoopOp(
         const Instruction &loop,
         RandomGenerator *rand_gen,
         Memory<F> *memory)
     {
-        for (const std::shared_ptr<const Instruction> &instruction : loop.children_)
+        const int numIterations = memory->scalar_[loop.in1_];
+        for (int i = 1; i <= numIterations; ++i)
+        {
+            memory->scalar_[loop.out_] = i;
+            ExecuteLoopBody(loop.children_, rand_gen, memory);
+        }
+    }
+
+    template <FeatureIndexT F>
+    inline void ExecuteLoopBody(
+        const std::vector<std::shared_ptr<Instruction>> &loopBody,
+        RandomGenerator *rand_gen,
+        Memory<F> *memory)
+    {
+        for (const std::shared_ptr<const Instruction> &instruction : loopBody)
         {
             ExecuteInstruction(*instruction, rand_gen, memory);
         }

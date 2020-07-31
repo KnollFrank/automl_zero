@@ -1762,18 +1762,21 @@ namespace automl_zero
     TEST_F(ExecuteInstructionTest, Loop)
     {
         // Given
-        Instruction loop = Instruction(LOOP, 2, 3, 1);
-        loop.children_.emplace_back(std::make_shared<Instruction>(VECTOR_SWAP_OP, 2, 3, 1));
-
-        memory_.vector_[1] = Vector<4>(((const vector<double>){0.0, 10.0, 20.0, 30.0}).data());
-        memory_.scalar_[2] = IndexToFloat(0, 4);
-        memory_.scalar_[3] = IndexToFloat(2, 4);
+        // s1 = 0;
+        memory_.scalar_[1] = 0;
+        // s2 = 5;
+        memory_.scalar_[2] = 5;
+        // for(s3 = 1..s2) {
+        Instruction loop = Instruction(LOOP, 2, 3);
+        // s1 = s1 + s3;
+        loop.children_.emplace_back(std::make_shared<Instruction>(SCALAR_SUM_OP, 1, 3, 1));
+        // }
 
         // When
         ExecuteInstruction(loop, &train_rand_gen_, &memory_);
 
         // Then
-        ASSERT_EQ(asStdVector(memory_.vector_[1]), vector<double>({20.0, 10.0, 0.0, 30.0}));
+        EXPECT_DOUBLE_EQ(memory_.scalar_[1], 1 + 2 + 3 + 4 + 5);
     }
 
     // s5 = arg_min(v3, s1):
