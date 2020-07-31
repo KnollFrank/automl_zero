@@ -463,7 +463,6 @@ namespace automl_zero
     std::vector<double> asStdVector(const Vector<F> v)
     {
         std::vector<double> result(v.data(), v.data() + v.size());
-        ;
         return result;
     }
 
@@ -1689,7 +1688,7 @@ namespace automl_zero
     {
         std::mt19937 bit_gen(10000);
         RandomGenerator rand_gen(&bit_gen);
-        Memory<4> memory;
+        Memory<F> memory;
         memory.Wipe();
 
         VectorInputPredictionAssigner<F>::Assign(input, &memory);
