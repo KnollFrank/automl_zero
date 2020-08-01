@@ -529,7 +529,7 @@ namespace automl_zero
 
     template <FeatureIndexT F>
     inline void ExecuteLoopBody(
-        const std::vector<std::shared_ptr<Instruction>> &loopBody,
+        const std::vector<std::shared_ptr<const Instruction>> &loopBody,
         RandomGenerator *rand_gen,
         Memory<F> *memory)
     {

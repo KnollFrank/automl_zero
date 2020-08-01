@@ -279,6 +279,7 @@ namespace automl_zero
                     nullptr);        // rand_gen, irrelevant.
 
                 Algorithm algorithm = generator.SortAlgorithm(8);
+                ::std::cout << "SortAlgorithm: " << ::std::endl << algorithm.ToReadable() << ::std::endl;
                 Vector<8> input;
                 input << 8, 7, 6, 5, 4, 3, 2, 1;
 
