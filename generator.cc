@@ -535,26 +535,25 @@ namespace automl_zero
 
                 shared_ptr<const Instruction> no_op_instruction = make_shared<const Instruction>();
 
-                // define setup function
-                constexpr AddressT kConstOneAddress = 2;
-                CHECK_EQ(
-                    kConstOneAddress,
-                    Generator::kConstOneAddress);
-                PadComponentFunctionWithInstruction(
-                    setup_size_init_, no_op_instruction, &algorithm.setup_);
-
-                // define predict function
-                SortAlgorithmPredict(algorithm.predict_, kConstOneAddress, F, no_op_instruction);
-
-                // define learn function
-                PadComponentFunctionWithInstruction(
-                    learn_size_init_, no_op_instruction, &algorithm.learn_);
+                SortAlgorithmSetup(algorithm.setup_, no_op_instruction);
+                SortAlgorithmPredict(algorithm.predict_, F, no_op_instruction);
+                SortAlgorithmLearn(algorithm.learn_, no_op_instruction);
 
                 return algorithm;
         }
 
-        void Generator::SortAlgorithmPredict(std::vector<std::shared_ptr<const Instruction>> &predict, const AddressT kConstOneAddress, const int F, const std::shared_ptr<const Instruction> &no_op_instruction)
+        void Generator::SortAlgorithmSetup(std::vector<std::shared_ptr<const Instruction>> &setup, const std::shared_ptr<const Instruction> &no_op_instruction)
         {
+                PadComponentFunctionWithInstruction(setup_size_init_, no_op_instruction, &setup);
+        }
+
+        void Generator::SortAlgorithmPredict(std::vector<std::shared_ptr<const Instruction>> &predict, const int F, const std::shared_ptr<const Instruction> &no_op_instruction)
+        {
+                constexpr AddressT kConstOneAddress = 2;
+                CHECK_EQ(
+                    kConstOneAddress,
+                    Generator::kConstOneAddress);
+
                 predict.emplace_back(std::make_shared<const Instruction>(
                     SCALAR_CONST_SET_OP,
                     kConstOneAddress,
@@ -571,6 +570,11 @@ namespace automl_zero
                     k_PREDICTIONS_VECTOR_ADDRESS));
                 PadComponentFunctionWithInstruction(
                     predict_size_init_, no_op_instruction, &predict);
+        }
+
+        void Generator::SortAlgorithmLearn(std::vector<std::shared_ptr<const Instruction>> &learn, const std::shared_ptr<const Instruction> &no_op_instruction)
+        {
+                PadComponentFunctionWithInstruction(learn_size_init_, no_op_instruction, &learn);
         }
 
         void Generator::createPredictInstuctionsWhichSortUpToIndex(std::vector<std::shared_ptr<const Instruction>> &predict, const float relativeIndex)

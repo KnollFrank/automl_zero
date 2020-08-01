@@ -123,7 +123,9 @@ namespace automl_zero
         Randomizer randomizer_;
         std::shared_ptr<const Instruction> no_op_instruction_;
 
-        void SortAlgorithmPredict(std::vector<std::shared_ptr<const Instruction>> &predict, const AddressT kConstOneAddress, const int F, const std::shared_ptr<const Instruction> &no_op_instruction);
+        void SortAlgorithmSetup(std::vector<std::shared_ptr<const Instruction>> &setup, const std::shared_ptr<const Instruction> &no_op_instruction);
+        void SortAlgorithmPredict(std::vector<std::shared_ptr<const Instruction>> &predict, const int F, const std::shared_ptr<const Instruction> &no_op_instruction);
+        void SortAlgorithmLearn(std::vector<std::shared_ptr<const Instruction>> &learn, const std::shared_ptr<const Instruction> &no_op_instruction);
         void createPredictInstuctionsWhichSortUpToIndex(std::vector<std::shared_ptr<const Instruction>> &predict, const float relativeIndex);
     };
 
