@@ -11,10 +11,9 @@ s2 = 1
 s3 = 0.5
 v1 = bcast(s2)
 s4 = dot(v1, v1)
-s5 =  s4 - s2
+s5 = s4 - s2
 v_k_PREDICTIONS_VECTOR_ADDRESS = s2 * v_k_FEATURES_VECTOR_ADDRESS
 for(s6 = 1..s5) {
-{
     // s0 = ((s6-1) + 0.5) / s4 // = IndexToFloat(s6-1, s4)
     s0 = s6 - s2
     s0 = s0 + s3

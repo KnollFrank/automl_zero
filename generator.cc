@@ -554,22 +554,75 @@ namespace automl_zero
                     kConstOneAddress,
                     Generator::kConstOneAddress);
 
+                // s2 = 1
                 predict.emplace_back(std::make_shared<const Instruction>(
                     SCALAR_CONST_SET_OP,
                     kConstOneAddress,
                     ActivationDataSetter(1.0)));
-                for (int i = 0; i < F - 1; ++i)
-                {
-                        createPredictInstuctionsWhichSortUpToIndex(predict, IndexToFloat(i, F));
-                }
-                // v_k_PREDICTIONS_VECTOR_ADDRESS = 1 * v_k_FEATURES_VECTOR_ADDRESS
+                // s3 = 0.5
+                predict.emplace_back(std::make_shared<const Instruction>(
+                    SCALAR_CONST_SET_OP,
+                    3,
+                    ActivationDataSetter(0.5)));
+                // v1 = bcast(s2)
+                predict.emplace_back(std::make_shared<const Instruction>(
+                    SCALAR_BROADCAST_OP,
+                    kConstOneAddress,
+                    1));
+                // s4 = dot(v1, v1)
+                predict.emplace_back(std::make_shared<const Instruction>(
+                    VECTOR_INNER_PRODUCT_OP,
+                    1,
+                    1,
+                    4));
+                // s5 =  s4 - s2
+                predict.emplace_back(std::make_shared<const Instruction>(
+                    SCALAR_DIFF_OP,
+                    4,
+                    2,
+                    5));
+                // v_k_PREDICTIONS_VECTOR_ADDRESS = s2 * v_k_FEATURES_VECTOR_ADDRESS
                 predict.emplace_back(std::make_shared<const Instruction>(
                     SCALAR_VECTOR_PRODUCT_OP,
                     kConstOneAddress,
                     k_FEATURES_VECTOR_ADDRESS,
                     k_PREDICTIONS_VECTOR_ADDRESS));
-                PadComponentFunctionWithInstruction(
-                    predict_size_init_, no_op_instruction, &predict);
+                // for(s6 = 1..s5) {
+                Instruction loop = Instruction(LOOP, 5, 6);
+                //     s0 = s6 - s2
+                loop.children_.emplace_back(std::make_shared<const Instruction>(
+                    SCALAR_DIFF_OP,
+                    6,
+                    2,
+                    0));
+                //     s0 = s0 + s3
+                loop.children_.emplace_back(std::make_shared<const Instruction>(
+                    SCALAR_SUM_OP,
+                    0,
+                    3,
+                    0));
+                //     s0 = s0 / s4
+                loop.children_.emplace_back(std::make_shared<const Instruction>(
+                    SCALAR_DIVISION_OP,
+                    0,
+                    4,
+                    0));
+                //     s1 = arg_min(v_k_PREDICTIONS_VECTOR_ADDRESS, s0)
+                loop.children_.emplace_back(std::make_shared<const Instruction>(
+                    VECTOR_ARG_MIN_OP,
+                    k_PREDICTIONS_VECTOR_ADDRESS,
+                    0,
+                    1));
+                //     swap(v_k_PREDICTIONS_VECTOR_ADDRESS, s0, s1)
+                loop.children_.emplace_back(std::make_shared<const Instruction>(
+                    VECTOR_SWAP_OP,
+                    0,
+                    1,
+                    k_PREDICTIONS_VECTOR_ADDRESS));
+                // }
+                predict.emplace_back(std::make_shared<const Instruction>(loop));
+
+                PadComponentFunctionWithInstruction(predict_size_init_, no_op_instruction, &predict);
         }
 
         void Generator::SortAlgorithmLearn(std::vector<std::shared_ptr<const Instruction>> &learn, const std::shared_ptr<const Instruction> &no_op_instruction)
