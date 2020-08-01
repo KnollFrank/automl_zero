@@ -6,3 +6,6 @@ bazel-out
 bazel-testlogs
 bazel-bin
 bazel-automl_zero
+GPATH
+GRTAGS
+GTAGS

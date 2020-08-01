@@ -1,40 +1,25 @@
-for (i = 0; i < v0.length()-1; i++)
+for (i = 0; i < v_k_FEATURES_VECTOR_ADDRESS.length() - 1; i++)
 {
-    jMin = arg_min(v0, i);
-    swap(v0, i, jMin);
+    jMin = arg_min(v_k_FEATURES_VECTOR_ADDRESS, i);
+    swap(v_k_FEATURES_VECTOR_ADDRESS, i, jMin);
 }
+v_k_PREDICTIONS_VECTOR_ADDRESS = v_k_FEATURES_VECTOR_ADDRESS
 
 <=>
-generateBody(i)
+
+s2 = 1
+s3 = 0.5
+v1 = bcast(s2)
+s4 = dot(v1, v1)
+s5 =  s4 - s2
+v_k_PREDICTIONS_VECTOR_ADDRESS = s2 * v_k_FEATURES_VECTOR_ADDRESS
+for(s6 = 1..s5) {
 {
-  return
-    s0 = i;
-    s1 = arg_min(v0, s0);
-    swap(v0, s0, s1);
+    // s0 = ((s6-1) + 0.5) / s4 // = IndexToFloat(s6-1, s4)
+    s0 = s6 - s2
+    s0 = s0 + s3
+    s0 = s0 / s4
+
+    s1 = arg_min(v_k_PREDICTIONS_VECTOR_ADDRESS, s0);
+    swap(v_k_PREDICTIONS_VECTOR_ADDRESS, s0, s1);
 }
-
-generateBody(0)
-generateBody(1)
-...
-generateBody(v0.length() - 2)
-
-def Setup():\n  NoOp()\n  NoOp()\n  NoOp()\n  NoOp()\n  NoOp()\n  NoOp()\n  NoOp()\n  NoOp()\n  NoOp()\n  NoOp()
-
-def Predict():
-    s0 = 0
-    s1 = arg_min(v0, s0)
-    swap(v0, s0, s1)
-
-    s0 = 1
-    s1 = arg_min(v0, s0)
-    swap(v0, s0, s1)
-
-    s0 = 2
-    s1 = arg_min(v0, s0)
-    swap(v0, s0, s1)
-
-    s0 = 3
-    s1 = arg_min(v0, s0)
-    swap(v0, s0, s1)
-
-def Learn():\n  NoOp()\n  NoOp()\n  NoOp()\n  NoOp()\n  NoOp()\n  NoOp()\n  NoOp()\n  NoOp()\n  NoOp()\n  NoOp()\n  NoOp()\n  NoOp()\n  NoOp()\n
