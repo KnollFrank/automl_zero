@@ -533,8 +533,7 @@ namespace automl_zero
                 // Vector addresses.
                 CHECK_GE(k_MAX_VECTOR_ADDRESSES, 5);
 
-                shared_ptr<const Instruction> no_op_instruction =
-                    make_shared<const Instruction>();
+                shared_ptr<const Instruction> no_op_instruction = make_shared<const Instruction>();
 
                 // define setup function
                 constexpr AddressT kConstOneAddress = 2;
@@ -545,22 +544,7 @@ namespace automl_zero
                     setup_size_init_, no_op_instruction, &algorithm.setup_);
 
                 // define predict function
-                algorithm.predict_.emplace_back(std::make_shared<const Instruction>(
-                    SCALAR_CONST_SET_OP,
-                    kConstOneAddress,
-                    ActivationDataSetter(1.0)));
-                for (int i = 0; i < F - 1; ++i)
-                {
-                        createPredictInstuctionsWhichSortUpToIndex(algorithm, IndexToFloat(i, F));
-                }
-                // v_k_PREDICTIONS_VECTOR_ADDRESS = 1 * v_k_FEATURES_VECTOR_ADDRESS
-                algorithm.predict_.emplace_back(std::make_shared<const Instruction>(
-                    SCALAR_VECTOR_PRODUCT_OP,
-                    kConstOneAddress,
-                    k_FEATURES_VECTOR_ADDRESS,
-                    k_PREDICTIONS_VECTOR_ADDRESS));
-                PadComponentFunctionWithInstruction(
-                    predict_size_init_, no_op_instruction, &algorithm.predict_);
+                SortAlgorithmPredict(algorithm.predict_, kConstOneAddress, F, no_op_instruction);
 
                 // define learn function
                 PadComponentFunctionWithInstruction(
@@ -569,21 +553,41 @@ namespace automl_zero
                 return algorithm;
         }
 
-        void Generator::createPredictInstuctionsWhichSortUpToIndex(Algorithm &algorithm, const float relativeIndex) const
+        void Generator::SortAlgorithmPredict(std::vector<std::shared_ptr<const Instruction>> &predict, const AddressT kConstOneAddress, const int F, const std::shared_ptr<const Instruction> &no_op_instruction)
+        {
+                predict.emplace_back(std::make_shared<const Instruction>(
+                    SCALAR_CONST_SET_OP,
+                    kConstOneAddress,
+                    ActivationDataSetter(1.0)));
+                for (int i = 0; i < F - 1; ++i)
+                {
+                        createPredictInstuctionsWhichSortUpToIndex(predict, IndexToFloat(i, F));
+                }
+                // v_k_PREDICTIONS_VECTOR_ADDRESS = 1 * v_k_FEATURES_VECTOR_ADDRESS
+                predict.emplace_back(std::make_shared<const Instruction>(
+                    SCALAR_VECTOR_PRODUCT_OP,
+                    kConstOneAddress,
+                    k_FEATURES_VECTOR_ADDRESS,
+                    k_PREDICTIONS_VECTOR_ADDRESS));
+                PadComponentFunctionWithInstruction(
+                    predict_size_init_, no_op_instruction, &predict);
+        }
+
+        void Generator::createPredictInstuctionsWhichSortUpToIndex(std::vector<std::shared_ptr<const Instruction>> &predict, const float relativeIndex)
         {
                 // s0 = relativeIndex
-                algorithm.predict_.emplace_back(std::make_shared<const Instruction>(
+                predict.emplace_back(std::make_shared<const Instruction>(
                     SCALAR_CONST_SET_OP,
                     0,
                     ActivationDataSetter(relativeIndex)));
                 // s1 = arg_min(v0, s0)
-                algorithm.predict_.emplace_back(std::make_shared<const Instruction>(
+                predict.emplace_back(std::make_shared<const Instruction>(
                     VECTOR_ARG_MIN_OP,
                     k_FEATURES_VECTOR_ADDRESS,
                     0,
                     1));
                 // swap(v0, s0, s1)
-                algorithm.predict_.emplace_back(std::make_shared<const Instruction>(
+                predict.emplace_back(std::make_shared<const Instruction>(
                     VECTOR_SWAP_OP,
                     0,
                     1,

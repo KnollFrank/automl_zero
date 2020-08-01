@@ -25,38 +25,40 @@
 #include "instruction.h"
 #include "randomizer.h"
 
-namespace automl_zero {
+namespace automl_zero
+{
 
     class RandomGenerator;
 
     constexpr double kDefaultLearningRate = 0.01;
     constexpr double kDefaultInitScale = 0.1;
 
-// A class to generate Algorithms.
-    class Generator {
+    // A class to generate Algorithms.
+    class Generator
+    {
     public:
         Generator(
-                // The model used to initialize the population. See HardcodedAlgorithmID
-                // enum. Used by TheInitModel() and ignored by other methods.
-                HardcodedAlgorithmID init_model,
-                // The sizes of the component functions. Can be zero if only using
-                // deterministic models without padding.
-                IntegerT setup_size_init,
-                IntegerT predict_size_init,
-                IntegerT learn_size_init,
-                // Ops that can be introduced into the setup component function. Can be
-                // empty if only deterministic models will be generated.
-                const std::vector<Op> &allowed_setup_ops,
-                // Ops that can be introduced into the predict component function. Can be
-                // empty if only deterministic models will be generated.
-                const std::vector<Op> &allowed_predict_ops,
-                // Ops that can be introduced into the learn component function. Can be
-                // empty if deterministic models will be generated.
-                const std::vector<Op> &allowed_learn_ops,
-                // Can be a nullptr if only deterministic models will be generated.
-                std::mt19937 *bit_gen,
-                // Can be a nullptr if only deterministic models will be generated.
-                RandomGenerator *rand_gen);
+            // The model used to initialize the population. See HardcodedAlgorithmID
+            // enum. Used by TheInitModel() and ignored by other methods.
+            HardcodedAlgorithmID init_model,
+            // The sizes of the component functions. Can be zero if only using
+            // deterministic models without padding.
+            IntegerT setup_size_init,
+            IntegerT predict_size_init,
+            IntegerT learn_size_init,
+            // Ops that can be introduced into the setup component function. Can be
+            // empty if only deterministic models will be generated.
+            const std::vector<Op> &allowed_setup_ops,
+            // Ops that can be introduced into the predict component function. Can be
+            // empty if only deterministic models will be generated.
+            const std::vector<Op> &allowed_predict_ops,
+            // Ops that can be introduced into the learn component function. Can be
+            // empty if deterministic models will be generated.
+            const std::vector<Op> &allowed_learn_ops,
+            // Can be a nullptr if only deterministic models will be generated.
+            std::mt19937 *bit_gen,
+            // Can be a nullptr if only deterministic models will be generated.
+            RandomGenerator *rand_gen);
 
         Generator(const Generator &) = delete;
 
@@ -88,17 +90,17 @@ namespace automl_zero {
         // A 2-layer neural network with one nonlinearity, where both layers implement
         // learning by gradient descent. The weights are initialized randomly.
         Algorithm NeuralNet(
-                double learning_rate, double first_init_scale, double final_init_scale);
+            double learning_rate, double first_init_scale, double final_init_scale);
 
         // A 2-layer neural network without bias and no learning.
         // vector address:
         static constexpr AddressT
-                kUnitTestNeuralNetNoBiasNoGradientFinalLayerWeightsAddress = 3;
+            kUnitTestNeuralNetNoBiasNoGradientFinalLayerWeightsAddress = 3;
         // vector address:
         static constexpr AddressT kOneFollowedByZeroesVectorAddress = 4;
         // matrix address:
         static constexpr AddressT
-                kUnitTestNeuralNetNoBiasNoGradientFirstLayerWeightsAddress = 1;
+            kUnitTestNeuralNetNoBiasNoGradientFirstLayerWeightsAddress = 1;
 
         Algorithm UnitTestNeuralNetNoBiasNoGradient(const double learning_rate);
 
@@ -121,9 +123,10 @@ namespace automl_zero {
         Randomizer randomizer_;
         std::shared_ptr<const Instruction> no_op_instruction_;
 
-        void createPredictInstuctionsWhichSortUpToIndex(Algorithm &algorithm, const float relativeIndex) const;
+        void SortAlgorithmPredict(std::vector<std::shared_ptr<const Instruction>> &predict, const AddressT kConstOneAddress, const int F, const std::shared_ptr<const Instruction> &no_op_instruction);
+        void createPredictInstuctionsWhichSortUpToIndex(std::vector<std::shared_ptr<const Instruction>> &predict, const float relativeIndex);
     };
 
-}  // namespace automl_zero
+} // namespace automl_zero
 
-#endif  // GENERATOR_H_
+#endif // GENERATOR_H_
