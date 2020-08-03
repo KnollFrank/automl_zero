@@ -19,6 +19,15 @@
             "problemMatcher": []
         },
         {
+            "label": "Build Instruction Test",
+            "type": "shell",
+            "command": "bazel build --compilation_mode=dbg //:instruction_test",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
             "label": "Build Executor Test",
             "type": "shell",
             "command": "bazel build --compilation_mode=dbg //:executor_test",
