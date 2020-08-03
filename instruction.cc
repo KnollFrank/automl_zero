@@ -456,6 +456,7 @@ namespace automl_zero
         case SCALAR_VECTOR_PRODUCT_OP:
         case SCALAR_MATRIX_PRODUCT_OP:
         case VECTOR_SWAP_OP:
+        case LOOP:
             in1_ = rand_gen->ScalarInAddress();
             return;
         case VECTOR_SUM_OP:

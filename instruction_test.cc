@@ -43,7 +43,7 @@ namespace automl_zero
     constexpr double kTolerance = 0.0001;
 
     // Must match the number of ops in the op enum in instruction.proto.
-    constexpr IntegerT kNumOps = 68;
+    constexpr IntegerT kNumOps = 69;
 
     enum DiffId : IntegerT
     {
@@ -230,7 +230,7 @@ namespace automl_zero
 
     TEST(InstructionTest, InstructionIsSmall)
     {
-        EXPECT_LE(sizeof(Instruction), 48);
+        EXPECT_LE(sizeof(Instruction), 64);
     }
 
     TEST(InstructionTest, Constructor_Default)
@@ -498,6 +498,7 @@ namespace automl_zero
             case SCALAR_RECIPROCAL_OP:
             case SCALAR_BROADCAST_OP:
             case VECTOR_SWAP_OP:
+            case LOOP:
                 EXPECT_TRUE(IsEventually(
                     function<AddressT(void)>([op, &rand_gen]() {
                         return RandomizeIn1(op, &rand_gen);
