@@ -357,6 +357,7 @@ namespace automl_zero
         case MATRIX_ST_DEV_OP:
         case MATRIX_ROW_MEAN_OP:
         case MATRIX_ROW_ST_DEV_OP:
+        case LOOP:
             switch (rand_gen->Choice2())
             {
             case kChoice0of2:
