@@ -622,6 +622,7 @@ namespace automl_zero
         case SCALAR_GAUSSIAN_SET_OP:
         case SCALAR_UNIFORM_SET_OP:
         case VECTOR_ARG_MIN_OP:
+        case LOOP:
             out_ = rand_gen->ScalarOutAddress();
             return;
         case VECTOR_SUM_OP:

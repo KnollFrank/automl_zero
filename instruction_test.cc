@@ -715,6 +715,7 @@ namespace automl_zero
             case SCALAR_GAUSSIAN_SET_OP:
             case SCALAR_UNIFORM_SET_OP:
             case SCALAR_RECIPROCAL_OP:
+            case LOOP:
                 EXPECT_TRUE(IsEventually(
                     function<AddressT(void)>([op, &rand_gen]() {
                         return RandomizeOut(op, &rand_gen);
