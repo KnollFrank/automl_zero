@@ -550,6 +550,7 @@ namespace automl_zero
         case VECTOR_UNIFORM_SET_OP:
         case MATRIX_UNIFORM_SET_OP:
         case SCALAR_VECTOR_AT_INDEX_SET_OP:
+        case LOOP:
             LOG(FATAL) << "Invalid op: " << static_cast<IntegerT>(op_) << std::endl;
         case SCALAR_SUM_OP:
         case SCALAR_DIFF_OP:

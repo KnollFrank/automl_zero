@@ -616,6 +616,7 @@ namespace automl_zero
             case VECTOR_COLUMN_BROADCAST_OP:
             case VECTOR_ROW_BROADCAST_OP:
             case SCALAR_VECTOR_AT_INDEX_SET_OP:
+            case LOOP:
                 EXPECT_DEATH({ RandomizeIn2(op, &rand_gen); }, "Invalid op");
                 break;
             case SCALAR_SUM_OP:

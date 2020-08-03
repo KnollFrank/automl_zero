@@ -24,5 +24,8 @@
     "gtest-adapter.debugConfig": [
         "Generator Test"
     ],
-    "gtest-adapter.supportLocation": true
+    "gtest-adapter.supportLocation": true,
+    "files.associations": {
+        "type_traits": "cpp"
+    }
 }
