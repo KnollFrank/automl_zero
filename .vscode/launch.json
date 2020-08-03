@@ -61,6 +61,29 @@
             ]
         },
         {
+            "name": "Mutator Test",
+            "preLaunchTask": "Build Mutator Test",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/bazel-bin/mutator_test.runfiles/__main__/mutator_test",
+            "sourceFileMap": {
+                "/proc/self/cwd/": "${workspaceFolder}"
+            },
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Automatische Strukturierung und Einrückung für \"gdb\" aktivieren",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {
             "name": "Executor Test",
             "preLaunchTask": "Build Executor Test",
             "type": "cppdbg",

@@ -37,6 +37,15 @@
             }
         },
         {
+            "label": "Build Mutator Test",
+            "type": "shell",
+            "command": "bazel build --compilation_mode=dbg //:mutator_test",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
             "label": "Build Generator Test",
             "type": "shell",
             "command": "bazel build --compilation_mode=dbg //:generator_test",
