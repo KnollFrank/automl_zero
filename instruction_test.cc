@@ -846,6 +846,8 @@ namespace automl_zero
             case MATRIX_ROW_ST_DEV_OP:
             case VECTOR_ARG_MIN_OP:
             case VECTOR_SWAP_OP:
+            // FK-FIXME: bei LOOP sollten eigentlich die Instruktionen des LOOP-Body randomisiert werden
+            case LOOP:
             {
                 Instruction instr;
                 EXPECT_DEATH({ RandomizeData(op, &rand_gen, &instr); }, "Invalid op");

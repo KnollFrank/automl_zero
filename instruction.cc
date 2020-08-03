@@ -734,6 +734,7 @@ namespace automl_zero
         case MATRIX_ROW_ST_DEV_OP:
         case VECTOR_ARG_MIN_OP:
         case VECTOR_SWAP_OP:
+        case LOOP:
             LOG(FATAL) << "Invalid op: " << static_cast<IntegerT>(op_) << std::endl;
         case SCALAR_CONST_SET_OP:
         {
