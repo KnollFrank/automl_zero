@@ -1065,6 +1065,7 @@ namespace automl_zero
             case VECTOR_COLUMN_BROADCAST_OP:
             case VECTOR_ROW_BROADCAST_OP:
             case SCALAR_VECTOR_AT_INDEX_SET_OP:
+            case LOOP:
                 EXPECT_TRUE(IsEventually(
                     function<IntegerT(void)>([&]() {
                         return CountDifferences(

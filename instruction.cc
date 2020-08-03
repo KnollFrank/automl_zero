@@ -263,6 +263,7 @@ namespace automl_zero
         case MATRIX_ROW_MEAN_OP:
         case MATRIX_ROW_ST_DEV_OP:
         case SCALAR_VECTOR_AT_INDEX_SET_OP:
+        case LOOP:
             RandomizeIn1(rand_gen);
             RandomizeOut(rand_gen);
             return;
