@@ -233,34 +233,23 @@ namespace automl_zero
         }
     }
 
+    InstructionIndexT Mutator::getMinSize(ComponentFunctionT componentFunction) {
+        switch (componentFunction)
+        {
+        case kSetupComponentFunction: return setup_size_min_;
+        case kPredictComponentFunction: return predict_size_min_;
+        case kLearnComponentFunction: return learn_size_min_;
+        }
+    }
+
     void Mutator::RemoveInstruction(Algorithm *algorithm)
     {
-        vector<shared_ptr<const Instruction>> *component_function; // To modify.
-        switch (RandomComponentFunction())
-        {
-        case kSetupComponentFunction:
-        {
-            if (algorithm->setup_.size() <= setup_size_min_)
-                return;
-            component_function = &algorithm->setup_;
-            break;
-        }
-        case kPredictComponentFunction:
-        {
-            if (algorithm->predict_.size() <= predict_size_min_)
-                return;
-            component_function = &algorithm->predict_;
-            break;
-        }
-        case kLearnComponentFunction:
-        {
-            if (algorithm->learn_.size() <= learn_size_min_)
-                return;
-            component_function = &algorithm->learn_;
-            break;
-        }
-        }
-        RemoveInstructionUnconditionally(component_function);
+        ComponentFunctionT componentFunctionType = RandomComponentFunction();
+        vector<shared_ptr<const Instruction>> &component_function = getComponentFunction(algorithm, componentFunctionType); // To modify.
+        InstructionIndexT minSize = getMinSize(componentFunctionType);
+        if (component_function.size() <= minSize)
+            return;
+        RemoveInstructionUnconditionally(&component_function);
     }
 
     void Mutator::TradeInstruction(Algorithm *algorithm)
@@ -311,8 +300,7 @@ namespace automl_zero
     void Mutator::InsertInstructionUnconditionally(
         const Op op, vector<shared_ptr<const Instruction>> *component_function)
     {
-        const InstructionIndexT position =
-            InstructionIndex(component_function->size() + 1);
+        const InstructionIndexT position = InstructionIndex(component_function->size() + 1);
         component_function->insert(
             component_function->begin() + position,
             make_shared<const Instruction>(op, rand_gen_));
@@ -322,8 +310,7 @@ namespace automl_zero
         vector<shared_ptr<const Instruction>> *component_function)
     {
         CHECK_GT(component_function->size(), 0);
-        const InstructionIndexT position =
-            InstructionIndex(component_function->size());
+        const InstructionIndexT position = InstructionIndex(component_function->size());
         component_function->erase(component_function->begin() + position);
     }
 

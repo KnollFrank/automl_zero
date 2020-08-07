@@ -129,6 +129,7 @@ namespace automl_zero {
         ComponentFunctionT RandomComponentFunction();
         std::vector<std::shared_ptr<const Instruction>> &getComponentFunction(Algorithm *algorithm, ComponentFunctionT componentFunction);
         InstructionIndexT getMaxSize(ComponentFunctionT componentFunction);
+        InstructionIndexT getMinSize(ComponentFunctionT componentFunction);
 
         const MutationTypeList allowed_actions_;
         const double mutate_prob_;
