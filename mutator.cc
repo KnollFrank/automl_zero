@@ -180,19 +180,6 @@ namespace automl_zero
         }
     }
 
-    Op Mutator::getOp(ComponentFunctionT componentFunction) {
-        switch (componentFunction) {
-        case kSetupComponentFunction:
-            return SetupOp();
-        case kPredictComponentFunction:
-            return PredictOp();
-        case kLearnComponentFunction:
-            return LearnOp();
-        default:
-            LOG(FATAL) << "Control flow should not reach here.";
-        }
-    }
-
     void Mutator::RandomizeInstruction(Algorithm *algorithm)
     {
         ComponentFunctionT componentFunctionType = RandomComponentFunction();
@@ -200,7 +187,7 @@ namespace automl_zero
         if (!componentFunction.empty())
         {
             InstructionIndexT index = InstructionIndex(componentFunction.size());
-            componentFunction[index] = make_shared<const Instruction>(getOp(componentFunctionType), rand_gen_);
+            componentFunction[index] = make_shared<const Instruction>(getRandomOp(componentFunctionType), rand_gen_);
         }
     }
 
@@ -237,7 +224,7 @@ namespace automl_zero
         {
             if (algorithm->setup_.size() >= setup_size_max_ - 1)
                 return;
-            op = SetupOp();
+            op = RandomSetupOp();
             component_function = &algorithm->setup_;
             break;
         }
@@ -245,7 +232,7 @@ namespace automl_zero
         {
             if (algorithm->predict_.size() >= predict_size_max_ - 1)
                 return;
-            op = PredictOp();
+            op = RandomPredictOp();
             component_function = &algorithm->predict_;
             break;
         }
@@ -253,7 +240,7 @@ namespace automl_zero
         {
             if (algorithm->learn_.size() >= learn_size_max_ - 1)
                 return;
-            op = LearnOp();
+            op = RandomLearnOp();
             component_function = &algorithm->learn_;
             break;
         }
@@ -299,19 +286,19 @@ namespace automl_zero
         {
         case kSetupComponentFunction:
         {
-            op = SetupOp();
+            op = RandomSetupOp();
             component_function = &algorithm->setup_;
             break;
         }
         case kPredictComponentFunction:
         {
-            op = PredictOp();
+            op = RandomPredictOp();
             component_function = &algorithm->predict_;
             break;
         }
         case kLearnComponentFunction:
         {
-            op = LearnOp();
+            op = RandomLearnOp();
             component_function = &algorithm->learn_;
             break;
         }
@@ -355,25 +342,38 @@ namespace automl_zero
         component_function->erase(component_function->begin() + position);
     }
 
-    Op Mutator::SetupOp()
+    Op Mutator::RandomSetupOp()
     {
         IntegerT op_index = absl::Uniform<DeprecatedOpIndexT>(
             *bit_gen_, 0, allowed_setup_ops_.size());
         return allowed_setup_ops_[op_index];
     }
 
-    Op Mutator::PredictOp()
+    Op Mutator::RandomPredictOp()
     {
         IntegerT op_index = absl::Uniform<DeprecatedOpIndexT>(
             *bit_gen_, 0, allowed_predict_ops_.size());
         return allowed_predict_ops_[op_index];
     }
 
-    Op Mutator::LearnOp()
+    Op Mutator::RandomLearnOp()
     {
         IntegerT op_index = absl::Uniform<DeprecatedOpIndexT>(
             *bit_gen_, 0, allowed_learn_ops_.size());
         return allowed_learn_ops_[op_index];
+    }
+
+    Op Mutator::getRandomOp(ComponentFunctionT componentFunction) {
+        switch (componentFunction) {
+        case kSetupComponentFunction:
+            return RandomSetupOp();
+        case kPredictComponentFunction:
+            return RandomPredictOp();
+        case kLearnComponentFunction:
+            return RandomLearnOp();
+        default:
+            LOG(FATAL) << "Control flow should not reach here.";
+        }
     }
 
     InstructionIndexT Mutator::InstructionIndex(

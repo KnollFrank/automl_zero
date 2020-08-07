@@ -117,10 +117,10 @@ namespace automl_zero {
             std::vector<std::shared_ptr<const Instruction>>* component_function);
 
         // Return operations to introduce into the component functions.
-        Op SetupOp();
-        Op PredictOp();
-        Op LearnOp();
-        Op getOp(ComponentFunctionT componentFunction);
+        Op RandomSetupOp();
+        Op RandomPredictOp();
+        Op RandomLearnOp();
+        Op getRandomOp(ComponentFunctionT componentFunction);
 
         // Returns which instruction to mutate.
         InstructionIndexT InstructionIndex(InstructionIndexT component_function_size);

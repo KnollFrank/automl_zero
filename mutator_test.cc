@@ -147,7 +147,7 @@ TEST(MutatorTest, SetupOpTest) {
       &bit_gen, &rand_gen);
   EXPECT_TRUE(IsEventually(
       function<Op(void)>([&](){
-        return mutator.SetupOp();
+        return mutator.RandomSetupOp();
       }),
       {NO_OP, SCALAR_SUM_OP, MATRIX_VECTOR_PRODUCT_OP, VECTOR_MEAN_OP},
       {NO_OP, SCALAR_SUM_OP, MATRIX_VECTOR_PRODUCT_OP, VECTOR_MEAN_OP}));
@@ -166,7 +166,7 @@ TEST(MutatorTest, PredictOpTest) {
       &bit_gen, &rand_gen);
   EXPECT_TRUE(IsEventually(
       function<Op(void)>([&](){
-        return mutator.PredictOp();
+        return mutator.RandomPredictOp();
       }),
       {NO_OP, SCALAR_SUM_OP, MATRIX_VECTOR_PRODUCT_OP, VECTOR_MEAN_OP},
       {NO_OP, SCALAR_SUM_OP, MATRIX_VECTOR_PRODUCT_OP, VECTOR_MEAN_OP}));
@@ -185,7 +185,7 @@ TEST(MutatorTest, LearnOpTest) {
       &bit_gen, &rand_gen);
   EXPECT_TRUE(IsEventually(
       function<Op(void)>([&](){
-        return mutator.LearnOp();
+        return mutator.RandomLearnOp();
       }),
       {NO_OP, SCALAR_SUM_OP, MATRIX_VECTOR_PRODUCT_OP, VECTOR_MEAN_OP},
       {NO_OP, SCALAR_SUM_OP, MATRIX_VECTOR_PRODUCT_OP, VECTOR_MEAN_OP}));
