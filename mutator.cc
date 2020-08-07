@@ -175,7 +175,7 @@ namespace automl_zero
         std::vector<std::shared_ptr<const Instruction>> &componentFunction = getComponentFunction(algorithm, RandomComponentFunction());
         if (!componentFunction.empty())
         {
-            InstructionIndexT index = InstructionIndex(componentFunction.size());
+            InstructionIndexT index = RandomInstructionIndex(componentFunction.size());
             componentFunction[index] = make_shared<const Instruction>(*componentFunction[index], rand_gen_);
         }
     }
@@ -186,7 +186,7 @@ namespace automl_zero
         std::vector<std::shared_ptr<const Instruction>> &componentFunction = getComponentFunction(algorithm, componentFunctionType);
         if (!componentFunction.empty())
         {
-            InstructionIndexT index = InstructionIndex(componentFunction.size());
+            InstructionIndexT index = RandomInstructionIndex(componentFunction.size());
             componentFunction[index] = make_shared<const Instruction>(getRandomOp(componentFunctionType), rand_gen_);
         }
     }
@@ -280,7 +280,7 @@ namespace automl_zero
     void Mutator::InsertInstructionUnconditionally(
         const Op op, vector<shared_ptr<const Instruction>> *component_function)
     {
-        const InstructionIndexT position = InstructionIndex(component_function->size() + 1);
+        const InstructionIndexT position = RandomInstructionIndex(component_function->size() + 1);
         component_function->insert(
             component_function->begin() + position,
             make_shared<const Instruction>(op, rand_gen_));
@@ -290,7 +290,7 @@ namespace automl_zero
         vector<shared_ptr<const Instruction>> *component_function)
     {
         CHECK_GT(component_function->size(), 0);
-        const InstructionIndexT position = InstructionIndex(component_function->size());
+        const InstructionIndexT position = RandomInstructionIndex(component_function->size());
         component_function->erase(component_function->begin() + position);
     }
 
@@ -318,7 +318,7 @@ namespace automl_zero
         }
     }
 
-    InstructionIndexT Mutator::InstructionIndex(const InstructionIndexT component_function_size)
+    InstructionIndexT Mutator::RandomInstructionIndex(const InstructionIndexT component_function_size)
     {
         return absl::Uniform<InstructionIndexT>(*bit_gen_, 0, component_function_size);
     }

@@ -129,7 +129,7 @@ TEST(MutatorTest, InstructionIndexTest) {
       &bit_gen, &rand_gen);
   EXPECT_TRUE(IsEventually(
       function<InstructionIndexT(void)>(
-          [&](){return mutator.InstructionIndex(5);}),
+          [&](){return mutator.RandomInstructionIndex(5);}),
       Range<InstructionIndexT>(0, 5),
       Range<InstructionIndexT>(0, 5)));
 }

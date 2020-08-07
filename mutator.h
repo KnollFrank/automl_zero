@@ -123,7 +123,7 @@ namespace automl_zero {
         Op getRandomOp(ComponentFunctionT componentFunction);
 
         // Returns which instruction to mutate.
-        InstructionIndexT InstructionIndex(InstructionIndexT component_function_size);
+        InstructionIndexT RandomInstructionIndex(InstructionIndexT component_function_size);
 
         // Returns which component function to mutate.
         ComponentFunctionT RandomComponentFunction();
