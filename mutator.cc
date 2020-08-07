@@ -82,12 +82,7 @@ namespace automl_zero
 
   void Mutator::Mutate(shared_ptr<const Algorithm> *algorithm)
   {
-    if (mutate_prob_ >= 1.0 || rand_gen_->UniformProbability() < mutate_prob_)
-    {
-      auto mutated = make_unique<Algorithm>(**algorithm);
-      MutateImpl(mutated.get());
-      algorithm->reset(mutated.release());
-    }
+    this->Mutate(1, algorithm);
   }
 
   void Mutator::Mutate(const IntegerT num_mutations, shared_ptr<const Algorithm> *algorithm)
