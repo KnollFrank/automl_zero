@@ -311,14 +311,10 @@ namespace automl_zero
 
     Op Mutator::getRandomOp(ComponentFunctionT componentFunction) {
         switch (componentFunction) {
-        case kSetupComponentFunction:
-            return RandomSetupOp();
-        case kPredictComponentFunction:
-            return RandomPredictOp();
-        case kLearnComponentFunction:
-            return RandomLearnOp();
-        default:
-            LOG(FATAL) << "Control flow should not reach here.";
+        case kSetupComponentFunction: return RandomSetupOp();
+        case kPredictComponentFunction: return RandomPredictOp();
+        case kLearnComponentFunction: return RandomLearnOp();
+        default: LOG(FATAL) << "Control flow should not reach here.";
         }
     }
 
