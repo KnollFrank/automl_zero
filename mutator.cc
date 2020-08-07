@@ -254,31 +254,11 @@ namespace automl_zero
 
     void Mutator::TradeInstruction(Algorithm *algorithm)
     {
-        Op op;                                                     // Operation for the new instruction.
-        vector<shared_ptr<const Instruction>> *component_function; // To modify.
-        switch (RandomComponentFunction())
-        {
-        case kSetupComponentFunction:
-        {
-            op = RandomSetupOp();
-            component_function = &algorithm->setup_;
-            break;
-        }
-        case kPredictComponentFunction:
-        {
-            op = RandomPredictOp();
-            component_function = &algorithm->predict_;
-            break;
-        }
-        case kLearnComponentFunction:
-        {
-            op = RandomLearnOp();
-            component_function = &algorithm->learn_;
-            break;
-        }
-        }
-        InsertInstructionUnconditionally(op, component_function);
-        RemoveInstructionUnconditionally(component_function);
+        ComponentFunctionT componentFunctionType = RandomComponentFunction();
+        vector<shared_ptr<const Instruction>> &component_function = getComponentFunction(algorithm, componentFunctionType); // To modify.
+
+        InsertInstructionUnconditionally(getRandomOp(componentFunctionType), &component_function);
+        RemoveInstructionUnconditionally(&component_function);
     }
 
     void Mutator::RandomizeAlgorithm(Algorithm *algorithm)
