@@ -216,36 +216,21 @@ namespace automl_zero
 
     void Mutator::InsertInstruction(Algorithm *algorithm)
     {
-        Op op;                                                     // Operation for the new instruction.
-        vector<shared_ptr<const Instruction>> *component_function; // To modify.
-        switch (RandomComponentFunction())
+        ComponentFunctionT componentFunctionType = RandomComponentFunction();
+        vector<shared_ptr<const Instruction>> &component_function = getComponentFunction(algorithm, componentFunctionType); // To modify.
+        InstructionIndexT maxSize = getMaxSize(componentFunctionType);
+        if (component_function.size() >= maxSize - 1)
+            return;
+        InsertInstructionUnconditionally(getRandomOp(componentFunctionType), &component_function);
+    }
+
+    InstructionIndexT Mutator::getMaxSize(ComponentFunctionT componentFunction) {
+        switch (componentFunction)
         {
-        case kSetupComponentFunction:
-        {
-            if (algorithm->setup_.size() >= setup_size_max_ - 1)
-                return;
-            op = RandomSetupOp();
-            component_function = &algorithm->setup_;
-            break;
+        case kSetupComponentFunction: return setup_size_max_;
+        case kPredictComponentFunction: return predict_size_max_;
+        case kLearnComponentFunction: return learn_size_max_;
         }
-        case kPredictComponentFunction:
-        {
-            if (algorithm->predict_.size() >= predict_size_max_ - 1)
-                return;
-            op = RandomPredictOp();
-            component_function = &algorithm->predict_;
-            break;
-        }
-        case kLearnComponentFunction:
-        {
-            if (algorithm->learn_.size() >= learn_size_max_ - 1)
-                return;
-            op = RandomLearnOp();
-            component_function = &algorithm->learn_;
-            break;
-        }
-        }
-        InsertInstructionUnconditionally(op, component_function);
     }
 
     void Mutator::RemoveInstruction(Algorithm *algorithm)

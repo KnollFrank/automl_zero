@@ -128,6 +128,8 @@ namespace automl_zero {
         // Returns which component function to mutate.
         ComponentFunctionT RandomComponentFunction();
         std::vector<std::shared_ptr<const Instruction>> &getComponentFunction(Algorithm *algorithm, ComponentFunctionT componentFunction);
+        InstructionIndexT getMaxSize(ComponentFunctionT componentFunction);
+
         const MutationTypeList allowed_actions_;
         const double mutate_prob_;
         const std::vector<Op> allowed_setup_ops_;
