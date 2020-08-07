@@ -82,7 +82,7 @@ namespace automl_zero
 
     void Mutator::Mutate(shared_ptr<const Algorithm> *algorithm)
     {
-        this->Mutate(1, algorithm);
+        Mutate(1, algorithm);
     }
 
     void Mutator::Mutate(const IntegerT num_mutations, shared_ptr<const Algorithm> *algorithm)
@@ -180,42 +180,28 @@ namespace automl_zero
         }
     }
 
+    Op Mutator::getOp(ComponentFunctionT componentFunction) {
+        switch (componentFunction) {
+        case kSetupComponentFunction:
+            return SetupOp();
+        case kPredictComponentFunction:
+            return PredictOp();
+        case kLearnComponentFunction:
+            return LearnOp();
+        default:
+            LOG(FATAL) << "Control flow should not reach here.";
+        }
+    }
+
     void Mutator::RandomizeInstruction(Algorithm *algorithm)
     {
-        switch (ComponentFunction())
+        ComponentFunctionT componentFunctionType = ComponentFunction();
+        std::vector<std::shared_ptr<const Instruction>> &componentFunction = getComponentFunction(algorithm, componentFunctionType);
+        if (!componentFunction.empty())
         {
-        case kSetupComponentFunction:
-        {
-            if (!algorithm->setup_.empty())
-            {
-                InstructionIndexT index = InstructionIndex(algorithm->setup_.size());
-                algorithm->setup_[index] =
-                    make_shared<const Instruction>(SetupOp(), rand_gen_);
-            }
-            return;
+            InstructionIndexT index = InstructionIndex(componentFunction.size());
+            componentFunction[index] = make_shared<const Instruction>(getOp(componentFunctionType), rand_gen_);
         }
-        case kPredictComponentFunction:
-        {
-            if (!algorithm->predict_.empty())
-            {
-                InstructionIndexT index = InstructionIndex(algorithm->predict_.size());
-                algorithm->predict_[index] =
-                    make_shared<const Instruction>(PredictOp(), rand_gen_);
-            }
-            return;
-        }
-        case kLearnComponentFunction:
-        {
-            if (!algorithm->learn_.empty())
-            {
-                InstructionIndexT index = InstructionIndex(algorithm->learn_.size());
-                algorithm->learn_[index] =
-                    make_shared<const Instruction>(LearnOp(), rand_gen_);
-            }
-            return;
-        }
-        }
-        LOG(FATAL) << "Control flow should not reach here.";
     }
 
     void Mutator::RandomizeComponentFunction(Algorithm *algorithm)

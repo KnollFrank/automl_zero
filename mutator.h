@@ -120,11 +120,13 @@ class Mutator {
   Op SetupOp();
   Op PredictOp();
   Op LearnOp();
+  Op getOp(ComponentFunctionT componentFunction);
 
   // Returns which instruction to mutate.
   InstructionIndexT InstructionIndex(InstructionIndexT component_function_size);
 
   // Returns which component function to mutate.
+  // FK-TODO: rename to RandomComponentFunction()
   ComponentFunctionT ComponentFunction();
   std::vector<std::shared_ptr<const Instruction>> &getComponentFunction(Algorithm *algorithm, ComponentFunctionT componentFunction);
   const MutationTypeList allowed_actions_;
