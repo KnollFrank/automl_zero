@@ -344,23 +344,17 @@ namespace automl_zero
 
     Op Mutator::RandomSetupOp()
     {
-        IntegerT op_index = absl::Uniform<DeprecatedOpIndexT>(
-            *bit_gen_, 0, allowed_setup_ops_.size());
-        return allowed_setup_ops_[op_index];
+        return randomizer_.SetupOp();
     }
 
     Op Mutator::RandomPredictOp()
     {
-        IntegerT op_index = absl::Uniform<DeprecatedOpIndexT>(
-            *bit_gen_, 0, allowed_predict_ops_.size());
-        return allowed_predict_ops_[op_index];
+        return randomizer_.PredictOp();
     }
 
     Op Mutator::RandomLearnOp()
     {
-        IntegerT op_index = absl::Uniform<DeprecatedOpIndexT>(
-            *bit_gen_, 0, allowed_learn_ops_.size());
-        return allowed_learn_ops_[op_index];
+        return randomizer_.LearnOp();
     }
 
     Op Mutator::getRandomOp(ComponentFunctionT componentFunction) {
