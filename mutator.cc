@@ -172,7 +172,7 @@ namespace automl_zero
 
     void Mutator::AlterParam(Algorithm *algorithm)
     {
-        std::vector<std::shared_ptr<const Instruction>> &componentFunction = getComponentFunction(algorithm, ComponentFunction());
+        std::vector<std::shared_ptr<const Instruction>> &componentFunction = getComponentFunction(algorithm, RandomComponentFunction());
         if (!componentFunction.empty())
         {
             InstructionIndexT index = InstructionIndex(componentFunction.size());
@@ -195,7 +195,7 @@ namespace automl_zero
 
     void Mutator::RandomizeInstruction(Algorithm *algorithm)
     {
-        ComponentFunctionT componentFunctionType = ComponentFunction();
+        ComponentFunctionT componentFunctionType = RandomComponentFunction();
         std::vector<std::shared_ptr<const Instruction>> &componentFunction = getComponentFunction(algorithm, componentFunctionType);
         if (!componentFunction.empty())
         {
@@ -206,7 +206,7 @@ namespace automl_zero
 
     void Mutator::RandomizeComponentFunction(Algorithm *algorithm)
     {
-        switch (ComponentFunction())
+        switch (RandomComponentFunction())
         {
         case kSetupComponentFunction:
         {
@@ -231,7 +231,7 @@ namespace automl_zero
     {
         Op op;                                                     // Operation for the new instruction.
         vector<shared_ptr<const Instruction>> *component_function; // To modify.
-        switch (ComponentFunction())
+        switch (RandomComponentFunction())
         {
         case kSetupComponentFunction:
         {
@@ -264,7 +264,7 @@ namespace automl_zero
     void Mutator::RemoveInstruction(Algorithm *algorithm)
     {
         vector<shared_ptr<const Instruction>> *component_function; // To modify.
-        switch (ComponentFunction())
+        switch (RandomComponentFunction())
         {
         case kSetupComponentFunction:
         {
@@ -295,7 +295,7 @@ namespace automl_zero
     {
         Op op;                                                     // Operation for the new instruction.
         vector<shared_ptr<const Instruction>> *component_function; // To modify.
-        switch (ComponentFunction())
+        switch (RandomComponentFunction())
         {
         case kSetupComponentFunction:
         {
@@ -383,7 +383,7 @@ namespace automl_zero
             *bit_gen_, 0, component_function_size);
     }
 
-    ComponentFunctionT Mutator::ComponentFunction()
+    ComponentFunctionT Mutator::RandomComponentFunction()
     {
         vector<ComponentFunctionT> allowed_component_functions;
         allowed_component_functions.reserve(4);

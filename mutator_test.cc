@@ -203,7 +203,7 @@ TEST(MutatorTest, ComponentFunctionTest_SetupPredictLearn) {
       &bit_gen, &rand_gen);
   EXPECT_TRUE(IsEventually(
       function<ComponentFunctionT(void)>([&](){
-        return mutator.ComponentFunction();
+        return mutator.RandomComponentFunction();
       }),
       {kSetupComponentFunction, kPredictComponentFunction,
        kLearnComponentFunction},
@@ -223,7 +223,7 @@ TEST(MutatorTest, ComponentFunctionTest_Setup) {
       &bit_gen, &rand_gen);
   EXPECT_TRUE(IsEventually(
       function<ComponentFunctionT(void)>([&](){
-        return mutator.ComponentFunction();
+        return mutator.RandomComponentFunction();
       }),
       {kSetupComponentFunction},
       {kSetupComponentFunction}));
@@ -241,7 +241,7 @@ TEST(MutatorTest, ComponentFunctionTest_Predict) {
       &bit_gen, &rand_gen);
   EXPECT_TRUE(IsEventually(
       function<ComponentFunctionT(void)>([&](){
-        return mutator.ComponentFunction();
+        return mutator.RandomComponentFunction();
       }),
       {kPredictComponentFunction},
       {kPredictComponentFunction}));
@@ -259,7 +259,7 @@ TEST(MutatorTest, ComponentFunctionTest_Learn) {
       &bit_gen, &rand_gen);
   EXPECT_TRUE(IsEventually(
       function<ComponentFunctionT(void)>([&](){
-        return mutator.ComponentFunction();
+        return mutator.RandomComponentFunction();
       }),
       {kLearnComponentFunction},
       {kLearnComponentFunction}));

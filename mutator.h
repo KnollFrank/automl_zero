@@ -28,127 +28,126 @@
 
 namespace automl_zero {
 
-class Mutator {
- public:
-  Mutator(
-      // What mutations may be applied. See the MutationType enum.
-      const MutationTypeList& allowed_actions,
-      // The probability of mutating each time.
-      double mutate_prob,
-      // Ops that can be introduced into the setup component function. Empty
-      // means the component function won't be mutated at all.
-      const std::vector<Op>& allowed_setup_ops,
-      // Ops that can be introduced into the predict component function. Empty
-      // means the component function won't be mutated at all.
-      const std::vector<Op>& allowed_predict_ops,
-      // Ops that can be introduced into the learn component function. Empty
-      // means the component function won't be mutated at all.
-      const std::vector<Op>& allowed_learn_ops,
-      // Minimum/maximum component function sizes.
-      const IntegerT setup_size_min,
-      const IntegerT setup_size_max,
-      const IntegerT predict_size_min,
-      const IntegerT predict_size_max,
-      const IntegerT learn_size_min,
-      const IntegerT learn_size_max,
-      // The random bit generator.
-      std::mt19937* bit_gen,
-      // The random number generator.
-      RandomGenerator* rand_gen);
+    class Mutator {
+    public:
+        Mutator(
+            // What mutations may be applied. See the MutationType enum.
+            const MutationTypeList& allowed_actions,
+            // The probability of mutating each time.
+            double mutate_prob,
+            // Ops that can be introduced into the setup component function. Empty
+            // means the component function won't be mutated at all.
+            const std::vector<Op>& allowed_setup_ops,
+            // Ops that can be introduced into the predict component function. Empty
+            // means the component function won't be mutated at all.
+            const std::vector<Op>& allowed_predict_ops,
+            // Ops that can be introduced into the learn component function. Empty
+            // means the component function won't be mutated at all.
+            const std::vector<Op>& allowed_learn_ops,
+            // Minimum/maximum component function sizes.
+            const IntegerT setup_size_min,
+            const IntegerT setup_size_max,
+            const IntegerT predict_size_min,
+            const IntegerT predict_size_max,
+            const IntegerT learn_size_min,
+            const IntegerT learn_size_max,
+            // The random bit generator.
+            std::mt19937* bit_gen,
+            // The random number generator.
+            RandomGenerator* rand_gen);
 
-  Mutator(const Mutator& other) = delete;
-  Mutator& operator=(const Mutator& other) = delete;
+        Mutator(const Mutator& other) = delete;
+        Mutator& operator=(const Mutator& other) = delete;
 
-  void Mutate(std::shared_ptr<const Algorithm>* algorithm);
-  void Mutate(IntegerT num_mutations,
-              std::shared_ptr<const Algorithm>* algorithm);
+        void Mutate(std::shared_ptr<const Algorithm>* algorithm);
+        void Mutate(IntegerT num_mutations,
+            std::shared_ptr<const Algorithm>* algorithm);
 
-  // Used to create a simple instance for tests.
-  Mutator();
+        // Used to create a simple instance for tests.
+        Mutator();
 
- private:
-  friend Mutator SimpleMutator();
-  FRIEND_TEST(MutatorTest, InstructionIndexTest);
-  FRIEND_TEST(MutatorTest, SetupOpTest);
-  FRIEND_TEST(MutatorTest, PredictOpTest);
-  FRIEND_TEST(MutatorTest, LearnOpTest);
-  FRIEND_TEST(MutatorTest, ComponentFunctionTest_SetupPredictLearn);
-  FRIEND_TEST(MutatorTest, ComponentFunctionTest_Setup);
-  FRIEND_TEST(MutatorTest, ComponentFunctionTest_Predict);
-  FRIEND_TEST(MutatorTest, ComponentFunctionTest_Learn);
-  FRIEND_TEST(MutatorTest, AlterParam);
-  FRIEND_TEST(MutatorTest, RandomizeInstruction);
-  FRIEND_TEST(MutatorTest, RandomizeComponentFunction);
-  FRIEND_TEST(MutatorTest, RandomizeAlgorithm);
+    private:
+        friend Mutator SimpleMutator();
+        FRIEND_TEST(MutatorTest, InstructionIndexTest);
+        FRIEND_TEST(MutatorTest, SetupOpTest);
+        FRIEND_TEST(MutatorTest, PredictOpTest);
+        FRIEND_TEST(MutatorTest, LearnOpTest);
+        FRIEND_TEST(MutatorTest, ComponentFunctionTest_SetupPredictLearn);
+        FRIEND_TEST(MutatorTest, ComponentFunctionTest_Setup);
+        FRIEND_TEST(MutatorTest, ComponentFunctionTest_Predict);
+        FRIEND_TEST(MutatorTest, ComponentFunctionTest_Learn);
+        FRIEND_TEST(MutatorTest, AlterParam);
+        FRIEND_TEST(MutatorTest, RandomizeInstruction);
+        FRIEND_TEST(MutatorTest, RandomizeComponentFunction);
+        FRIEND_TEST(MutatorTest, RandomizeAlgorithm);
 
-  void MutateImpl(Algorithm* algorithm);
+        void MutateImpl(Algorithm* algorithm);
 
-  // Randomizes a single parameter within one instruction. Keeps the same op.
-  void AlterParam(Algorithm* algorithm);
+        // Randomizes a single parameter within one instruction. Keeps the same op.
+        void AlterParam(Algorithm* algorithm);
 
-  // Randomizes an instruction (all its parameters, including the op).
-  void RandomizeInstruction(Algorithm* algorithm);
+        // Randomizes an instruction (all its parameters, including the op).
+        void RandomizeInstruction(Algorithm* algorithm);
 
-  // Randomizes all the instructions in one of the three component functions.
-  // Does not change the component function size.
-  void RandomizeComponentFunction(Algorithm* algorithm);
+        // Randomizes all the instructions in one of the three component functions.
+        // Does not change the component function size.
+        void RandomizeComponentFunction(Algorithm* algorithm);
 
-  // Inserts an instruction, making the component function longer. Has
-  // no effect on a maximum-length component function.
-  void InsertInstruction(Algorithm* algorithm);
+        // Inserts an instruction, making the component function longer. Has
+        // no effect on a maximum-length component function.
+        void InsertInstruction(Algorithm* algorithm);
 
-  // Removes an instruction, making the component function shorter. Has
-  // no effect on a minimum-length component function.
-  void RemoveInstruction(Algorithm* algorithm);
+        // Removes an instruction, making the component function shorter. Has
+        // no effect on a minimum-length component function.
+        void RemoveInstruction(Algorithm* algorithm);
 
-  // First removes an instruction, then inserts an instruction. Has
-  // no effect on a zero-length component function.
-  void TradeInstruction(Algorithm* algorithm);
+        // First removes an instruction, then inserts an instruction. Has
+        // no effect on a zero-length component function.
+        void TradeInstruction(Algorithm* algorithm);
 
-  // Randomizes all the instructions in all of the component functions. Does not
-  // change the component function sizes.
-  void RandomizeAlgorithm(Algorithm* algorithm);
+        // Randomizes all the instructions in all of the component functions. Does not
+        // change the component function sizes.
+        void RandomizeAlgorithm(Algorithm* algorithm);
 
-  void InsertInstructionUnconditionally(
-      const Op op,
-      std::vector<std::shared_ptr<const Instruction>>* component_function);
+        void InsertInstructionUnconditionally(
+            const Op op,
+            std::vector<std::shared_ptr<const Instruction>>* component_function);
 
-  void RemoveInstructionUnconditionally(
-      std::vector<std::shared_ptr<const Instruction>>* component_function);
+        void RemoveInstructionUnconditionally(
+            std::vector<std::shared_ptr<const Instruction>>* component_function);
 
-  // Return operations to introduce into the component functions.
-  Op SetupOp();
-  Op PredictOp();
-  Op LearnOp();
-  Op getOp(ComponentFunctionT componentFunction);
+        // Return operations to introduce into the component functions.
+        Op SetupOp();
+        Op PredictOp();
+        Op LearnOp();
+        Op getOp(ComponentFunctionT componentFunction);
 
-  // Returns which instruction to mutate.
-  InstructionIndexT InstructionIndex(InstructionIndexT component_function_size);
+        // Returns which instruction to mutate.
+        InstructionIndexT InstructionIndex(InstructionIndexT component_function_size);
 
-  // Returns which component function to mutate.
-  // FK-TODO: rename to RandomComponentFunction()
-  ComponentFunctionT ComponentFunction();
-  std::vector<std::shared_ptr<const Instruction>> &getComponentFunction(Algorithm *algorithm, ComponentFunctionT componentFunction);
-  const MutationTypeList allowed_actions_;
-  const double mutate_prob_;
-  const std::vector<Op> allowed_setup_ops_;
-  const std::vector<Op> allowed_predict_ops_;
-  const std::vector<Op> allowed_learn_ops_;
-  const bool mutate_setup_;
-  const bool mutate_predict_;
-  const bool mutate_learn_;
-  const InstructionIndexT setup_size_min_;
-  const InstructionIndexT setup_size_max_;
-  const InstructionIndexT predict_size_min_;
-  const InstructionIndexT predict_size_max_;
-  const InstructionIndexT learn_size_min_;
-  const InstructionIndexT learn_size_max_;
-  std::unique_ptr<std::mt19937> bit_gen_owned_;
-  std::mt19937* bit_gen_;
-  std::unique_ptr<RandomGenerator> rand_gen_owned_;
-  RandomGenerator* rand_gen_;
-  Randomizer randomizer_;
-};
+        // Returns which component function to mutate.
+        ComponentFunctionT RandomComponentFunction();
+        std::vector<std::shared_ptr<const Instruction>> &getComponentFunction(Algorithm *algorithm, ComponentFunctionT componentFunction);
+        const MutationTypeList allowed_actions_;
+        const double mutate_prob_;
+        const std::vector<Op> allowed_setup_ops_;
+        const std::vector<Op> allowed_predict_ops_;
+        const std::vector<Op> allowed_learn_ops_;
+        const bool mutate_setup_;
+        const bool mutate_predict_;
+        const bool mutate_learn_;
+        const InstructionIndexT setup_size_min_;
+        const InstructionIndexT setup_size_max_;
+        const InstructionIndexT predict_size_min_;
+        const InstructionIndexT predict_size_max_;
+        const InstructionIndexT learn_size_min_;
+        const InstructionIndexT learn_size_max_;
+        std::unique_ptr<std::mt19937> bit_gen_owned_;
+        std::mt19937* bit_gen_;
+        std::unique_ptr<RandomGenerator> rand_gen_owned_;
+        RandomGenerator* rand_gen_;
+        Randomizer randomizer_;
+    };
 
 }  // namespace automl_zero
 
