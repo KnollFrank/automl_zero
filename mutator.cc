@@ -172,13 +172,11 @@ namespace automl_zero
 
     void Mutator::AlterParam(Algorithm *algorithm)
     {
-        std::vector<std::shared_ptr<const Instruction>> *componentFunction = getComponentFunction(algorithm, ComponentFunction());
-        if (!componentFunction->empty())
+        std::vector<std::shared_ptr<const Instruction>> &componentFunction = getComponentFunction(algorithm, ComponentFunction());
+        if (!componentFunction.empty())
         {
-            InstructionIndexT index = InstructionIndex(componentFunction->size());
-            algorithm->setup_[index] =
-                make_shared<const Instruction>(
-                    *(*componentFunction)[index], rand_gen_);
+            InstructionIndexT index = InstructionIndex(componentFunction.size());
+            componentFunction[index] = make_shared<const Instruction>(*componentFunction[index], rand_gen_);
         }
     }
 
@@ -422,15 +420,15 @@ namespace automl_zero
         return allowed_component_functions[index];
     }
 
-    std::vector<std::shared_ptr<const Instruction>> *Mutator::getComponentFunction(Algorithm *algorithm, ComponentFunctionT componentFunction) {
+    std::vector<std::shared_ptr<const Instruction>> &Mutator::getComponentFunction(Algorithm *algorithm, ComponentFunctionT componentFunction) {
         switch (componentFunction)
         {
         case kSetupComponentFunction:
-            return &algorithm->setup_;
+            return algorithm->setup_;
         case kPredictComponentFunction:
-            return &algorithm->predict_;
+            return algorithm->predict_;
         case kLearnComponentFunction:
-            return &algorithm->learn_;
+            return algorithm->learn_;
         default:
             LOG(FATAL) << "Control flow should not reach here.";
         }
