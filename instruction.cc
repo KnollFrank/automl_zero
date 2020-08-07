@@ -37,88 +37,88 @@ namespace automl_zero
 
     Instruction::Instruction()
         : op_(NO_OP),
-          in1_(0),
-          in2_(0),
-          out_(0),
-          activation_data_(0.0),
-          float_data_0_(0.0),
-          float_data_1_(0.0),
-          float_data_2_(0.0),
-          children_({}) {}
+        in1_(0),
+        in2_(0),
+        out_(0),
+        activation_data_(0.0),
+        float_data_0_(0.0),
+        float_data_1_(0.0),
+        float_data_2_(0.0),
+        children_({}) {}
 
     Instruction::Instruction(const IntegerDataSetter &integer_data_setter)
         : op_(NO_OP),
-          in1_(0),
-          in2_(0),
-          out_(0),
-          activation_data_(static_cast<double>(integer_data_setter.value_)),
-          float_data_0_(0.0),
-          float_data_1_(0.0),
-          float_data_2_(0.0),
-          children_({}) {}
+        in1_(0),
+        in2_(0),
+        out_(0),
+        activation_data_(static_cast<double>(integer_data_setter.value_)),
+        float_data_0_(0.0),
+        float_data_1_(0.0),
+        float_data_2_(0.0),
+        children_({}) {}
 
     Instruction::Instruction(const Op op, const AddressT in, const AddressT out)
         : op_(op),
-          in1_(in),
-          in2_(0),
-          out_(out),
-          activation_data_(0.0),
-          float_data_0_(0.0),
-          float_data_1_(0.0),
-          float_data_2_(0.0),
-          children_({}) {}
+        in1_(in),
+        in2_(0),
+        out_(out),
+        activation_data_(0.0),
+        float_data_0_(0.0),
+        float_data_1_(0.0),
+        float_data_2_(0.0),
+        children_({}) {}
 
     Instruction::Instruction(
         const Op op, const AddressT in1, const AddressT in2, const AddressT out)
         : op_(op),
-          in1_(in1),
-          in2_(in2),
-          out_(out),
-          activation_data_(0.0),
-          float_data_0_(0.0),
-          float_data_1_(0.0),
-          float_data_2_(0.0),
-          children_({}) {}
+        in1_(in1),
+        in2_(in2),
+        out_(out),
+        activation_data_(0.0),
+        float_data_0_(0.0),
+        float_data_1_(0.0),
+        float_data_2_(0.0),
+        children_({}) {}
 
     Instruction::Instruction(
         const Op op, const AddressT out,
         const ActivationDataSetter &activation_data_setter)
         : op_(op),
-          in1_(0),
-          in2_(0),
-          out_(out),
-          activation_data_(activation_data_setter.value_),
-          float_data_0_(0.0),
-          float_data_1_(0.0),
-          float_data_2_(0.0),
-          children_({}) {}
+        in1_(0),
+        in2_(0),
+        out_(out),
+        activation_data_(activation_data_setter.value_),
+        float_data_0_(0.0),
+        float_data_1_(0.0),
+        float_data_2_(0.0),
+        children_({}) {}
 
     Instruction::Instruction(
         const Op op, const AddressT out,
         const IntegerDataSetter &integer_data_setter)
         : op_(op),
-          in1_(0),
-          in2_(0),
-          out_(out),
-          activation_data_(static_cast<double>(integer_data_setter.value_)),
-          float_data_0_(0.0),
-          float_data_1_(0.0),
-          float_data_2_(0.0),
-          children_({}) {}
+        in1_(0),
+        in2_(0),
+        out_(out),
+        activation_data_(static_cast<double>(integer_data_setter.value_)),
+        float_data_0_(0.0),
+        float_data_1_(0.0),
+        float_data_2_(0.0),
+        children_({}) {}
 
     Instruction::Instruction(
         const Op op, const AddressT out,
         const FloatDataSetter &float_data_setter_0,
         const FloatDataSetter &float_data_setter_1)
         : op_(op),
-          in1_(0),
-          in2_(0),
-          out_(out),
-          activation_data_(0.0),
-          float_data_0_(float_data_setter_0.value_),
-          float_data_1_(float_data_setter_1.value_),
-          float_data_2_(0.0),
-          children_({}) {}
+        in1_(0),
+        in2_(0),
+        out_(out),
+        activation_data_(0.0),
+        float_data_0_(float_data_setter_0.value_),
+        float_data_1_(float_data_setter_1.value_),
+        float_data_2_(0.0),
+        children_({}) {}
 
     Instruction::Instruction(
         const Op op,
@@ -126,14 +126,14 @@ namespace automl_zero
         const AddressT in1,
         const FloatDataSetter &float_data_setter)
         : op_(op),
-          in1_(in1),
-          in2_(0),
-          out_(out),
-          activation_data_(0.0),
-          float_data_0_(float_data_setter.value_),
-          float_data_1_(0.0),
-          float_data_2_(0.0),
-          children_({}) {}
+        in1_(in1),
+        in2_(0),
+        out_(out),
+        activation_data_(0.0),
+        float_data_0_(float_data_setter.value_),
+        float_data_1_(0.0),
+        float_data_2_(0.0),
+        children_({}) {}
 
     Instruction::Instruction(
         const Op op, const AddressT out,
@@ -141,14 +141,14 @@ namespace automl_zero
         const FloatDataSetter &float_data_setter_1,
         const FloatDataSetter &float_data_setter_2)
         : op_(op),
-          in1_(0),
-          in2_(0),
-          out_(out),
-          activation_data_(0.0),
-          float_data_0_(float_data_setter_0.value_),
-          float_data_1_(float_data_setter_1.value_),
-          float_data_2_(float_data_setter_2.value_),
-          children_({}) {}
+        in1_(0),
+        in2_(0),
+        out_(out),
+        activation_data_(0.0),
+        float_data_0_(float_data_setter_0.value_),
+        float_data_1_(float_data_setter_1.value_),
+        float_data_2_(float_data_setter_2.value_),
+        children_({}) {}
 
     Instruction::Instruction(Op op, RandomGenerator *rand_gen)
     {
@@ -158,20 +158,19 @@ namespace automl_zero
     Instruction::Instruction(
         const Instruction &other, RandomGenerator *rand_gen)
         : op_(other.op_),
-          in1_(other.in1_),
-          in2_(other.in2_),
-          out_(other.out_),
-          activation_data_(other.activation_data_),
-          float_data_0_(other.float_data_0_),
-          float_data_1_(other.float_data_1_),
-          float_data_2_(other.float_data_2_),
-          children_(other.children_)
+        in1_(other.in1_),
+        in2_(other.in2_),
+        out_(other.out_),
+        activation_data_(other.activation_data_),
+        float_data_0_(other.float_data_0_),
+        float_data_1_(other.float_data_1_),
+        float_data_2_(other.float_data_2_),
+        children_(other.children_)
     {
         AlterParam(rand_gen);
     }
 
-    Instruction::Instruction(
-        const SerializedInstruction &serialized)
+    Instruction::Instruction(const SerializedInstruction &serialized)
     {
         Deserialize(serialized);
     }
@@ -187,14 +186,14 @@ namespace automl_zero
     bool Instruction::operator==(const Instruction &other) const
     {
         return op_ == other.op_ &&
-               in1_ == other.in1_ &&
-               in2_ == other.in2_ &&
-               out_ == other.out_ &&
-               abs(activation_data_ - other.activation_data_) < kActivationDataTolerance &&
-               abs(float_data_0_ - other.float_data_0_) < kFloatDataTolerance &&
-               abs(float_data_1_ - other.float_data_1_) < kFloatDataTolerance &&
-               abs(float_data_2_ - other.float_data_2_) < kFloatDataTolerance &&
-               children_ == other.children_;
+            in1_ == other.in1_ &&
+            in2_ == other.in2_ &&
+            out_ == other.out_ &&
+            abs(activation_data_ - other.activation_data_) < kActivationDataTolerance &&
+            abs(float_data_0_ - other.float_data_0_) < kFloatDataTolerance &&
+            abs(float_data_1_ - other.float_data_1_) < kFloatDataTolerance &&
+            abs(float_data_2_ - other.float_data_2_) < kFloatDataTolerance &&
+            children_ == other.children_;
     }
 
     void Instruction::FillWithNoOp()
@@ -207,7 +206,7 @@ namespace automl_zero
         float_data_0_ = 0.0;
         float_data_1_ = 0.0;
         float_data_2_ = 0.0;
-        children_ = {};
+        children_ ={};
     }
 
     void Instruction::SetOpAndRandomizeParams(
@@ -780,7 +779,7 @@ namespace automl_zero
             float_data_1_ = rand_gen->UniformFloat(-1.0, 1.0);
             return;
         }
-            // Do not add default clause. All ops should be supported here.
+        // Do not add default clause. All ops should be supported here.
         }
     }
 
@@ -929,7 +928,7 @@ namespace automl_zero
             float_data_1_ = max(value0, value1);
             return;
         }
-            // Do not add default clause. All ops should be supported here.
+        // Do not add default clause. All ops should be supported here.
         }
     }
 
@@ -943,34 +942,34 @@ namespace automl_zero
             break;
         case SCALAR_SUM_OP:
             stream << "  s" << out_ << " = s" << in1_ << " + s" << in2_
-                   << std::endl;
+                << std::endl;
             break;
         case SCALAR_DIFF_OP:
             stream << "  s" << out_ << " = s" << in1_ << " - s" << in2_
-                   << std::endl;
+                << std::endl;
             break;
         case SCALAR_PRODUCT_OP:
             stream << "  s" << out_ << " = s" << in1_ << " * s" << in2_
-                   << std::endl;
+                << std::endl;
             break;
         case SCALAR_DIVISION_OP:
             stream << "  s" << out_ << " = s" << in1_ << " / s" << in2_
-                   << std::endl;
+                << std::endl;
             break;
         case SCALAR_MIN_OP:
             stream << "  s" << out_ << " = minimum(s" << in1_ << ", s" << in2_
-                   << ")" << std::endl;
+                << ")" << std::endl;
             break;
         case SCALAR_MAX_OP:
             stream << "  s" << out_ << " = maximum(s" << in1_ << ", s" << in2_
-                   << ")" << std::endl;
+                << ")" << std::endl;
             break;
         case SCALAR_ABS_OP:
             stream << "  s" << out_ << " = abs(s" << in1_ << ")" << std::endl;
             break;
         case SCALAR_HEAVYSIDE_OP:
             stream << "  s" << out_ << " = heaviside(s" << in1_ << ", 1.0)"
-                   << std::endl;
+                << std::endl;
             break;
         case SCALAR_CONST_SET_OP:
         {
@@ -988,15 +987,15 @@ namespace automl_zero
             break;
         case SCALAR_ARCSIN_OP:
             stream << "  s" << out_ << " = arcsin(s" << in1_ << ")"
-                   << std::endl;
+                << std::endl;
             break;
         case SCALAR_ARCCOS_OP:
             stream << "  s" << out_ << " = arccos(s" << in1_ << ")"
-                   << std::endl;
+                << std::endl;
             break;
         case SCALAR_ARCTAN_OP:
             stream << "  s" << out_ << " = arctan(s" << in1_ << ")"
-                   << std::endl;
+                << std::endl;
             break;
         case SCALAR_EXP_OP:
             stream << "  s" << out_ << " = exp(s" << in1_ << ")" << std::endl;
@@ -1009,7 +1008,7 @@ namespace automl_zero
             break;
         case SCALAR_BROADCAST_OP:
             stream << "  v" << out_ << " = bcast(s" << in1_ << ")"
-                   << std::endl;
+                << std::endl;
             break;
         case VECTOR_RECIPROCAL_OP:
             stream << "  v" << out_ << " = 1 / v" << in1_ << std::endl;
@@ -1019,130 +1018,130 @@ namespace automl_zero
             break;
         case MATRIX_ROW_NORM_OP:
             stream << "  v" << out_ << " = norm(m" << in1_ << ", axis=1)"
-                   << std::endl;
+                << std::endl;
             break;
         case MATRIX_COLUMN_NORM_OP:
             stream << "  v" << out_ << " = norm(m" << in1_ << ", axis=0)"
-                   << std::endl;
+                << std::endl;
             break;
         case VECTOR_COLUMN_BROADCAST_OP:
             stream << "  m" << out_ << " = bcast(v" << in1_ << ", axis=0)"
-                   << std::endl;
+                << std::endl;
             break;
         case VECTOR_ROW_BROADCAST_OP:
             stream << "  m" << out_ << " = bcast(v" << in1_ << ", axis=1)"
-                   << std::endl;
+                << std::endl;
             break;
         case VECTOR_SUM_OP:
             stream << "  v" << out_ << " = v" << in1_ << " + v" << in2_
-                   << std::endl;
+                << std::endl;
             break;
         case VECTOR_DIFF_OP:
             stream << "  v" << out_ << " = v" << in1_ << " - v" << in2_
-                   << std::endl;
+                << std::endl;
             break;
         case VECTOR_PRODUCT_OP:
             stream << "  v" << out_ << " = v" << in1_ << " * v" << in2_
-                   << std::endl;
+                << std::endl;
             break;
         case VECTOR_DIVISION_OP:
             stream << "  v" << out_ << " = v" << in1_ << " / v" << in2_
-                   << std::endl;
+                << std::endl;
             break;
         case VECTOR_MIN_OP:
             stream << "  v" << out_ << " = minimum(v" << in1_ << ", v" << in2_
-                   << ")" << std::endl;
+                << ")" << std::endl;
             break;
         case VECTOR_MAX_OP:
             stream << "  v" << out_ << " = maximum(v" << in1_ << ", v" << in2_
-                   << ")" << std::endl;
+                << ")" << std::endl;
             break;
         case VECTOR_ABS_OP:
             stream << "  v" << out_ << " = abs(v" << in1_ << ")" << std::endl;
             break;
         case VECTOR_HEAVYSIDE_OP:
             stream << "  v" << out_ << " = heaviside(v" << in1_ << ", 1.0)"
-                   << std::endl;
+                << std::endl;
             break;
         case VECTOR_CONST_SET_OP:
         {
             stream << "  v" << out_ << "[" << float_data_0_ << "]"
-                   << " = " << float_data_1_ << std::endl;
+                << " = " << float_data_1_ << std::endl;
             break;
         }
         case MATRIX_SUM_OP:
             stream << "  m" << out_ << " = m" << in1_ << " + m" << in2_
-                   << std::endl;
+                << std::endl;
             break;
         case MATRIX_DIFF_OP:
             stream << "  m" << out_ << " = m" << in1_ << " - m" << in2_
-                   << std::endl;
+                << std::endl;
             break;
         case MATRIX_PRODUCT_OP:
             stream << "  m" << out_ << " = m" << in1_ << " * m" << in2_
-                   << std::endl;
+                << std::endl;
             break;
         case MATRIX_DIVISION_OP:
             stream << "  m" << out_ << " = m" << in1_ << " / m" << in2_
-                   << std::endl;
+                << std::endl;
             break;
         case MATRIX_MIN_OP:
             stream << "  m" << out_ << " = minimum(m" << in1_ << ", m" << in2_
-                   << ")" << std::endl;
+                << ")" << std::endl;
             break;
         case MATRIX_MAX_OP:
             stream << "  m" << out_ << " = maximum(m" << in1_ << ", m" << in2_
-                   << ")" << std::endl;
+                << ")" << std::endl;
             break;
         case MATRIX_ABS_OP:
             stream << "  m" << out_ << " = abs(m" << in1_ << ")" << std::endl;
             break;
         case MATRIX_HEAVYSIDE_OP:
             stream << "  m" << out_ << " = heaviside(m" << in1_ << ", 1.0)"
-                   << std::endl;
+                << std::endl;
             break;
         case MATRIX_CONST_SET_OP:
         {
             stream << "  m" << out_
-                   << "[" << float_data_0_ << ", " << float_data_1_ << "]"
-                   << " = " << float_data_2_ << std::endl;
+                << "[" << float_data_0_ << ", " << float_data_1_ << "]"
+                << " = " << float_data_2_ << std::endl;
             break;
         }
         case SCALAR_VECTOR_PRODUCT_OP:
             stream << "  v" << out_ << " = s" << in1_ << " * v" << in2_
-                   << std::endl;
+                << std::endl;
             break;
         case VECTOR_INNER_PRODUCT_OP:
             stream << "  s" << out_ << " = "
-                   << "dot(v" << in1_ << ", v" << in2_ << ")" << std::endl;
+                << "dot(v" << in1_ << ", v" << in2_ << ")" << std::endl;
             break;
         case VECTOR_OUTER_PRODUCT_OP:
             stream << "  m" << out_ << " = "
-                   << "outer(v" << in1_ << ", v" << in2_ << ")" << std::endl;
+                << "outer(v" << in1_ << ", v" << in2_ << ")" << std::endl;
             break;
         case SCALAR_MATRIX_PRODUCT_OP:
             stream << "  m" << out_ << " = s" << in1_ << " * m" << in2_
-                   << std::endl;
+                << std::endl;
             break;
         case MATRIX_VECTOR_PRODUCT_OP:
             stream << "  v" << out_ << " = dot(m" << in1_ << ", v" << in2_
-                   << ")" << std::endl;
+                << ")" << std::endl;
             break;
         case VECTOR_NORM_OP:
             stream << "  s" << out_ << " = norm(v" << in1_ << ")"
-                   << std::endl;
+                << std::endl;
             break;
         case MATRIX_NORM_OP:
             stream << "  s" << out_ << " = norm(m" << in1_ << ")"
-                   << std::endl;
+                << std::endl;
             break;
         case MATRIX_TRANSPOSE_OP:
             stream << "  m" << out_ << " = transpose(m" << in1_ << ")"
-                   << std::endl;
+                << std::endl;
             break;
         case MATRIX_MATRIX_PRODUCT_OP:
             stream << "  m" << out_ << " = matmul(m" << in1_ << ", m" << in2_
-                   << ")" << std::endl;
+                << ")" << std::endl;
             break;
         case VECTOR_MEAN_OP:
             stream << "  s" << out_ << " = mean(v" << in1_ << ")" << std::endl;
@@ -1158,48 +1157,48 @@ namespace automl_zero
             break;
         case MATRIX_ROW_MEAN_OP:
             stream << "  v" << out_ << " = mean(m" << in1_ << ", axis=1)"
-                   << std::endl;
+                << std::endl;
             break;
         case MATRIX_ROW_ST_DEV_OP:
             stream << "  v" << out_ << " = std(m" << in1_ << ", axis=1)"
-                   << std::endl;
+                << std::endl;
             break;
         case SCALAR_GAUSSIAN_SET_OP:
         {
             stream << "  s" << out_ << " = gaussian(" << float_data_0_
-                   << ", " << float_data_1_ << ")" << std::endl;
+                << ", " << float_data_1_ << ")" << std::endl;
             break;
         }
         case VECTOR_GAUSSIAN_SET_OP:
         {
             stream << "  v" << out_ << " = gaussian(" << float_data_0_
-                   << ", " << float_data_1_ << ", n_features)" << std::endl;
+                << ", " << float_data_1_ << ", n_features)" << std::endl;
             break;
         }
         case MATRIX_GAUSSIAN_SET_OP:
         {
             stream << "  m" << out_ << " = gaussian(" << float_data_0_
-                   << ", " << float_data_1_ << ", (n_features, n_features))"
-                   << std::endl;
+                << ", " << float_data_1_ << ", (n_features, n_features))"
+                << std::endl;
             break;
         }
         case SCALAR_UNIFORM_SET_OP:
         {
             stream << "  s" << out_ << " = uniform(" << float_data_0_
-                   << ", " << float_data_1_ << ")" << std::endl;
+                << ", " << float_data_1_ << ")" << std::endl;
             break;
         }
         case VECTOR_UNIFORM_SET_OP:
         {
             stream << "  v" << out_ << " = uniform(" << float_data_0_
-                   << ", " << float_data_1_ << ", n_features)" << std::endl;
+                << ", " << float_data_1_ << ", n_features)" << std::endl;
             break;
         }
         case MATRIX_UNIFORM_SET_OP:
         {
             stream << "  m" << out_ << " = uniform(" << float_data_0_
-                   << ", " << float_data_1_ << ", (n_features, n_features))"
-                   << std::endl;
+                << ", " << float_data_1_ << ", (n_features, n_features))"
+                << std::endl;
             break;
         }
         case SCALAR_VECTOR_AT_INDEX_SET_OP:
@@ -1227,7 +1226,7 @@ namespace automl_zero
             stream << "  }" << std::endl;
             break;
         }
-            // Do not add default clause. All ops should be supported here.
+        // Do not add default clause. All ops should be supported here.
         }
         std::string instr_str = stream.str();
         return instr_str;

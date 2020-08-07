@@ -370,11 +370,9 @@ namespace automl_zero
         }
     }
 
-    InstructionIndexT Mutator::InstructionIndex(
-        const InstructionIndexT component_function_size)
+    InstructionIndexT Mutator::InstructionIndex(const InstructionIndexT component_function_size)
     {
-        return absl::Uniform<InstructionIndexT>(
-            *bit_gen_, 0, component_function_size);
+        return absl::Uniform<InstructionIndexT>(*bit_gen_, 0, component_function_size);
     }
 
     ComponentFunctionT Mutator::RandomComponentFunction()
@@ -403,14 +401,10 @@ namespace automl_zero
     std::vector<std::shared_ptr<const Instruction>> &Mutator::getComponentFunction(Algorithm *algorithm, ComponentFunctionT componentFunction) {
         switch (componentFunction)
         {
-        case kSetupComponentFunction:
-            return algorithm->setup_;
-        case kPredictComponentFunction:
-            return algorithm->predict_;
-        case kLearnComponentFunction:
-            return algorithm->learn_;
-        default:
-            LOG(FATAL) << "Control flow should not reach here.";
+        case kSetupComponentFunction: return algorithm->setup_;
+        case kPredictComponentFunction: return algorithm->predict_;
+        case kLearnComponentFunction: return algorithm->learn_;
+        default: LOG(FATAL) << "Control flow should not reach here.";
         }
     }
 } // namespace automl_zero
