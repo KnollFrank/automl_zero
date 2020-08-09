@@ -63,44 +63,31 @@ namespace automl_zero {
         algorithm->reset(mutable_algorithm.release());
     }
 
-    // FK-TODO: DRY with CountDifferentPredictInstructions and CountDifferentLearnInstructions
-    IntegerT CountDifferentSetupInstructions(const Algorithm& algorithm1, const Algorithm& algorithm2) {
+    IntegerT CountDifferentInstructionsOfComponentFunction(
+        const std::vector<std::shared_ptr<const Instruction>>& componentFunction1,
+        const std::vector<std::shared_ptr<const Instruction>>& componentFunction2) {
         IntegerT num_diff_instructions = 0;
-        vector<shared_ptr<const Instruction>>::const_iterator instruction1_it = algorithm1.setup_.begin();
-        for (const shared_ptr<const Instruction>& instruction2 : algorithm2.setup_) {
+        vector<shared_ptr<const Instruction>>::const_iterator instruction1_it = componentFunction1.begin();
+        for (const shared_ptr<const Instruction>& instruction2 : componentFunction2) {
             if (*instruction2 != **instruction1_it) {
                 ++num_diff_instructions;
             }
             ++instruction1_it;
         }
-        CHECK(instruction1_it == algorithm1.setup_.end());
+        CHECK(instruction1_it == componentFunction1.end());
         return num_diff_instructions;
+    }
+
+    IntegerT CountDifferentSetupInstructions(const Algorithm& algorithm1, const Algorithm& algorithm2) {
+        return CountDifferentInstructionsOfComponentFunction(algorithm1.setup_, algorithm2.setup_);
     }
 
     IntegerT CountDifferentPredictInstructions(const Algorithm& algorithm1, const Algorithm& algorithm2) {
-        IntegerT num_diff_instructions = 0;
-        vector<shared_ptr<const Instruction>>::const_iterator instruction1_it = algorithm1.predict_.begin();
-        for (const shared_ptr<const Instruction>& instruction2 : algorithm2.predict_) {
-            if (*instruction2 != **instruction1_it) {
-                ++num_diff_instructions;
-            }
-            ++instruction1_it;
-        }
-        CHECK(instruction1_it == algorithm1.predict_.end());
-        return num_diff_instructions;
+        return CountDifferentInstructionsOfComponentFunction(algorithm1.predict_, algorithm2.predict_);
     }
 
     IntegerT CountDifferentLearnInstructions(const Algorithm& algorithm1, const Algorithm& algorithm2) {
-        IntegerT num_diff_instructions = 0;
-        vector<shared_ptr<const Instruction>>::const_iterator instruction1_it = algorithm1.learn_.begin();
-        for (const shared_ptr<const Instruction>& instruction2 : algorithm2.learn_) {
-            if (*instruction2 != **instruction1_it) {
-                ++num_diff_instructions;
-            }
-            ++instruction1_it;
-        }
-        CHECK(instruction1_it == algorithm1.learn_.end());
-        return num_diff_instructions;
+        return CountDifferentInstructionsOfComponentFunction(algorithm1.learn_, algorithm2.learn_);
     }
 
     IntegerT CountDifferentInstructions(const Algorithm& algorithm1, const Algorithm& algorithm2) {
