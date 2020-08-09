@@ -109,8 +109,7 @@ namespace automl_zero {
             CountDifferentLearnInstructions(algorithm1, algorithm2);
     }
 
-    IntegerT ScalarSumOpPosition(
-        const vector<shared_ptr<const Instruction>>& component_function) {
+    IntegerT ScalarSumOpPosition(const vector<shared_ptr<const Instruction>>& component_function) {
         vector<IntegerT> positions;
         for (IntegerT position = 0; position < component_function.size(); ++position) {
             if (component_function[position]->op_ == SCALAR_SUM_OP) {
