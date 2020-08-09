@@ -797,8 +797,7 @@ namespace automl_zero {
         auto mutated_algorithm = make_shared<const Algorithm>(random_algorithm);
         mutator.Mutate(&mutated_algorithm);
         EXPECT_EQ(mutated_algorithm->setup_.size(), random_algorithm.setup_.size());
-        EXPECT_EQ(mutated_algorithm->predict_.size(),
-            random_algorithm.predict_.size());
+        EXPECT_EQ(mutated_algorithm->predict_.size(), random_algorithm.predict_.size());
         EXPECT_EQ(mutated_algorithm->learn_.size(), random_algorithm.learn_.size());
     }
 
