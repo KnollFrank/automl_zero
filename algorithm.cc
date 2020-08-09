@@ -49,16 +49,16 @@ namespace automl_zero {
     }
 
     Algorithm::Algorithm(const Algorithm& other) {
-        ShallowCopyComponentFunction(other.setup_, &this->setup_);
-        ShallowCopyComponentFunction(other.predict_, &this->predict_);
-        ShallowCopyComponentFunction(other.learn_, &this->learn_);
+        ShallowCopyComponentFunction(other.setup_.instructions, &this->setup_.instructions);
+        ShallowCopyComponentFunction(other.predict_.instructions, &this->predict_.instructions);
+        ShallowCopyComponentFunction(other.learn_.instructions, &this->learn_.instructions);
     }
 
     Algorithm& Algorithm::operator=(const Algorithm& other) {
         if (&other != this) {
-            ShallowCopyComponentFunction(other.setup_, &this->setup_);
-            ShallowCopyComponentFunction(other.predict_, &this->predict_);
-            ShallowCopyComponentFunction(other.learn_, &this->learn_);
+            ShallowCopyComponentFunction(other.setup_.instructions, &this->setup_.instructions);
+            ShallowCopyComponentFunction(other.predict_.instructions, &this->predict_.instructions);
+            ShallowCopyComponentFunction(other.learn_.instructions, &this->learn_.instructions);
         }
         return *this;
     }
@@ -96,24 +96,24 @@ namespace automl_zero {
     }
 
     bool Algorithm::operator==(const Algorithm& other) const {
-        if (!IsComponentFunctionEqual(setup_, other.setup_)) return false;
-        if (!IsComponentFunctionEqual(predict_, other.predict_)) return false;
-        if (!IsComponentFunctionEqual(learn_, other.learn_)) return false;
+        if (!IsComponentFunctionEqual(setup_.instructions, other.setup_.instructions)) return false;
+        if (!IsComponentFunctionEqual(predict_.instructions, other.predict_.instructions)) return false;
+        if (!IsComponentFunctionEqual(learn_.instructions, other.learn_.instructions)) return false;
         return true;
     }
 
     string Algorithm::ToReadable() const {
         ostringstream stream;
         stream << "def Setup():" << std::endl;
-        for (const shared_ptr<const Instruction>& instruction : setup_) {
+        for (const shared_ptr<const Instruction>& instruction : setup_.instructions) {
             stream << instruction->ToString();
         }
         stream << "def Predict():" << std::endl;
-        for (const shared_ptr<const Instruction>& instruction : predict_) {
+        for (const shared_ptr<const Instruction>& instruction : predict_.instructions) {
             stream << instruction->ToString();
         }
         stream << "def Learn():" << std::endl;
-        for (const shared_ptr<const Instruction>& instruction : learn_) {
+        for (const shared_ptr<const Instruction>& instruction : learn_.instructions) {
             stream << instruction->ToString();
         }
         return stream.str();
@@ -121,37 +121,37 @@ namespace automl_zero {
 
     SerializedAlgorithm Algorithm::ToProto() const {
         SerializedAlgorithm checkpoint_algorithm;
-        for (const shared_ptr<const Instruction>& instr : setup_) {
+        for (const shared_ptr<const Instruction>& instr : setup_.instructions) {
             *checkpoint_algorithm.add_setup_instructions() = instr->Serialize();
         }
-        for (const shared_ptr<const Instruction>& instr : predict_) {
+        for (const shared_ptr<const Instruction>& instr : predict_.instructions) {
             *checkpoint_algorithm.add_predict_instructions() = instr->Serialize();
         }
-        for (const shared_ptr<const Instruction>& instr : learn_) {
+        for (const shared_ptr<const Instruction>& instr : learn_.instructions) {
             *checkpoint_algorithm.add_learn_instructions() = instr->Serialize();
         }
         return checkpoint_algorithm;
     }
 
     void Algorithm::FromProto(const SerializedAlgorithm& checkpoint_algorithm) {
-        setup_.reserve(checkpoint_algorithm.setup_instructions_size());
-        setup_.clear();
+        setup_.instructions.reserve(checkpoint_algorithm.setup_instructions_size());
+        setup_.instructions.clear();
         for (const SerializedInstruction& checkpoint_instruction: checkpoint_algorithm.setup_instructions()) {
-            setup_.emplace_back(
+            setup_.instructions.emplace_back(
                 make_shared<const Instruction>(checkpoint_instruction));
         }
 
-        predict_.reserve(checkpoint_algorithm.predict_instructions_size());
-        predict_.clear();
+        predict_.instructions.reserve(checkpoint_algorithm.predict_instructions_size());
+        predict_.instructions.clear();
         for (const SerializedInstruction& checkpoint_instruction: checkpoint_algorithm.predict_instructions()) {
-            predict_.emplace_back(
+            predict_.instructions.emplace_back(
                 make_shared<const Instruction>(checkpoint_instruction));
         }
 
-        learn_.reserve(checkpoint_algorithm.learn_instructions_size());
-        learn_.clear();
+        learn_.instructions.reserve(checkpoint_algorithm.learn_instructions_size());
+        learn_.instructions.clear();
         for (const SerializedInstruction& checkpoint_instruction: checkpoint_algorithm.learn_instructions()) {
-            learn_.emplace_back(
+            learn_.instructions.emplace_back(
                 make_shared<const Instruction>(checkpoint_instruction));
         }
     }
@@ -160,11 +160,11 @@ namespace automl_zero {
         const ComponentFunctionT component_function_type) const {
         switch (component_function_type) {
         case kSetupComponentFunction:
-            return setup_;
+            return setup_.instructions;
         case kPredictComponentFunction:
-            return predict_;
+            return predict_.instructions;
         case kLearnComponentFunction:
-            return learn_;
+            return learn_.instructions;
         }
     }
 
@@ -172,11 +172,11 @@ namespace automl_zero {
         const ComponentFunctionT component_function_type) {
         switch (component_function_type) {
         case kSetupComponentFunction:
-            return &setup_;
+            return &setup_.instructions;
         case kPredictComponentFunction:
-            return &predict_;
+            return &predict_.instructions;
         case kLearnComponentFunction:
-            return &learn_;
+            return &learn_.instructions;
         }
     }
 

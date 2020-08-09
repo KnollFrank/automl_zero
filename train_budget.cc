@@ -27,17 +27,17 @@ using ::std::unique_ptr;  // NOLINT
 TrainBudget::TrainBudget(
     const Algorithm& baseline_algorithm, const double threshold_factor)
     : baseline_setup_cost_(
-          ComputeCost(baseline_algorithm.setup_)),
+          ComputeCost(baseline_algorithm.setup_.instructions)),
       baseline_train_cost_(
-          ComputeCost(baseline_algorithm.predict_) +
-          ComputeCost(baseline_algorithm.learn_)),
+          ComputeCost(baseline_algorithm.predict_.instructions) +
+          ComputeCost(baseline_algorithm.learn_.instructions)),
       threshold_factor_(threshold_factor) {}
 
 IntegerT TrainBudget::TrainExamples(
     const Algorithm& algorithm, const IntegerT budget) const {
-  const double setup_cost = ComputeCost(algorithm.setup_);
+  const double setup_cost = ComputeCost(algorithm.setup_.instructions);
   const double train_cost =
-      ComputeCost(algorithm.predict_) + ComputeCost(algorithm.learn_);
+      ComputeCost(algorithm.predict_.instructions) + ComputeCost(algorithm.learn_.instructions);
   CHECK_GT(train_cost, 0.0);
   const double suggested_train_examples = static_cast<double>(budget);
   const double baseline_cost =

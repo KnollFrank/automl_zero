@@ -251,7 +251,7 @@ IntegerT GetsFromPosition(
     RegularizedEvolution* regularized_evolution) {
   double fitness;
   shared_ptr<const Algorithm> algorithm = regularized_evolution->Get(&fitness);
-  return static_cast<IntegerT>(algorithm->predict_[0]->GetIntegerData());
+  return static_cast<IntegerT>(algorithm->predict_.instructions[0]->GetIntegerData());
 }
 
 }  // namespace automl_zero

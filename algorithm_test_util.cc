@@ -33,7 +33,7 @@ namespace automl_zero {
 
     Algorithm DnaFromId(const IntegerT algorithm_id) {
         Algorithm algorithm = SimpleNoOpAlgorithm();
-        algorithm.predict_[0] =
+        algorithm.predict_.instructions[0] =
             make_shared<const Instruction>(IntegerDataSetter(algorithm_id));
         return algorithm;
     }
@@ -49,7 +49,7 @@ namespace automl_zero {
     void SwitchDnaId(shared_ptr<const Algorithm>* algorithm,
         const IntegerT new_algorithm_id) {
         auto mutable_algorithm = make_unique<Algorithm>(**algorithm);
-        mutable_algorithm->predict_[0] =
+        mutable_algorithm->predict_.instructions[0] =
             make_shared<const Instruction>(IntegerDataSetter(new_algorithm_id));
         algorithm->reset(mutable_algorithm.release());
     }
@@ -57,8 +57,8 @@ namespace automl_zero {
     void IncrementDnaId(shared_ptr<const Algorithm>* algorithm, const IntegerT by) {
         auto mutable_algorithm = make_unique<Algorithm>(**algorithm);
         const IntegerT algorithm_id =
-            mutable_algorithm->predict_[0]->GetIntegerData();
-        mutable_algorithm->predict_[0] =
+            mutable_algorithm->predict_.instructions[0]->GetIntegerData();
+        mutable_algorithm->predict_.instructions[0] =
             make_shared<const Instruction>(IntegerDataSetter(algorithm_id + by));
         algorithm->reset(mutable_algorithm.release());
     }
@@ -79,15 +79,15 @@ namespace automl_zero {
     }
 
     IntegerT CountDifferentSetupInstructions(const Algorithm& algorithm1, const Algorithm& algorithm2) {
-        return CountDifferentInstructionsOfComponentFunction(algorithm1.setup_, algorithm2.setup_);
+        return CountDifferentInstructionsOfComponentFunction(algorithm1.setup_.instructions, algorithm2.setup_.instructions);
     }
 
     IntegerT CountDifferentPredictInstructions(const Algorithm& algorithm1, const Algorithm& algorithm2) {
-        return CountDifferentInstructionsOfComponentFunction(algorithm1.predict_, algorithm2.predict_);
+        return CountDifferentInstructionsOfComponentFunction(algorithm1.predict_.instructions, algorithm2.predict_.instructions);
     }
 
     IntegerT CountDifferentLearnInstructions(const Algorithm& algorithm1, const Algorithm& algorithm2) {
-        return CountDifferentInstructionsOfComponentFunction(algorithm1.learn_, algorithm2.learn_);
+        return CountDifferentInstructionsOfComponentFunction(algorithm1.learn_.instructions, algorithm2.learn_.instructions);
     }
 
     IntegerT CountDifferentInstructions(const Algorithm& algorithm1, const Algorithm& algorithm2) {
@@ -116,15 +116,15 @@ namespace automl_zero {
 
     IntegerT DifferentComponentFunction(const Algorithm& algorithm1, const Algorithm& algorithm2) {
         vector<IntegerT> component_functions;
-        if (algorithm1.setup_.size() != algorithm2.setup_.size() ||
+        if (algorithm1.setup_.instructions.size() != algorithm2.setup_.instructions.size() ||
             CountDifferentSetupInstructions(algorithm1, algorithm2) > 0) {
             component_functions.push_back(kSetupComponentFunction);
         }
-        if (algorithm1.predict_.size() != algorithm2.predict_.size() ||
+        if (algorithm1.predict_.instructions.size() != algorithm2.predict_.instructions.size() ||
             CountDifferentPredictInstructions(algorithm1, algorithm2) > 0) {
             component_functions.push_back(kPredictComponentFunction);
         }
-        if (algorithm1.learn_.size() != algorithm2.learn_.size() ||
+        if (algorithm1.learn_.instructions.size() != algorithm2.learn_.instructions.size() ||
             CountDifferentLearnInstructions(algorithm1, algorithm2) > 0) {
             component_functions.push_back(kLearnComponentFunction);
         }

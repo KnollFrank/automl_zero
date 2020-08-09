@@ -56,14 +56,14 @@ namespace automl_zero
     constexpr double kLargeMaxAbsError = 1000000000.0;
 
     bool VectorEq(const Vector<4> &vector1,
-                  const vector<double> &vector2)
+        const vector<double> &vector2)
     {
         Eigen::Map<const Vector<4>> vector2_eigen(vector2.data());
         return vector1.isApprox(vector2_eigen);
     }
 
     bool VectorEq(const Vector<16> &vector1,
-                  const vector<double> &vector2)
+        const vector<double> &vector2)
     {
         Eigen::Map<const Vector<16>> vector2_eigen(vector2.data());
         return vector1.isApprox(vector2_eigen);
@@ -73,30 +73,30 @@ namespace automl_zero
     {
         auto dataset =
             GenerateTask<4>(StrCat("unit_test_ones_task {} "
-                                   "eval_type: RMS_ERROR "
-                                   "num_train_examples: ",
-                                   kNumTrainExamples,
-                                   " "
-                                   "num_valid_examples: ",
-                                   kNumValidExamples,
-                                   " "
-                                   "num_tasks: 1 "
-                                   "features_size: 4 "));
+                "eval_type: RMS_ERROR "
+                "num_train_examples: ",
+                kNumTrainExamples,
+                " "
+                "num_valid_examples: ",
+                kNumValidExamples,
+                " "
+                "num_tasks: 1 "
+                "features_size: 4 "));
 
         // Create a Algorithm that counts the examples in the
         // k_PREDICTIONS_SCALAR_ADDRESS.
         Algorithm algorithm = SimpleNoOpAlgorithm();
         constexpr AddressT temp_scalar_address = 2;
-        algorithm.predict_[0] = make_shared<const Instruction>(
+        algorithm.predict_.instructions[0] = make_shared<const Instruction>(
             SCALAR_CONST_SET_OP, temp_scalar_address, ActivationDataSetter(1.0));
-        algorithm.predict_[2] = make_shared<const Instruction>(
+        algorithm.predict_.instructions[2] = make_shared<const Instruction>(
             SCALAR_SUM_OP,
             temp_scalar_address, k_PREDICTIONS_SCALAR_ADDRESS,
             k_PREDICTIONS_SCALAR_ADDRESS);
 
         RandomGenerator rand_gen;
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
-                             &rand_gen, kLargeMaxAbsError);
+            &rand_gen, kLargeMaxAbsError);
         executor.Execute();
         Memory<4> memory;
         executor.GetMemory(&memory);
@@ -109,30 +109,30 @@ namespace automl_zero
     {
         auto dataset =
             GenerateTask<4>(StrCat("unit_test_ones_task {} "
-                                   "eval_type: RMS_ERROR "
-                                   "num_train_examples: ",
-                                   kNumTrainExamples,
-                                   " "
-                                   "num_valid_examples: ",
-                                   kNumValidExamples,
-                                   " "
-                                   "num_tasks: 1 "
-                                   "features_size: 4 "));
+                "eval_type: RMS_ERROR "
+                "num_train_examples: ",
+                kNumTrainExamples,
+                " "
+                "num_valid_examples: ",
+                kNumValidExamples,
+                " "
+                "num_tasks: 1 "
+                "features_size: 4 "));
 
         // Create a Algorithm that counts the examples in the
         // k_PREDICTIONS_SCALAR_ADDRESS.
         Algorithm algorithm = SimpleNoOpAlgorithm();
         constexpr AddressT temp_scalar_address = 2;
-        algorithm.learn_[0] = make_shared<const Instruction>(
+        algorithm.learn_.instructions[0] = make_shared<const Instruction>(
             SCALAR_CONST_SET_OP, temp_scalar_address, ActivationDataSetter(1.0));
-        algorithm.learn_[2] = make_shared<const Instruction>(
+        algorithm.learn_.instructions[2] = make_shared<const Instruction>(
             SCALAR_SUM_OP,
             temp_scalar_address, k_PREDICTIONS_SCALAR_ADDRESS,
             k_PREDICTIONS_SCALAR_ADDRESS);
 
         RandomGenerator rand_gen;
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
-                             &rand_gen, kLargeMaxAbsError);
+            &rand_gen, kLargeMaxAbsError);
         executor.Execute();
         Memory<4> memory;
         executor.GetMemory(&memory);
@@ -148,57 +148,57 @@ namespace automl_zero
             kOneFollowedByZeroesVectorAddress,
             Generator::kOneFollowedByZeroesVectorAddress);
         // memory.vector_[Generator::kOneFollowedByZeroesVectorAddress](0) = 1;
-        algorithm.setup_.push_back(make_shared<const Instruction>(
+        algorithm.setup_.instructions.push_back(make_shared<const Instruction>(
             VECTOR_CONST_SET_OP,
             kOneFollowedByZeroesVectorAddress,
             FloatDataSetter(0),
             FloatDataSetter(1)));
 
         // memory->vector_[k_PREDICTIONS_VECTOR_ADDRESS] = memory->scalar_[k_PREDICTIONS_SCALAR_ADDRESS] * {1, 0, 0, ...}
-        algorithm.predict_.push_back(make_shared<const Instruction>(
+        algorithm.predict_.instructions.push_back(make_shared<const Instruction>(
             SCALAR_VECTOR_PRODUCT_OP,
             k_PREDICTIONS_SCALAR_ADDRESS,
             kOneFollowedByZeroesVectorAddress,
             k_PREDICTIONS_VECTOR_ADDRESS));
 
         // memory->scalar_[k_LABELS_SCALAR_ADDRESS] = memory->vector_[k_LABELS_VECTOR_ADDRESS][0]
-        algorithm.learn_.insert(algorithm.learn_.begin(), make_shared<const Instruction>(
-                                                              SCALAR_VECTOR_AT_INDEX_SET_OP,
-                                                              k_LABELS_SCALAR_ADDRESS,
-                                                              k_LABELS_VECTOR_ADDRESS,
-                                                              FloatDataSetter(0)));
+        algorithm.learn_.instructions.insert(algorithm.learn_.instructions.begin(), make_shared<const Instruction>(
+            SCALAR_VECTOR_AT_INDEX_SET_OP,
+            k_LABELS_SCALAR_ADDRESS,
+            k_LABELS_VECTOR_ADDRESS,
+            FloatDataSetter(0)));
         // memory->scalar_[k_PREDICTIONS_SCALAR_ADDRESS] = memory->vector_[k_PREDICTIONS_VECTOR_ADDRESS][0]
-        algorithm.learn_.insert(algorithm.learn_.begin(), make_shared<const Instruction>(
-                                                              SCALAR_VECTOR_AT_INDEX_SET_OP,
-                                                              k_PREDICTIONS_SCALAR_ADDRESS,
-                                                              k_PREDICTIONS_VECTOR_ADDRESS,
-                                                              FloatDataSetter(0)));
+        algorithm.learn_.instructions.insert(algorithm.learn_.instructions.begin(), make_shared<const Instruction>(
+            SCALAR_VECTOR_AT_INDEX_SET_OP,
+            k_PREDICTIONS_SCALAR_ADDRESS,
+            k_PREDICTIONS_VECTOR_ADDRESS,
+            FloatDataSetter(0)));
     }
 
     TEST(ExecutorTest, ComputesLossCorrectly)
     {
         auto dataset =
             GenerateTask<4>(StrCat("unit_test_ones_task {} "
-                                   "eval_type: RMS_ERROR "
-                                   "num_train_examples: ",
-                                   kNumTrainExamples,
-                                   " "
-                                   "num_valid_examples: ",
-                                   kNumValidExamples,
-                                   " "
-                                   "num_tasks: 1 "
-                                   "features_size: 4 "));
+                "eval_type: RMS_ERROR "
+                "num_train_examples: ",
+                kNumTrainExamples,
+                " "
+                "num_valid_examples: ",
+                kNumValidExamples,
+                " "
+                "num_tasks: 1 "
+                "features_size: 4 "));
 
         // Create a Algorithm in which the error is always 0.1.
         Algorithm algorithm = SimpleNoOpAlgorithm();
-        algorithm.predict_[0] = make_shared<const Instruction>(
+        algorithm.predict_.instructions[0] = make_shared<const Instruction>(
             SCALAR_CONST_SET_OP,
             k_PREDICTIONS_SCALAR_ADDRESS,
             ActivationDataSetter(0.9));
         adaptAlgorithm2VectorLabels(algorithm);
         RandomGenerator rand_gen;
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
-                             &rand_gen, kLargeMaxAbsError);
+            &rand_gen, kLargeMaxAbsError);
         double fitness = executor.Execute();
         EXPECT_GE(fitness, FlipAndSquash(0.1));
     }
@@ -207,19 +207,19 @@ namespace automl_zero
     {
         auto dataset =
             GenerateTask<4>(StrCat("unit_test_ones_task {} "
-                                   "eval_type: ACCURACY "
-                                   "num_train_examples: ",
-                                   kNumTrainExamples,
-                                   " "
-                                   "num_valid_examples: ",
-                                   kNumValidExamples,
-                                   " "
-                                   "num_tasks: 1 "
-                                   "features_size: 4 "));
+                "eval_type: ACCURACY "
+                "num_train_examples: ",
+                kNumTrainExamples,
+                " "
+                "num_valid_examples: ",
+                kNumValidExamples,
+                " "
+                "num_tasks: 1 "
+                "features_size: 4 "));
 
         // Create a Algorithm in which the accuracy is always 0.0.
         Algorithm algorithm_0 = SimpleNoOpAlgorithm();
-        algorithm_0.predict_[0] = make_shared<const Instruction>(
+        algorithm_0.predict_.instructions[0] = make_shared<const Instruction>(
             SCALAR_CONST_SET_OP,
             k_PREDICTIONS_SCALAR_ADDRESS,
             ActivationDataSetter(-3.0));
@@ -234,7 +234,7 @@ namespace automl_zero
 
         // Create a Algorithm in which the accuracy is always 1.0.
         Algorithm algorithm_1 = SimpleNoOpAlgorithm();
-        algorithm_1.predict_[0] = make_shared<const Instruction>(
+        algorithm_1.predict_.instructions[0] = make_shared<const Instruction>(
             SCALAR_CONST_SET_OP,
             k_PREDICTIONS_SCALAR_ADDRESS,
             ActivationDataSetter(3.0));
@@ -248,27 +248,27 @@ namespace automl_zero
 
         // Create a Algorithm, whose logit is infinity.
         Algorithm algorithm_inf = SimpleNoOpAlgorithm();
-        algorithm_inf.predict_[0] = make_shared<const Instruction>(
+        algorithm_inf.predict_.instructions[0] = make_shared<const Instruction>(
             SCALAR_CONST_SET_OP,
             k_PREDICTIONS_SCALAR_ADDRESS,
             ActivationDataSetter(std::numeric_limits<double>::infinity()));
         adaptAlgorithm2VectorLabels(algorithm_inf);
 
         Executor<4> executor_inf(algorithm_inf, dataset, kNumTrainExamples,
-                                 kNumValidExamples, &rand_gen, kLargeMaxAbsError);
+            kNumValidExamples, &rand_gen, kLargeMaxAbsError);
         double fitness_inf = executor_inf.Execute();
         EXPECT_FLOAT_EQ(fitness_inf, 1.0);
 
         // Create a Algorithm, whose logit is negative infinity.
         Algorithm algorithm_ninf = SimpleNoOpAlgorithm();
-        algorithm_ninf.predict_[0] = make_shared<const Instruction>(
+        algorithm_ninf.predict_.instructions[0] = make_shared<const Instruction>(
             SCALAR_CONST_SET_OP,
             k_PREDICTIONS_SCALAR_ADDRESS,
             ActivationDataSetter(-std::numeric_limits<double>::infinity()));
         adaptAlgorithm2VectorLabels(algorithm_ninf);
 
         Executor<4> executor_ninf(algorithm_ninf, dataset, kNumTrainExamples,
-                                  kNumValidExamples, &rand_gen, kLargeMaxAbsError);
+            kNumValidExamples, &rand_gen, kLargeMaxAbsError);
         double fitness_ninf = executor_ninf.Execute();
         EXPECT_FLOAT_EQ(fitness_ninf, kMinFitness);
     }
@@ -277,7 +277,7 @@ namespace automl_zero
     TEST(ExecutorTest, SortedComputesLossCorrectly)
     {
         // Given
-        const Vector<4> numbers = {0, 1, 2, 3};
+        const Vector<4> numbers ={ 0, 1, 2, 3 };
 
         // When
         double error = SortedLossAccumulator<4>::getError(numbers);
@@ -289,7 +289,7 @@ namespace automl_zero
     TEST(ExecutorTest, SortedComputesLossCorrectly1)
     {
         // Given
-        const Vector<4> numbers = {0, 1, 2, 1};
+        const Vector<4> numbers ={ 0, 1, 2, 1 };
 
         // When
         double error = SortedLossAccumulator<4>::getError(numbers);
@@ -301,7 +301,7 @@ namespace automl_zero
     TEST(ExecutorTest, SortedComputesLossCorrectly2)
     {
         // Given
-        const Vector<4> numbers = {3, 2, 1, 0};
+        const Vector<4> numbers ={ 3, 2, 1, 0 };
 
         // When
         double error = SortedLossAccumulator<4>::getError(numbers);
@@ -316,15 +316,15 @@ namespace automl_zero
         const IntegerT num_valid_examples = 9;
         auto dataset =
             GenerateTask<4>(StrCat("unit_test_increment_task {} "
-                                   "eval_type: RMS_ERROR "
-                                   "num_train_examples: ",
-                                   num_train_examples,
-                                   " "
-                                   "num_valid_examples: ",
-                                   num_valid_examples,
-                                   " "
-                                   "num_tasks: 1 "
-                                   "features_size: 4 "));
+                "eval_type: RMS_ERROR "
+                "num_train_examples: ",
+                num_train_examples,
+                " "
+                "num_valid_examples: ",
+                num_valid_examples,
+                " "
+                "num_tasks: 1 "
+                "features_size: 4 "));
         Algorithm algorithm = SimpleNoOpAlgorithm();
         adaptAlgorithm2VectorLabels(algorithm);
         RandomGenerator rand_gen;
@@ -348,22 +348,22 @@ namespace automl_zero
     {
         auto dataset =
             GenerateTask<4>(StrCat("unit_test_increment_task {} "
-                                   "eval_type: RMS_ERROR "
-                                   "num_train_examples: ",
-                                   kNumTrainExamples,
-                                   " "
-                                   "num_valid_examples: ",
-                                   kNumValidExamples,
-                                   " "
-                                   "num_tasks: 1 "
-                                   "features_size: 4 "));
+                "eval_type: RMS_ERROR "
+                "num_train_examples: ",
+                kNumTrainExamples,
+                " "
+                "num_valid_examples: ",
+                kNumValidExamples,
+                " "
+                "num_tasks: 1 "
+                "features_size: 4 "));
 
         // Create a Algorithm that aggretates the mean value of the features.
         Algorithm algorithm = SimpleNoOpAlgorithm();
         constexpr AddressT temp_scalar_address = 2;
-        algorithm.predict_[0] = make_shared<const Instruction>(
+        algorithm.predict_.instructions[0] = make_shared<const Instruction>(
             VECTOR_MEAN_OP, k_FEATURES_VECTOR_ADDRESS, temp_scalar_address);
-        algorithm.predict_[1] = make_shared<const Instruction>(
+        algorithm.predict_.instructions[1] = make_shared<const Instruction>(
             SCALAR_SUM_OP,
             temp_scalar_address, k_PREDICTIONS_SCALAR_ADDRESS,
             k_PREDICTIONS_SCALAR_ADDRESS);
@@ -371,7 +371,7 @@ namespace automl_zero
 
         RandomGenerator rand_gen;
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
-                             &rand_gen, kLargeMaxAbsError);
+            &rand_gen, kLargeMaxAbsError);
         executor.Execute();
         Memory<4> memory;
         executor.GetMemory(&memory);
@@ -382,19 +382,19 @@ namespace automl_zero
     {
         auto dataset =
             GenerateTask<4>(StrCat("unit_test_increment_task {} "
-                                   "eval_type: RMS_ERROR "
-                                   "num_train_examples: ",
-                                   kNumTrainExamples,
-                                   " "
-                                   "num_valid_examples: ",
-                                   kNumValidExamples,
-                                   " "
-                                   "num_tasks: 1 "
-                                   "features_size: 4 "));
+                "eval_type: RMS_ERROR "
+                "num_train_examples: ",
+                kNumTrainExamples,
+                " "
+                "num_valid_examples: ",
+                kNumValidExamples,
+                " "
+                "num_tasks: 1 "
+                "features_size: 4 "));
 
         // Create a Algorithm that aggretates the mean value of the labels.
         Algorithm algorithm = SimpleNoOpAlgorithm();
-        algorithm.learn_[0] = make_shared<const Instruction>(
+        algorithm.learn_.instructions[0] = make_shared<const Instruction>(
             SCALAR_SUM_OP,
             k_LABELS_SCALAR_ADDRESS, k_PREDICTIONS_SCALAR_ADDRESS,
             k_PREDICTIONS_SCALAR_ADDRESS);
@@ -402,7 +402,7 @@ namespace automl_zero
 
         RandomGenerator rand_gen;
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
-                             &rand_gen, kLargeMaxAbsError);
+            &rand_gen, kLargeMaxAbsError);
         executor.Execute();
         Memory<4> memory;
         executor.GetMemory(&memory);
@@ -413,22 +413,22 @@ namespace automl_zero
     {
         auto dataset =
             GenerateTask<4>(StrCat("unit_test_increment_task {increment: 0.1} "
-                                   "eval_type: RMS_ERROR "
-                                   "num_train_examples: ",
-                                   kNumTrainExamples,
-                                   " "
-                                   "num_valid_examples: ",
-                                   kNumValidExamples,
-                                   " "
-                                   "num_tasks: 1 "
-                                   "features_size: 4 "));
+                "eval_type: RMS_ERROR "
+                "num_train_examples: ",
+                kNumTrainExamples,
+                " "
+                "num_valid_examples: ",
+                kNumValidExamples,
+                " "
+                "num_tasks: 1 "
+                "features_size: 4 "));
 
         Algorithm algorithm = SimpleNoOpAlgorithm();
         adaptAlgorithm2VectorLabels(algorithm);
 
         RandomGenerator rand_gen;
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
-                             &rand_gen, kLargeMaxAbsError);
+            &rand_gen, kLargeMaxAbsError);
         double fitness = executor.Execute();
         EXPECT_TRUE(abs(fitness - FlipAndSquash(5.7301812)) < kTestTolerance);
     }
@@ -437,24 +437,24 @@ namespace automl_zero
     {
         auto dataset =
             GenerateTask<4>(StrCat("unit_test_increment_task {} "
-                                   "eval_type: RMS_ERROR "
-                                   "num_train_examples: ",
-                                   kNumTrainExamples,
-                                   " "
-                                   "num_valid_examples: ",
-                                   kNumValidExamples,
-                                   " "
-                                   "num_tasks: 1 "
-                                   "features_size: 4 "));
+                "eval_type: RMS_ERROR "
+                "num_train_examples: ",
+                kNumTrainExamples,
+                " "
+                "num_valid_examples: ",
+                kNumValidExamples,
+                " "
+                "num_tasks: 1 "
+                "features_size: 4 "));
 
         // Create a Algorithm that aggretates the mean value of the labels.
         Algorithm algorithm = SimpleNoOpAlgorithm();
-        algorithm.predict_[0] = make_shared<const Instruction>(
+        algorithm.predict_.instructions[0] = make_shared<const Instruction>(
             SCALAR_VECTOR_AT_INDEX_SET_OP,
             k_LABELS_SCALAR_ADDRESS,
             k_LABELS_VECTOR_ADDRESS,
             FloatDataSetter(0));
-        algorithm.predict_[1] = make_shared<const Instruction>(
+        algorithm.predict_.instructions[1] = make_shared<const Instruction>(
             SCALAR_SUM_OP,
             k_LABELS_SCALAR_ADDRESS, k_PREDICTIONS_SCALAR_ADDRESS,
             k_PREDICTIONS_SCALAR_ADDRESS);
@@ -462,7 +462,7 @@ namespace automl_zero
 
         RandomGenerator rand_gen;
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
-                             &rand_gen, kLargeMaxAbsError);
+            &rand_gen, kLargeMaxAbsError);
         executor.Execute();
         Memory<4> memory;
         executor.GetMemory(&memory);
@@ -473,19 +473,19 @@ namespace automl_zero
     {
         auto dataset =
             GenerateTask<4>(StrCat("unit_test_increment_task {} "
-                                   "eval_type: RMS_ERROR "
-                                   "num_train_examples: ",
-                                   kNumTrainExamples,
-                                   " "
-                                   "num_valid_examples: ",
-                                   kNumValidExamples,
-                                   " "
-                                   "num_tasks: 1 "
-                                   "features_size: 4 "));
+                "eval_type: RMS_ERROR "
+                "num_train_examples: ",
+                kNumTrainExamples,
+                " "
+                "num_valid_examples: ",
+                kNumValidExamples,
+                " "
+                "num_tasks: 1 "
+                "features_size: 4 "));
 
         // Create a Algorithm that creates a NaN in the predict component function.
         Algorithm algorithm = SimpleNoOpAlgorithm();
-        algorithm.setup_[0] = make_shared<const Instruction>(
+        algorithm.setup_.instructions[0] = make_shared<const Instruction>(
             SCALAR_CONST_SET_OP,
             k_PREDICTIONS_SCALAR_ADDRESS,
             ActivationDataSetter(kMaxAbsError + 10.0));
@@ -493,7 +493,7 @@ namespace automl_zero
 
         RandomGenerator rand_gen;
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
-                             &rand_gen, kMaxAbsError);
+            &rand_gen, kMaxAbsError);
         double fitness = executor.Execute();
         Memory<4> memory;
         EXPECT_DOUBLE_EQ(fitness, kMinFitness);
@@ -503,19 +503,19 @@ namespace automl_zero
     {
         auto dataset =
             GenerateTask<4>(StrCat("unit_test_increment_task {} "
-                                   "eval_type: RMS_ERROR "
-                                   "num_train_examples: ",
-                                   kNumTrainExamples,
-                                   " "
-                                   "num_valid_examples: ",
-                                   kNumValidExamples,
-                                   " "
-                                   "num_tasks: 1 "
-                                   "features_size: 4 "));
+                "eval_type: RMS_ERROR "
+                "num_train_examples: ",
+                kNumTrainExamples,
+                " "
+                "num_valid_examples: ",
+                kNumValidExamples,
+                " "
+                "num_tasks: 1 "
+                "features_size: 4 "));
 
         // Create a Algorithm that creates a NaN in the predict component function.
         Algorithm algorithm = SimpleNoOpAlgorithm();
-        algorithm.predict_[0] = make_shared<const Instruction>(
+        algorithm.predict_.instructions[0] = make_shared<const Instruction>(
             SCALAR_CONST_SET_OP,
             k_PREDICTIONS_SCALAR_ADDRESS,
             ActivationDataSetter(kMaxAbsError + 10.0));
@@ -523,7 +523,7 @@ namespace automl_zero
 
         RandomGenerator rand_gen;
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
-                             &rand_gen, kMaxAbsError);
+            &rand_gen, kMaxAbsError);
         double fitness = executor.Execute();
         Memory<4> memory;
         EXPECT_DOUBLE_EQ(fitness, kMinFitness);
@@ -533,19 +533,19 @@ namespace automl_zero
     {
         auto dataset =
             GenerateTask<4>(StrCat("unit_test_ones_task {} "
-                                   "eval_type: RMS_ERROR "
-                                   "num_train_examples: ",
-                                   kNumTrainExamples,
-                                   " "
-                                   "num_valid_examples: ",
-                                   kNumValidExamples,
-                                   " "
-                                   "num_tasks: 1 "
-                                   "features_size: 4 "));
+                "eval_type: RMS_ERROR "
+                "num_train_examples: ",
+                kNumTrainExamples,
+                " "
+                "num_valid_examples: ",
+                kNumValidExamples,
+                " "
+                "num_tasks: 1 "
+                "features_size: 4 "));
 
         // Create a Algorithm that creates a NaN in the predict component function.
         Algorithm algorithm = SimpleNoOpAlgorithm();
-        algorithm.learn_[0] = make_shared<const Instruction>(
+        algorithm.learn_.instructions[0] = make_shared<const Instruction>(
             SCALAR_CONST_SET_OP,
             k_PREDICTIONS_SCALAR_ADDRESS,
             ActivationDataSetter(kMaxAbsError + 10.0));
@@ -553,7 +553,7 @@ namespace automl_zero
 
         RandomGenerator rand_gen;
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
-                             &rand_gen, kMaxAbsError);
+            &rand_gen, kMaxAbsError);
         double fitness = executor.Execute();
         Memory<4> memory;
         EXPECT_DOUBLE_EQ(fitness, kMinFitness);
@@ -563,30 +563,30 @@ namespace automl_zero
     {
         auto dataset =
             GenerateTask<4>(StrCat("unit_test_ones_task {} "
-                                   "eval_type: RMS_ERROR "
-                                   "num_train_examples: ",
-                                   kNumTrainExamples,
-                                   " "
-                                   "num_valid_examples: ",
-                                   kNumValidExamples,
-                                   " "
-                                   "num_tasks: 1 "
-                                   "features_size: 4 "));
+                "eval_type: RMS_ERROR "
+                "num_train_examples: ",
+                kNumTrainExamples,
+                " "
+                "num_valid_examples: ",
+                kNumValidExamples,
+                " "
+                "num_tasks: 1 "
+                "features_size: 4 "));
 
         // Create a Algorithm that creates a NaN in the predict component function.
         Algorithm algorithm = SimpleNoOpAlgorithm();
         AddressT one_address = 2;
         AddressT zero_address = 3;
-        algorithm.setup_[0] = make_shared<const Instruction>(
+        algorithm.setup_.instructions[0] = make_shared<const Instruction>(
             SCALAR_CONST_SET_OP, one_address, ActivationDataSetter(1.0));
-        algorithm.setup_[1] = make_shared<const Instruction>(
+        algorithm.setup_.instructions[1] = make_shared<const Instruction>(
             SCALAR_DIVISION_OP,
             one_address, zero_address, k_PREDICTIONS_SCALAR_ADDRESS);
         adaptAlgorithm2VectorLabels(algorithm);
 
         RandomGenerator rand_gen;
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
-                             &rand_gen, kMaxAbsError);
+            &rand_gen, kMaxAbsError);
         double fitness = executor.Execute();
         Memory<4> memory;
         EXPECT_DOUBLE_EQ(fitness, kMinFitness);
@@ -596,30 +596,30 @@ namespace automl_zero
     {
         auto dataset =
             GenerateTask<4>(StrCat("unit_test_ones_task {} "
-                                   "eval_type: RMS_ERROR "
-                                   "num_train_examples: ",
-                                   kNumTrainExamples,
-                                   " "
-                                   "num_valid_examples: ",
-                                   kNumValidExamples,
-                                   " "
-                                   "num_tasks: 1 "
-                                   "features_size: 4 "));
+                "eval_type: RMS_ERROR "
+                "num_train_examples: ",
+                kNumTrainExamples,
+                " "
+                "num_valid_examples: ",
+                kNumValidExamples,
+                " "
+                "num_tasks: 1 "
+                "features_size: 4 "));
 
         // Create a Algorithm that creates a NaN in the predict component function.
         Algorithm algorithm = SimpleNoOpAlgorithm();
         AddressT one_address = 2;
         AddressT zero_address = 3;
-        algorithm.setup_[0] = make_shared<const Instruction>(
+        algorithm.setup_.instructions[0] = make_shared<const Instruction>(
             SCALAR_CONST_SET_OP, one_address, ActivationDataSetter(1.0));
-        algorithm.predict_[0] = make_shared<const Instruction>(
+        algorithm.predict_.instructions[0] = make_shared<const Instruction>(
             SCALAR_DIVISION_OP,
             one_address, zero_address, k_PREDICTIONS_SCALAR_ADDRESS);
         adaptAlgorithm2VectorLabels(algorithm);
 
         RandomGenerator rand_gen;
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
-                             &rand_gen, kMaxAbsError);
+            &rand_gen, kMaxAbsError);
         double fitness = executor.Execute();
         Memory<4> memory;
         EXPECT_DOUBLE_EQ(fitness, kMinFitness);
@@ -629,30 +629,30 @@ namespace automl_zero
     {
         auto dataset =
             GenerateTask<4>(StrCat("unit_test_ones_task {} "
-                                   "eval_type: RMS_ERROR "
-                                   "num_train_examples: ",
-                                   kNumTrainExamples,
-                                   " "
-                                   "num_valid_examples: ",
-                                   kNumValidExamples,
-                                   " "
-                                   "num_tasks: 1 "
-                                   "features_size: 4 "));
+                "eval_type: RMS_ERROR "
+                "num_train_examples: ",
+                kNumTrainExamples,
+                " "
+                "num_valid_examples: ",
+                kNumValidExamples,
+                " "
+                "num_tasks: 1 "
+                "features_size: 4 "));
 
         // Create a Algorithm that creates a NaN in the predict component function.
         Algorithm algorithm = SimpleNoOpAlgorithm();
         AddressT one_address = 2;
         AddressT zero_address = 3;
-        algorithm.setup_[0] = make_shared<const Instruction>(
+        algorithm.setup_.instructions[0] = make_shared<const Instruction>(
             SCALAR_CONST_SET_OP, one_address, ActivationDataSetter(1.0));
-        algorithm.learn_[0] = make_shared<const Instruction>(
+        algorithm.learn_.instructions[0] = make_shared<const Instruction>(
             SCALAR_DIVISION_OP,
             one_address, zero_address, k_PREDICTIONS_SCALAR_ADDRESS);
         adaptAlgorithm2VectorLabels(algorithm);
 
         RandomGenerator rand_gen;
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
-                             &rand_gen, kMaxAbsError);
+            &rand_gen, kMaxAbsError);
         double fitness = executor.Execute();
         Memory<4> memory;
         EXPECT_DOUBLE_EQ(fitness, kMinFitness);
@@ -662,27 +662,27 @@ namespace automl_zero
     {
         auto dataset =
             GenerateTask<4>(StrCat("unit_test_ones_task {} "
-                                   "eval_type: RMS_ERROR "
-                                   "num_train_examples: ",
-                                   kNumTrainExamples,
-                                   " "
-                                   "num_valid_examples: ",
-                                   kNumValidExamples,
-                                   " "
-                                   "num_tasks: 1 "
-                                   "features_size: 4 "));
+                "eval_type: RMS_ERROR "
+                "num_train_examples: ",
+                kNumTrainExamples,
+                " "
+                "num_valid_examples: ",
+                kNumValidExamples,
+                " "
+                "num_tasks: 1 "
+                "features_size: 4 "));
 
         // Create a Algorithm that creates a NaN in the predict component function.
         Algorithm algorithm = SimpleNoOpAlgorithm();
         AddressT zero_address = 2;
-        algorithm.setup_[1] = make_shared<const Instruction>(
+        algorithm.setup_.instructions[1] = make_shared<const Instruction>(
             SCALAR_DIVISION_OP,
             zero_address, zero_address, k_PREDICTIONS_SCALAR_ADDRESS);
         adaptAlgorithm2VectorLabels(algorithm);
 
         RandomGenerator rand_gen;
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
-                             &rand_gen, kMaxAbsError);
+            &rand_gen, kMaxAbsError);
         double fitness = executor.Execute();
         Memory<4> memory;
         EXPECT_DOUBLE_EQ(fitness, kMinFitness);
@@ -692,27 +692,27 @@ namespace automl_zero
     {
         auto dataset =
             GenerateTask<4>(StrCat("unit_test_ones_task {} "
-                                   "eval_type: RMS_ERROR "
-                                   "num_train_examples: ",
-                                   kNumTrainExamples,
-                                   " "
-                                   "num_valid_examples: ",
-                                   kNumValidExamples,
-                                   " "
-                                   "num_tasks: 1 "
-                                   "features_size: 4 "));
+                "eval_type: RMS_ERROR "
+                "num_train_examples: ",
+                kNumTrainExamples,
+                " "
+                "num_valid_examples: ",
+                kNumValidExamples,
+                " "
+                "num_tasks: 1 "
+                "features_size: 4 "));
 
         // Create a Algorithm that creates a NaN in the predict component function.
         Algorithm algorithm = SimpleNoOpAlgorithm();
         AddressT zero_address = 2;
-        algorithm.predict_[0] = make_shared<const Instruction>(
+        algorithm.predict_.instructions[0] = make_shared<const Instruction>(
             SCALAR_DIVISION_OP,
             zero_address, zero_address, k_PREDICTIONS_SCALAR_ADDRESS);
         adaptAlgorithm2VectorLabels(algorithm);
 
         RandomGenerator rand_gen;
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
-                             &rand_gen, kMaxAbsError);
+            &rand_gen, kMaxAbsError);
         double fitness = executor.Execute();
         Memory<4> memory;
         EXPECT_DOUBLE_EQ(fitness, kMinFitness);
@@ -722,27 +722,27 @@ namespace automl_zero
     {
         auto dataset =
             GenerateTask<4>(StrCat("unit_test_ones_task {} "
-                                   "eval_type: RMS_ERROR "
-                                   "num_train_examples: ",
-                                   kNumTrainExamples,
-                                   " "
-                                   "num_valid_examples: ",
-                                   kNumValidExamples,
-                                   " "
-                                   "num_tasks: 1 "
-                                   "features_size: 4 "));
+                "eval_type: RMS_ERROR "
+                "num_train_examples: ",
+                kNumTrainExamples,
+                " "
+                "num_valid_examples: ",
+                kNumValidExamples,
+                " "
+                "num_tasks: 1 "
+                "features_size: 4 "));
 
         // Create a Algorithm that creates a NaN in the predict component function.
         Algorithm algorithm = SimpleNoOpAlgorithm();
         AddressT zero_address = 2;
-        algorithm.learn_[0] = make_shared<const Instruction>(
+        algorithm.learn_.instructions[0] = make_shared<const Instruction>(
             SCALAR_DIVISION_OP,
             zero_address, zero_address, k_PREDICTIONS_SCALAR_ADDRESS);
         adaptAlgorithm2VectorLabels(algorithm);
 
         RandomGenerator rand_gen;
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
-                             &rand_gen, kMaxAbsError);
+            &rand_gen, kMaxAbsError);
         double fitness = executor.Execute();
         Memory<4> memory;
         EXPECT_DOUBLE_EQ(fitness, kMinFitness);
@@ -804,7 +804,7 @@ namespace automl_zero
 
         RandomGenerator rand_gen;
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
-                             &rand_gen, kMaxAbsError);
+            &rand_gen, kMaxAbsError);
 
         double fitness = executor.Execute();
         Memory<4> memory;
@@ -867,7 +867,7 @@ namespace automl_zero
 
         RandomGenerator rand_gen;
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
-                             &rand_gen, kMaxAbsError);
+            &rand_gen, kMaxAbsError);
         double fitness = executor.Execute();
         Memory<4> memory;
         EXPECT_TRUE(fitness != kMinFitness);
@@ -929,7 +929,7 @@ namespace automl_zero
 
         RandomGenerator rand_gen;
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
-                             &rand_gen, kMaxAbsError);
+            &rand_gen, kMaxAbsError);
         double fitness = executor.Execute();
         Memory<4> memory;
         EXPECT_DOUBLE_EQ(fitness, kMinFitness);
@@ -939,22 +939,22 @@ namespace automl_zero
     {
         auto dataset =
             GenerateTask<4>(StrCat("unit_test_zeros_task {} "
-                                   "eval_type: RMS_ERROR "
-                                   "num_train_examples: ",
-                                   kNumTrainExamples,
-                                   " "
-                                   "num_valid_examples: ",
-                                   kNumValidExamples,
-                                   " "
-                                   "num_tasks: 1 "
-                                   "features_size: 4 "));
+                "eval_type: RMS_ERROR "
+                "num_train_examples: ",
+                kNumTrainExamples,
+                " "
+                "num_valid_examples: ",
+                kNumValidExamples,
+                " "
+                "num_tasks: 1 "
+                "features_size: 4 "));
 
         Algorithm algorithm = SimpleNoOpAlgorithm();
         adaptAlgorithm2VectorLabels(algorithm);
 
         RandomGenerator rand_gen;
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
-                             &rand_gen, kMaxAbsError);
+            &rand_gen, kMaxAbsError);
         double fitness = executor.Execute();
         Memory<4> memory;
         EXPECT_FLOAT_EQ(fitness, FlipAndSquash(0.0));
@@ -964,18 +964,18 @@ namespace automl_zero
     {
         Task<4> dataset =
             GenerateTask<4>(StrCat("scalar_2layer_nn_regression_task {} "
-                                   "num_train_examples: ",
-                                   kNumTrainExamples,
-                                   " "
-                                   "num_valid_examples: ",
-                                   kNumValidExamples,
-                                   " "
-                                   "eval_type: RMS_ERROR "
-                                   "param_seeds: ",
-                                   kFirstParamSeedForTest,
-                                   " "
-                                   "data_seeds: ",
-                                   kFirstDataSeedForTest));
+                "num_train_examples: ",
+                kNumTrainExamples,
+                " "
+                "num_valid_examples: ",
+                kNumValidExamples,
+                " "
+                "eval_type: RMS_ERROR "
+                "param_seeds: ",
+                kFirstParamSeedForTest,
+                " "
+                "data_seeds: ",
+                kFirstDataSeedForTest));
         RandomGenerator rand_gen;
         Algorithm algorithm = SimpleGz();
         adaptAlgorithm2VectorLabels(algorithm);
@@ -1055,10 +1055,10 @@ namespace automl_zero
     protected:
         ExecuteInstructionTest()
             : in1_(1),
-              in2_(0),
-              out_(1),
-              bit_gen_(100000),
-              train_rand_gen_(&bit_gen_)
+            in2_(0),
+            out_(1),
+            bit_gen_(100000),
+            train_rand_gen_(&bit_gen_)
         {
             memory_.Wipe();
         }
@@ -1117,7 +1117,7 @@ namespace automl_zero
             ExecuteInstruction(instruction, &train_rand_gen_, &memory_);
             Vector<4> expected_out_vector(expected_out.data());
             EXPECT_LE((memory_.vector_[out_] - expected_out_vector).norm(),
-                      kTestTolerance);
+                kTestTolerance);
         }
 
         void VerifyNothingToVectorIsRandomized(const Instruction &instruction)
@@ -1136,7 +1136,7 @@ namespace automl_zero
             ExecuteInstruction(instruction, &train_rand_gen_, &memory_);
             Matrix<4> expected_out_matrix(expected_out.data());
             EXPECT_LE((memory_.matrix_[out_] - expected_out_matrix).norm(),
-                      kTestTolerance);
+                kTestTolerance);
         }
 
         void VerifyNothingToMatrixIsRandomized(const Instruction &instruction)
@@ -1213,7 +1213,7 @@ namespace automl_zero
             ExecuteInstruction(instruction, &train_rand_gen_, &memory_);
             Vector<4> expected_out_vector(expected_out.data());
             EXPECT_LE((memory_.vector_[out_] - expected_out_vector).norm(),
-                      kTestTolerance);
+                kTestTolerance);
         }
 
         void VerifyMatrixToScalarEquals(
@@ -1235,7 +1235,7 @@ namespace automl_zero
             ExecuteInstruction(instruction, &train_rand_gen_, &memory_);
             Vector<4> expected_out_vector(expected_out.data());
             EXPECT_LE((memory_.vector_[out_] - expected_out_vector).norm(),
-                      kTestTolerance);
+                kTestTolerance);
         }
 
         void VerifyScalarScalarToScalarEquals(
@@ -1283,7 +1283,7 @@ namespace automl_zero
             ExecuteInstruction(instruction, &train_rand_gen_, &memory_);
             Vector<4> expected_out_vector(expected_out.data());
             EXPECT_LE((memory_.vector_[out_] - expected_out_vector).norm(),
-                      kTestTolerance);
+                kTestTolerance);
         }
 
         void VerifyScalarMatrixToMatrixEquals(
@@ -1297,7 +1297,7 @@ namespace automl_zero
             ExecuteInstruction(instruction, &train_rand_gen_, &memory_);
             Matrix<4> expected_out_matrix(expected_out.data());
             EXPECT_LE((memory_.matrix_[out_] - expected_out_matrix).norm(),
-                      kTestTolerance);
+                kTestTolerance);
         }
 
         void VerifyVectorVectorToScalarEquals(
@@ -1323,7 +1323,7 @@ namespace automl_zero
             ExecuteInstruction(instruction, &train_rand_gen_, &memory_);
             Vector<4> expected_out_vector(expected_out.data());
             EXPECT_LE((memory_.vector_[out_] - expected_out_vector).norm(),
-                      kTestTolerance);
+                kTestTolerance);
         }
 
         void VerifyVectorVectorToVectorInstructionIsNan(
@@ -1359,7 +1359,7 @@ namespace automl_zero
             ExecuteInstruction(instruction, &train_rand_gen_, &memory_);
             Matrix<4> expected_out_matrix(expected_out.data());
             EXPECT_LE((memory_.matrix_[out_] - expected_out_matrix).norm(),
-                      kTestTolerance);
+                kTestTolerance);
         }
 
         void VerifyMatrixVectorToVectorEquals(
@@ -1373,7 +1373,7 @@ namespace automl_zero
             ExecuteInstruction(instruction, &train_rand_gen_, &memory_);
             Vector<4> expected_out_vector(expected_out.data());
             EXPECT_LE((memory_.vector_[out_] - expected_out_vector).norm(),
-                      kTestTolerance);
+                kTestTolerance);
         }
 
         void VerifyMatrixMatrixToMatrixInstructionWorksCorrectly(
@@ -1387,7 +1387,7 @@ namespace automl_zero
             ExecuteInstruction(instruction, &train_rand_gen_, &memory_);
             Matrix<4> expected_out_matrix(expected_out.data());
             EXPECT_LE((memory_.matrix_[out_] - expected_out_matrix).norm(),
-                      kTestTolerance);
+                kTestTolerance);
         }
 
         void VerifyMatrixMatrixToMatrixInstructionIsNan(
@@ -1421,7 +1421,7 @@ namespace automl_zero
             ExecuteInstruction(instruction, &train_rand_gen_, &memory_);
             Matrix<4> expected_out_matrix(expected_out.data());
             EXPECT_LE((memory_.matrix_[out_] - expected_out_matrix).norm(),
-                      kTestTolerance);
+                kTestTolerance);
         }
 
         const AddressT in1_;
@@ -1618,77 +1618,77 @@ namespace automl_zero
     {
         VerifyVectorVectorToVectorInstructionWorksCorrectly(
             MakeTwoInputsInstruction(VECTOR_SUM_OP),
-            {0.1, -0.1, 1.2, -10.0}, {2.3, -0.3, 0.5, -0.001},
-            {2.4, -0.4, 1.7, -10.001});
+            { 0.1, -0.1, 1.2, -10.0 }, { 2.3, -0.3, 0.5, -0.001 },
+            { 2.4, -0.4, 1.7, -10.001 });
     }
 
     TEST_F(ExecuteInstructionTest, VectorArithmeticRelated_VectorDiffOp)
     {
         VerifyVectorVectorToVectorInstructionWorksCorrectly(
             MakeTwoInputsInstruction(VECTOR_DIFF_OP),
-            {0.1, -0.1, 1.2, -10.0}, {2.3, -0.3, 0.5, -0.001},
-            {-2.2, 0.2, 0.7, -9.999});
+            { 0.1, -0.1, 1.2, -10.0 }, { 2.3, -0.3, 0.5, -0.001 },
+            { -2.2, 0.2, 0.7, -9.999 });
     }
 
     TEST_F(ExecuteInstructionTest, VectorArithmeticRelated_VectorProductOp)
     {
         VerifyVectorVectorToVectorInstructionWorksCorrectly(
             MakeTwoInputsInstruction(VECTOR_PRODUCT_OP),
-            {0.1, -0.1, 1.2, -10.0}, {2.3, -0.3, 0.5, -0.001},
-            {0.23, 0.03, 0.6, 0.01});
+            { 0.1, -0.1, 1.2, -10.0 }, { 2.3, -0.3, 0.5, -0.001 },
+            { 0.23, 0.03, 0.6, 0.01 });
     }
 
     TEST_F(ExecuteInstructionTest, VectorArithmeticRelated_VectorDivisionOp)
     {
         VerifyVectorVectorToVectorInstructionWorksCorrectly(
             MakeTwoInputsInstruction(VECTOR_DIVISION_OP),
-            {7.0, -18.18, 1.0, 0.0}, {2.0, 3.0, 0.5, -0.5},
-            {3.5, -6.06, 2.0, 0.0});
+            { 7.0, -18.18, 1.0, 0.0 }, { 2.0, 3.0, 0.5, -0.5 },
+            { 3.5, -6.06, 2.0, 0.0 });
         VerifyVectorVectorToVectorInstructionIsNan(
             MakeTwoInputsInstruction(VECTOR_DIVISION_OP),
-            {7.0, -18.18, 0.0, -10.0}, {2.0, 3.0, 0.0, -0.5});
+            { 7.0, -18.18, 0.0, -10.0 }, { 2.0, 3.0, 0.0, -0.5 });
         VerifyVectorVectorToVectorInstructionIsInf(
             MakeTwoInputsInstruction(VECTOR_DIVISION_OP),
-            {7.0, -18.18, 1.0, -10.0}, {2.0, 3.0, 0.0, -0.5});
+            { 7.0, -18.18, 1.0, -10.0 }, { 2.0, 3.0, 0.0, -0.5 });
     }
 
     TEST_F(ExecuteInstructionTest, VectorArithmeticRelated_VectorMinOp)
     {
         VerifyVectorVectorToVectorInstructionWorksCorrectly(
             MakeTwoInputsInstruction(VECTOR_MIN_OP),
-            {0.5, 2.2, -2.2, 2.2}, {2.2, 0.5, -0.5, -0.5},
-            {0.5, 0.5, -2.2, -0.5});
+            { 0.5, 2.2, -2.2, 2.2 }, { 2.2, 0.5, -0.5, -0.5 },
+            { 0.5, 0.5, -2.2, -0.5 });
     }
 
     TEST_F(ExecuteInstructionTest, VectorArithmeticRelated_VectorMaxOp)
     {
         VerifyVectorVectorToVectorInstructionWorksCorrectly(
             MakeTwoInputsInstruction(VECTOR_MAX_OP),
-            {0.5, 2.2, -2.2, 0.5}, {2.2, 0.5, -0.5, -2.2},
-            {2.2, 2.2, -0.5, 0.5});
+            { 0.5, 2.2, -2.2, 0.5 }, { 2.2, 0.5, -0.5, -2.2 },
+            { 2.2, 2.2, -0.5, 0.5 });
     }
 
     TEST_F(ExecuteInstructionTest, VectorArithmeticRelated_VectorAbsOp)
     {
         VerifyVectorToVectorEquals(
             MakeOneInputInstruction(VECTOR_ABS_OP),
-            {0.5, 0.0, -2.2, 100.5}, {0.5, 0.0, 2.2, 100.5});
+            { 0.5, 0.0, -2.2, 100.5 }, { 0.5, 0.0, 2.2, 100.5 });
     }
 
     TEST_F(ExecuteInstructionTest, VectorArithmeticRelated_VectorHeavisideOp)
     {
         VerifyVectorToVectorEquals(
             MakeOneInputInstruction(VECTOR_HEAVYSIDE_OP),
-            {-0.01, 0.001, 1.3, -0.001}, {0.0, 1.0, 1.0, 0.0});
+            { -0.01, 0.001, 1.3, -0.001 }, { 0.0, 1.0, 1.0, 0.0 });
     }
 
     TEST_F(ExecuteInstructionTest, VectorArithmeticRelated_VectorConstSetOp)
     {
         VerifyNothingToVectorEquals(
             MakeZeroInputsInstruction(VECTOR_CONST_SET_OP,
-                                      FloatDataSetter(IndexToFloat(2, 4)),
-                                      FloatDataSetter(-1.5)),
-            {0.0, 0.0, -1.5, 0.0});
+                FloatDataSetter(IndexToFloat(2, 4)),
+                FloatDataSetter(-1.5)),
+            { 0.0, 0.0, -1.5, 0.0 });
     }
 
     // s1 = v3[2]
@@ -1702,7 +1702,9 @@ namespace automl_zero
                 3,
                 FloatDataSetter(IndexToFloat(2, 4)));
         memory_.scalar_[1] = 0.0;
-        memory_.vector_[3] = Vector<4>(((const vector<double>){0.0, 10.0, 20.0, 30.0}).data());
+        memory_.vector_[3] = Vector<4>(((const vector<double>) {            
+0.0, 10.0, 20.0, 30.0        
+}).data());
 
         // When
         ExecuteInstruction(instruction, &train_rand_gen_, &memory_);
@@ -1716,7 +1718,9 @@ namespace automl_zero
     {
         // Given
         const Instruction &instruction = Instruction(VECTOR_SWAP_OP, 2, 3, 1);
-        memory_.vector_[1] = Vector<4>(((const vector<double>){0.0, 10.0, 20.0, 30.0}).data());
+        memory_.vector_[1] = Vector<4>(((const vector<double>) {            
+0.0, 10.0, 20.0, 30.0        
+}).data());
         memory_.scalar_[2] = IndexToFloat(0, 4);
         memory_.scalar_[3] = IndexToFloat(2, 4);
 
@@ -1724,7 +1728,7 @@ namespace automl_zero
         ExecuteInstruction(instruction, &train_rand_gen_, &memory_);
 
         // Then
-        ASSERT_EQ(asStdVector(memory_.vector_[1]), vector<double>({20.0, 10.0, 0.0, 30.0}));
+        ASSERT_EQ(asStdVector(memory_.vector_[1]), vector<double>({ 20.0, 10.0, 0.0, 30.0 }));
     }
 
     // swap(v1, s2, s3)
@@ -1732,7 +1736,9 @@ namespace automl_zero
     {
         // Given
         const Instruction &instruction = Instruction(VECTOR_SWAP_OP, 2, 3, 1);
-        memory_.vector_[1] = Vector<4>(((const vector<double>){0.0, 10.0, 20.0, 30.0}).data());
+        memory_.vector_[1] = Vector<4>(((const vector<double>) {
+            0.0, 10.0, 20.0, 30.0        
+}).data());
         memory_.scalar_[2] = IndexToFloat(-1, 4); // => IndexToFloat(0, 4)
         memory_.scalar_[3] = IndexToFloat(4, 4);  // => IndexToFloat(3, 4)
 
@@ -1740,7 +1746,7 @@ namespace automl_zero
         ExecuteInstruction(instruction, &train_rand_gen_, &memory_);
 
         // Then
-        ASSERT_EQ(asStdVector(memory_.vector_[1]), vector<double>({30.0, 10.0, 20.0, 0.0}));
+        ASSERT_EQ(asStdVector(memory_.vector_[1]), vector<double>({ 30.0, 10.0, 20.0, 0.0 }));
     }
 
     // swap(v1, s2, s3)
@@ -1748,7 +1754,9 @@ namespace automl_zero
     {
         // Given
         const Instruction &instruction = Instruction(VECTOR_SWAP_OP, 2, 3, 1);
-        memory_.vector_[1] = Vector<4>(((const vector<double>){0.0, 10.0, 20.0, 30.0}).data());
+        memory_.vector_[1] = Vector<4>(((const vector<double>) {            
+0.0, 10.0, 20.0, 30.0        
+}).data());
         memory_.scalar_[2] = IndexToFloat(4, 4);  // => IndexToFloat(3, 4)
         memory_.scalar_[3] = IndexToFloat(-1, 4); // => IndexToFloat(0, 4)
 
@@ -1756,7 +1764,7 @@ namespace automl_zero
         ExecuteInstruction(instruction, &train_rand_gen_, &memory_);
 
         // Then
-        ASSERT_EQ(asStdVector(memory_.vector_[1]), vector<double>({30.0, 10.0, 20.0, 0.0}));
+        ASSERT_EQ(asStdVector(memory_.vector_[1]), vector<double>({ 30.0, 10.0, 20.0, 0.0 }));
     }
 
     TEST_F(ExecuteInstructionTest, Loop)
@@ -1788,7 +1796,9 @@ namespace automl_zero
         const Instruction &instruction = Instruction(VECTOR_ARG_MIN_OP, 3, 1, 5);
         memory_.scalar_[1] = IndexToFloat(1, 4);
         memory_.scalar_[5] = -1;
-        memory_.vector_[3] = Vector<4>(((const vector<double>){0.0, 20.0, 10.0, 30.0}).data());
+        memory_.vector_[3] = Vector<4>(((const vector<double>) {            
+0.0, 20.0, 10.0, 30.0        
+}).data());
 
         // When
         ExecuteInstruction(instruction, &train_rand_gen_, &memory_);
@@ -1804,7 +1814,9 @@ namespace automl_zero
         const Instruction &instruction = Instruction(VECTOR_ARG_MIN_OP, 3, 0, 5);
         memory_.scalar_[0] = IndexToFloat(0, 4);
         memory_.scalar_[5] = -1;
-        memory_.vector_[3] = Vector<4>(((const vector<double>){0.0, 20.0, 10.0, 30.0}).data());
+        memory_.vector_[3] = Vector<4>(((const vector<double>) {            
+0.0, 20.0, 10.0, 30.0
+        }).data());
 
         // When
         ExecuteInstruction(instruction, &train_rand_gen_, &memory_);
@@ -1821,7 +1833,9 @@ namespace automl_zero
         const Instruction &instruction = Instruction(VECTOR_ARG_MIN_OP, 3, 0, 5);
         memory_.scalar_[0] = indexTooLow; // => IndexToFloat(0, 4)
         memory_.scalar_[5] = -1;
-        memory_.vector_[3] = Vector<4>(((const vector<double>){0.0, 20.0, 10.0, 30.0}).data());
+        memory_.vector_[3] = Vector<4>(((const vector<double>) {            
+0.0, 20.0, 10.0, 30.0        
+}).data());
 
         // When
         ExecuteInstruction(instruction, &train_rand_gen_, &memory_);
@@ -1838,7 +1852,9 @@ namespace automl_zero
         const Instruction &instruction = Instruction(VECTOR_ARG_MIN_OP, 3, 0, 5);
         memory_.scalar_[0] = indexTooHigh; // => IndexToFloat(3, 4)
         memory_.scalar_[5] = -1;
-        memory_.vector_[3] = Vector<4>(((const vector<double>){0.0, 20.0, 10.0, 30.0}).data());
+        memory_.vector_[3] = Vector<4>(((const vector<double>) {            
+0.0, 20.0, 10.0, 30.0        
+}).data());
 
         // When
         ExecuteInstruction(instruction, &train_rand_gen_, &memory_);
@@ -1851,184 +1867,184 @@ namespace automl_zero
     {
         VerifyMatrixMatrixToMatrixInstructionWorksCorrectly(
             MakeTwoInputsInstruction(MATRIX_SUM_OP),
-            {-2.0, 10.0, 0.3, 0.0,
-             0.0, 8.0, -0.1, 0.0,
-             20.0, 0.0, 20.0, 50.0,
-             -0.01, -1.0, 25.0, -32.0},
-            {-0.2, 1.0, 0.03, 0.0,
-             0.0, 0.8, -0.01, 0.0,
-             2.0, 0.0, 2.0, 5.0,
-             -0.001, -0.1, 2.5, -3.2},
-            {-2.2, 11.0, 0.33, 0.0,
-             0.0, 8.8, -0.11, 0.0,
-             22.0, 0.0, 22.0, 55.0,
-             -0.011, -1.1, 27.5, -35.2});
+            { -2.0, 10.0, 0.3, 0.0,
+            0.0, 8.0, -0.1, 0.0,
+            20.0, 0.0, 20.0, 50.0,
+            -0.01, -1.0, 25.0, -32.0 },
+            { -0.2, 1.0, 0.03, 0.0,
+            0.0, 0.8, -0.01, 0.0,
+            2.0, 0.0, 2.0, 5.0,
+            -0.001, -0.1, 2.5, -3.2 },
+            { -2.2, 11.0, 0.33, 0.0,
+            0.0, 8.8, -0.11, 0.0,
+            22.0, 0.0, 22.0, 55.0,
+            -0.011, -1.1, 27.5, -35.2 });
     }
 
     TEST_F(ExecuteInstructionTest, MatrixArithmeticRelated_MatrixDiffOp)
     {
         VerifyMatrixMatrixToMatrixInstructionWorksCorrectly(
             MakeTwoInputsInstruction(MATRIX_DIFF_OP),
-            {-2.0, 10.0, 0.3, 0.0,
-             0.0, 8.0, -0.1, 0.0,
-             20.0, 0.0, 20.0, 50.0,
-             -0.01, -1.0, 25.0, -32.0},
-            {-0.2, 1.0, 0.03, 0.0,
-             0.0, 0.8, -0.01, 0.0,
-             2.0, 0.0, 2.0, 5.0,
-             -0.001, -0.1, 2.5, -3.2},
-            {-1.8, 9.0, 0.27, 0.0,
-             0.0, 7.2, -0.09, 0.0,
-             18.0, 0.0, 18.0, 45.0,
-             -0.009, -0.9, 22.5, -28.8});
+            { -2.0, 10.0, 0.3, 0.0,
+            0.0, 8.0, -0.1, 0.0,
+            20.0, 0.0, 20.0, 50.0,
+            -0.01, -1.0, 25.0, -32.0 },
+            { -0.2, 1.0, 0.03, 0.0,
+            0.0, 0.8, -0.01, 0.0,
+            2.0, 0.0, 2.0, 5.0,
+            -0.001, -0.1, 2.5, -3.2 },
+            { -1.8, 9.0, 0.27, 0.0,
+            0.0, 7.2, -0.09, 0.0,
+            18.0, 0.0, 18.0, 45.0,
+            -0.009, -0.9, 22.5, -28.8 });
     }
 
     TEST_F(ExecuteInstructionTest, MatrixArithmeticRelated_MatrixProductOp)
     {
         VerifyMatrixMatrixToMatrixInstructionWorksCorrectly(
             MakeTwoInputsInstruction(MATRIX_PRODUCT_OP),
-            {0.1, -0.1, 1.2, -10.0,
-             0.1, 1.2, -0.1, -10.0,
-             1.0, -1.0, 12.0, -100.0,
-             0.01, -0.01, 0.12, -1.00},
-            {2.3, -0.3, 0.5, -0.001,
-             2.3, 0.5, -0.3, -0.001,
-             23, -3.0, 5.0, -0.01,
-             0.23, -0.03, 0.05, -0.0001},
-            {0.23, 0.03, 0.6, 0.01,
-             0.23, 0.6, 0.03, 0.01,
-             23.0, 3.0, 60.0, 1.0,
-             0.0023, 0.0003, 0.006, 0.0001});
+            { 0.1, -0.1, 1.2, -10.0,
+            0.1, 1.2, -0.1, -10.0,
+            1.0, -1.0, 12.0, -100.0,
+            0.01, -0.01, 0.12, -1.00 },
+            { 2.3, -0.3, 0.5, -0.001,
+            2.3, 0.5, -0.3, -0.001,
+            23, -3.0, 5.0, -0.01,
+            0.23, -0.03, 0.05, -0.0001 },
+            { 0.23, 0.03, 0.6, 0.01,
+            0.23, 0.6, 0.03, 0.01,
+            23.0, 3.0, 60.0, 1.0,
+            0.0023, 0.0003, 0.006, 0.0001 });
     }
 
     TEST_F(ExecuteInstructionTest, MatrixArithmeticRelated_MatrixDivisionOp)
     {
         VerifyMatrixMatrixToMatrixInstructionWorksCorrectly(
             MakeTwoInputsInstruction(MATRIX_DIVISION_OP),
-            {7.0, -18.18, 1.0, 0.0,
-             7.0, 1.0, -18.18, 0.0,
-             70.0, -181.8, 10.0, 0.0,
-             70.0, -181.8, 0.0, 10.0},
-            {2.0, 3.0, 0.5, -0.5,
-             2.0, 0.5, 3.0, -0.5,
-             20.0, 30.0, 5.0, -5.0,
-             2.0, 3.0, -0.5, 0.5},
-            {3.5, -6.06, 2.0, 0.0,
-             3.5, 2.0, -6.06, 0.0,
-             3.5, -6.06, 2.0, 0.0,
-             35.0, -60.6, 0.0, 20.0});
+            { 7.0, -18.18, 1.0, 0.0,
+            7.0, 1.0, -18.18, 0.0,
+            70.0, -181.8, 10.0, 0.0,
+            70.0, -181.8, 0.0, 10.0 },
+            { 2.0, 3.0, 0.5, -0.5,
+            2.0, 0.5, 3.0, -0.5,
+            20.0, 30.0, 5.0, -5.0,
+            2.0, 3.0, -0.5, 0.5 },
+            { 3.5, -6.06, 2.0, 0.0,
+            3.5, 2.0, -6.06, 0.0,
+            3.5, -6.06, 2.0, 0.0,
+            35.0, -60.6, 0.0, 20.0 });
         VerifyMatrixMatrixToMatrixInstructionIsNan(
             MakeTwoInputsInstruction(VECTOR_DIVISION_OP),
-            {7.0, -18.18, 1.0, 0.0,
-             7.0, 1.0, 0.0, 0.0,
-             70.0, -181.8, 10.0, 0.0,
-             70.0, -181.8, 0.0, 10.0},
-            {2.0, 3.0, 0.5, -0.5,
-             2.0, 0.5, 0.0, -0.5,
-             20.0, 30.0, 5.0, -5.0,
-             2.0, 3.0, -0.5, 0.5});
+            { 7.0, -18.18, 1.0, 0.0,
+            7.0, 1.0, 0.0, 0.0,
+            70.0, -181.8, 10.0, 0.0,
+            70.0, -181.8, 0.0, 10.0 },
+            { 2.0, 3.0, 0.5, -0.5,
+            2.0, 0.5, 0.0, -0.5,
+            20.0, 30.0, 5.0, -5.0,
+            2.0, 3.0, -0.5, 0.5 });
         VerifyMatrixMatrixToMatrixInstructionIsInf(
             MakeTwoInputsInstruction(VECTOR_DIVISION_OP),
-            {7.0, -18.18, 1.0, 0.0,
-             7.0, 1.0, 1.0, 0.0,
-             70.0, -181.8, 10.0, 0.0,
-             70.0, -181.8, 0.0, 10.0},
-            {2.0, 3.0, 0.5, -0.5,
-             2.0, 0.5, 0.0, -0.5,
-             20.0, 30.0, 5.0, -5.0,
-             2.0, 3.0, -0.5, 0.5});
+            { 7.0, -18.18, 1.0, 0.0,
+            7.0, 1.0, 1.0, 0.0,
+            70.0, -181.8, 10.0, 0.0,
+            70.0, -181.8, 0.0, 10.0 },
+            { 2.0, 3.0, 0.5, -0.5,
+            2.0, 0.5, 0.0, -0.5,
+            20.0, 30.0, 5.0, -5.0,
+            2.0, 3.0, -0.5, 0.5 });
     }
 
     TEST_F(ExecuteInstructionTest, MatrixArithmeticRelated_MatrixMinOp)
     {
         VerifyMatrixMatrixToMatrixInstructionWorksCorrectly(
             MakeTwoInputsInstruction(MATRIX_MIN_OP),
-            {0.5, 2.2, -2.2, 2.2,
-             0.5, -2.2, 2.2, 2.2,
-             5.0, 22.0, -22.0, 22.0,
-             0.05, 0.22, -0.22, 0.22},
-            {2.2, 0.5, -0.5, -0.5,
-             2.2, -0.5, 0.5, -0.5,
-             22.0, 5.0, -5.0, -5.0,
-             0.22, 0.05, -0.05, -0.05},
-            {0.5, 0.5, -2.2, -0.5,
-             0.5, -2.2, 0.5, -0.5,
-             5.0, 5.0, -22.0, -5.0,
-             0.05, 0.05, -0.22, -0.05});
+            { 0.5, 2.2, -2.2, 2.2,
+            0.5, -2.2, 2.2, 2.2,
+            5.0, 22.0, -22.0, 22.0,
+            0.05, 0.22, -0.22, 0.22 },
+            { 2.2, 0.5, -0.5, -0.5,
+            2.2, -0.5, 0.5, -0.5,
+            22.0, 5.0, -5.0, -5.0,
+            0.22, 0.05, -0.05, -0.05 },
+            { 0.5, 0.5, -2.2, -0.5,
+            0.5, -2.2, 0.5, -0.5,
+            5.0, 5.0, -22.0, -5.0,
+            0.05, 0.05, -0.22, -0.05 });
     }
 
     TEST_F(ExecuteInstructionTest, MatrixArithmeticRelated_MatrixMaxOp)
     {
         VerifyMatrixMatrixToMatrixInstructionWorksCorrectly(
             MakeTwoInputsInstruction(MATRIX_MAX_OP),
-            {0.5, 2.2, -2.2, 0.5,
-             0.5, -2.2, 2.2, 0.5,
-             5.0, 22.0, -22.0, 5.0,
-             0.05, 0.22, -0.22, 0.05},
-            {2.2, 0.5, -0.5, -2.2,
-             2.2, -0.5, 0.5, -2.2,
-             22.0, 5.0, -5.0, -22.0,
-             0.22, 0.05, -0.05, -0.22},
-            {2.2, 2.2, -0.5, 0.5,
-             2.2, -0.5, 2.2, 0.5,
-             22.0, 22.0, -5.0, 5.0,
-             0.22, 0.22, -0.05, 0.05});
+            { 0.5, 2.2, -2.2, 0.5,
+            0.5, -2.2, 2.2, 0.5,
+            5.0, 22.0, -22.0, 5.0,
+            0.05, 0.22, -0.22, 0.05 },
+            { 2.2, 0.5, -0.5, -2.2,
+            2.2, -0.5, 0.5, -2.2,
+            22.0, 5.0, -5.0, -22.0,
+            0.22, 0.05, -0.05, -0.22 },
+            { 2.2, 2.2, -0.5, 0.5,
+            2.2, -0.5, 2.2, 0.5,
+            22.0, 22.0, -5.0, 5.0,
+            0.22, 0.22, -0.05, 0.05 });
     }
 
     TEST_F(ExecuteInstructionTest, MatrixArithmeticRelated_MatrixAbsOp)
     {
         VerifyMatrixToMatrixInstructionWorksCorrectly(
             MakeOneInputInstruction(MATRIX_ABS_OP),
-            {0.5, 0.0, -2.2, 100.5,
-             0.5, -2.2, 0.0, 100.5,
-             5.0, 0.0, -22.0, 1005.0,
-             0.05, 0.0, -0.22, 10.05},
-            {0.5, 0.0, 2.2, 100.5,
-             0.5, 2.2, 0.0, 100.5,
-             5.0, 0.0, 22.0, 1005.0,
-             0.05, 0.0, 0.22, 10.05});
+            { 0.5, 0.0, -2.2, 100.5,
+            0.5, -2.2, 0.0, 100.5,
+            5.0, 0.0, -22.0, 1005.0,
+            0.05, 0.0, -0.22, 10.05 },
+            { 0.5, 0.0, 2.2, 100.5,
+            0.5, 2.2, 0.0, 100.5,
+            5.0, 0.0, 22.0, 1005.0,
+            0.05, 0.0, 0.22, 10.05 });
     }
 
     TEST_F(ExecuteInstructionTest, MatrixArithmeticRelated_MatrixHeavisideOp)
     {
         VerifyMatrixToMatrixInstructionWorksCorrectly(
             MakeOneInputInstruction(MATRIX_HEAVYSIDE_OP),
-            {0.5, 0.1, -2.2, 100.5,
-             0.5, -2.2, 0.0, 100.5,
-             5.0, 1.0, -22.0, 1005.0,
-             0.05, 0.01, -0.22, 10.05},
-            {1.0, 1.0, 0.0, 1.0,
-             1.0, 0.0, 0.0, 1.0,
-             1.0, 1.0, 0.0, 1.0,
-             1.0, 1.0, 0.0, 1.0});
+            { 0.5, 0.1, -2.2, 100.5,
+            0.5, -2.2, 0.0, 100.5,
+            5.0, 1.0, -22.0, 1005.0,
+            0.05, 0.01, -0.22, 10.05 },
+            { 1.0, 1.0, 0.0, 1.0,
+            1.0, 0.0, 0.0, 1.0,
+            1.0, 1.0, 0.0, 1.0,
+            1.0, 1.0, 0.0, 1.0 });
     }
 
     TEST_F(ExecuteInstructionTest, MatrixArithmeticRelated_MatrixConstSetOp)
     {
         VerifyNothingToMatrixEquals(
             MakeZeroInputsInstruction(MATRIX_CONST_SET_OP,
-                                      FloatDataSetter(IndexToFloat(2, 4)),
-                                      FloatDataSetter(IndexToFloat(1, 4)),
-                                      FloatDataSetter(-1.5)),
-            {0.0, 0.0, 0.0, 0.0,
-             0.0, 0.0, 0.0, 0.0,
-             0.0, -1.5, 0.0, 0.0,
-             0.0, 0.0, 0.0, 0.0});
+                FloatDataSetter(IndexToFloat(2, 4)),
+                FloatDataSetter(IndexToFloat(1, 4)),
+                FloatDataSetter(-1.5)),
+            { 0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0,
+            0.0, -1.5, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0 });
     }
 
     TEST_F(ExecuteInstructionTest, LinearAlgebraRelated_ScalarVectorProductOp)
     {
         VerifyScalarVectorToVectorEquals(
             MakeTwoInputsInstruction(SCALAR_VECTOR_PRODUCT_OP),
-            -0.2, {2.3, -0.3, 0.5, -0.001},
-            {-0.46, 0.06, -0.1, 0.0002});
+            -0.2, { 2.3, -0.3, 0.5, -0.001 },
+            { -0.46, 0.06, -0.1, 0.0002 });
     }
 
     TEST_F(ExecuteInstructionTest, LinearAlgebraRelated_VectorInnerProductOp)
     {
         VerifyVectorVectorToScalarEquals(
             MakeTwoInputsInstruction(VECTOR_INNER_PRODUCT_OP),
-            {-0.01, 0.0, 1.3, -0.001}, {2.3, 0.3, 0.5, -0.001},
+            { -0.01, 0.0, 1.3, -0.001 }, { 2.3, 0.3, 0.5, -0.001 },
             0.627001);
     }
 
@@ -2036,11 +2052,11 @@ namespace automl_zero
     {
         VerifyVectorVectorToMatrixEquals(
             MakeTwoInputsInstruction(VECTOR_OUTER_PRODUCT_OP),
-            {0.1, -0.1, 1.2, -10.0}, {2.3, -0.3, 0.5, -0.001},
-            {0.23, -0.03, 0.05, -0.0001,
-             -0.23, 0.03, -0.05, 0.0001,
-             2.76, -0.36, 0.6, -0.0012,
-             -23, 3.0, -5.0, 0.01});
+            { 0.1, -0.1, 1.2, -10.0 }, { 2.3, -0.3, 0.5, -0.001 },
+            { 0.23, -0.03, 0.05, -0.0001,
+            -0.23, 0.03, -0.05, 0.0001,
+            2.76, -0.36, 0.6, -0.0012,
+            -23, 3.0, -5.0, 0.01 });
     }
 
     TEST_F(ExecuteInstructionTest, LinearAlgebraRelated_ScalarMatrixProductOp)
@@ -2048,33 +2064,33 @@ namespace automl_zero
         VerifyScalarMatrixToMatrixEquals(
             MakeTwoInputsInstruction(SCALAR_MATRIX_PRODUCT_OP),
             0.5,
-            {2.2, 0.5, -0.5, -2.2,
-             2.2, -0.5, 0.5, -2.2,
-             22.0, 5.0, -5.0, -22.0,
-             0.22, 0.05, -0.05, -0.22},
-            {1.1, 0.25, -0.25, -1.1,
-             1.1, -0.25, 0.25, -1.1,
-             11.0, 2.5, -2.5, -11.0,
-             0.11, 0.025, -0.025, -0.11});
+            { 2.2, 0.5, -0.5, -2.2,
+            2.2, -0.5, 0.5, -2.2,
+            22.0, 5.0, -5.0, -22.0,
+            0.22, 0.05, -0.05, -0.22 },
+            { 1.1, 0.25, -0.25, -1.1,
+            1.1, -0.25, 0.25, -1.1,
+            11.0, 2.5, -2.5, -11.0,
+            0.11, 0.025, -0.025, -0.11 });
     }
 
     TEST_F(ExecuteInstructionTest, LinearAlgebraRelated_MatrixVectorProductOp)
     {
         VerifyMatrixVectorToVectorEquals(
             MakeTwoInputsInstruction(MATRIX_VECTOR_PRODUCT_OP),
-            {-0.2, 1.0, 0.03, 0.0,
-             0.0, 0.8, -0.01, 0.0,
-             2.0, 0.0, 2.0, 5.0,
-             -0.001, -0.1, 2.5, -3.2},
-            {0.1, -2.2, 10.0, 0.0},
-            {-1.92, -1.86, 20.2, 25.2199});
+            { -0.2, 1.0, 0.03, 0.0,
+            0.0, 0.8, -0.01, 0.0,
+            2.0, 0.0, 2.0, 5.0,
+            -0.001, -0.1, 2.5, -3.2 },
+            { 0.1, -2.2, 10.0, 0.0 },
+            { -1.92, -1.86, 20.2, 25.2199 });
     }
 
     TEST_F(ExecuteInstructionTest, LinearAlgebraRelated_VectorNormOp)
     {
         VerifyVectorToScalarEquals(
             MakeOneInputInstruction(VECTOR_NORM_OP),
-            {2.2, -0.5, 0.0, 0.01},
+            { 2.2, -0.5, 0.0, 0.01 },
             2.25612499654);
     }
 
@@ -2082,10 +2098,10 @@ namespace automl_zero
     {
         VerifyMatrixToScalarEquals(
             MakeOneInputInstruction(MATRIX_NORM_OP),
-            {0.0, 0.5, -0.5, -2.2,
-             2.2, -0.5, 0.5, -2.2,
-             22.0, 5.0, -5.0, -22.0,
-             0.22, 0.05, -0.05, -0.22},
+            { 0.0, 0.5, -0.5, -2.2,
+            2.2, -0.5, 0.5, -2.2,
+            22.0, 5.0, -5.0, -22.0,
+            0.22, 0.05, -0.05, -0.22 },
             32.149989113528484);
     }
 
@@ -2093,46 +2109,46 @@ namespace automl_zero
     {
         VerifyMatrixToMatrixInstructionWorksCorrectly(
             MakeOneInputInstruction(MATRIX_TRANSPOSE_OP),
-            {0.0, 0.5, -0.5, -2.2,
-             2.2, -0.5, 0.5, -2.2,
-             22.0, 5.0, -5.0, -22.0,
-             0.22, 0.05, -0.05, -0.22},
-            {0.0, 2.2, 22.0, 0.22,
-             0.5, -0.5, 5.0, 0.05,
-             -0.5, 0.5, -5.0, -0.05,
-             -2.2, -2.2, -22.0, -0.22});
+            { 0.0, 0.5, -0.5, -2.2,
+            2.2, -0.5, 0.5, -2.2,
+            22.0, 5.0, -5.0, -22.0,
+            0.22, 0.05, -0.05, -0.22 },
+            { 0.0, 2.2, 22.0, 0.22,
+            0.5, -0.5, 5.0, 0.05,
+            -0.5, 0.5, -5.0, -0.05,
+            -2.2, -2.2, -22.0, -0.22 });
     }
 
     TEST_F(ExecuteInstructionTest, LinearAlgebraRelated_MatrixMatrixProductOp)
     {
         VerifyMatrixMatrixToMatrixInstructionWorksCorrectly(
             MakeTwoInputsInstruction(MATRIX_MATRIX_PRODUCT_OP),
-            {0.1, 2.5, -0.5, -2.2,
-             10.3, -0.06, 0.7, -2.1,
-             22.0, 5.0, -5.0, -22.0,
-             0.4, 19.05, -0.05, -0.22},
-            {10.0, 2.0, -0.5, 0.003,
-             10.3, 0.06, -7.3, -8.0,
-             -28.0, 0.076, 3.0, -32.0,
-             0.4, -2.0, 0.08, -0.7},
-            {39.87, 4.712, -19.976, -2.4597,
-             81.942, 24.8496, -2.78, -20.4191,
-             402.7, 87.92, -64.26, 135.466,
-             201.527, 2.3792, -139.4326, -150.6448});
+            { 0.1, 2.5, -0.5, -2.2,
+            10.3, -0.06, 0.7, -2.1,
+            22.0, 5.0, -5.0, -22.0,
+            0.4, 19.05, -0.05, -0.22 },
+            { 10.0, 2.0, -0.5, 0.003,
+            10.3, 0.06, -7.3, -8.0,
+            -28.0, 0.076, 3.0, -32.0,
+            0.4, -2.0, 0.08, -0.7 },
+            { 39.87, 4.712, -19.976, -2.4597,
+            81.942, 24.8496, -2.78, -20.4191,
+            402.7, 87.92, -64.26, 135.466,
+            201.527, 2.3792, -139.4326, -150.6448 });
     }
 
     TEST_F(ExecuteInstructionTest, ProbabilityRelated_VectorMeanOp)
     {
         VerifyVectorToScalarEquals(
             MakeOneInputInstruction(VECTOR_MEAN_OP),
-            {-0.01, -0.2, 1.3, -0.001}, 0.27225);
+            { -0.01, -0.2, 1.3, -0.001 }, 0.27225);
     }
 
     TEST_F(ExecuteInstructionTest, ProbabilityRelated_VectorStDevOp)
     {
         VerifyVectorToScalarEquals(
             MakeOneInputInstruction(VECTOR_ST_DEV_OP),
-            {2.2, -0.5, 0.0, 0.01},
+            { 2.2, -0.5, 0.0, 0.01 },
             1.04391989635);
     }
 
@@ -2140,10 +2156,10 @@ namespace automl_zero
     {
         VerifyMatrixToScalarEquals(
             MakeOneInputInstruction(MATRIX_MEAN_OP),
-            {0.1, 2.5, -0.5, -2.2,
-             10.3, -0.06, 0.7, -2.1,
-             22.0, 5.0, -5.0, -22.0,
-             0.4, 19.05, -0.05, -0.22},
+            { 0.1, 2.5, -0.5, -2.2,
+            10.3, -0.06, 0.7, -2.1,
+            22.0, 5.0, -5.0, -22.0,
+            0.4, 19.05, -0.05, -0.22 },
             1.745);
     }
 
@@ -2151,10 +2167,10 @@ namespace automl_zero
     {
         VerifyMatrixToScalarEquals(
             MakeOneInputInstruction(MATRIX_ST_DEV_OP),
-            {0.1, 2.5, -0.5, -2.2,
-             10.3, -0.06, 0.7, -2.1,
-             22.0, 5.0, -5.0, -22.0,
-             0.4, 19.05, -0.05, -0.22},
+            { 0.1, 2.5, -0.5, -2.2,
+            10.3, -0.06, 0.7, -2.1,
+            22.0, 5.0, -5.0, -22.0,
+            0.4, 19.05, -0.05, -0.22 },
             9.5352523563878488);
     }
 
@@ -2162,113 +2178,113 @@ namespace automl_zero
     {
         VerifyMatrixToVectorEquals(
             MakeOneInputInstruction(MATRIX_ROW_MEAN_OP),
-            {0.1, 2.5, -0.5, -2.2,
-             10.3, -0.06, 0.7, -2.1,
-             22.0, 5.0, -5.0, -22.0,
-             0.4, 19.05, -0.05, -0.22},
-            {-0.025, 2.21, 0.0, 4.795});
+            { 0.1, 2.5, -0.5, -2.2,
+            10.3, -0.06, 0.7, -2.1,
+            22.0, 5.0, -5.0, -22.0,
+            0.4, 19.05, -0.05, -0.22 },
+            { -0.025, 2.21, 0.0, 4.795 });
     }
 
     TEST_F(ExecuteInstructionTest, ProbabilityRelated_MatrixRowStDevOp)
     {
         VerifyMatrixToVectorEquals(
             MakeOneInputInstruction(MATRIX_ROW_ST_DEV_OP),
-            {0.1, 2.5, -0.5, -2.2,
-             10.3, -0.06, 0.7, -2.1,
-             22.0, 5.0, -5.0, -22.0,
-             0.4, 19.05, -0.05, -0.22},
-            {1.68430252627, 4.78166289067, 15.9530561335, 8.23324510749});
+            { 0.1, 2.5, -0.5, -2.2,
+            10.3, -0.06, 0.7, -2.1,
+            22.0, 5.0, -5.0, -22.0,
+            0.4, 19.05, -0.05, -0.22 },
+            { 1.68430252627, 4.78166289067, 15.9530561335, 8.23324510749 });
     }
 
     TEST_F(ExecuteInstructionTest, ProbabilityRelated_ScalarGaussianSetOp)
     {
         VerifyNothingToScalarEquals(
             MakeZeroInputsInstruction(SCALAR_GAUSSIAN_SET_OP,
-                                      FloatDataSetter(20.0),
-                                      FloatDataSetter(10.0)),
+                FloatDataSetter(20.0),
+                FloatDataSetter(10.0)),
             28.042686);
         VerifyNothingToScalarIsRandomized(
             MakeZeroInputsInstruction(SCALAR_GAUSSIAN_SET_OP,
-                                      FloatDataSetter(20.0),
-                                      FloatDataSetter(10.0)));
+                FloatDataSetter(20.0),
+                FloatDataSetter(10.0)));
     }
 
     TEST_F(ExecuteInstructionTest, ProbabilityRelated_VectorGaussianSetOp)
     {
         VerifyNothingToVectorEquals(
             MakeZeroInputsInstruction(VECTOR_GAUSSIAN_SET_OP,
-                                      FloatDataSetter(20.0),
-                                      FloatDataSetter(10.0)),
-            {28.0427, 19.8492, 37.8303, 24.1638});
+                FloatDataSetter(20.0),
+                FloatDataSetter(10.0)),
+            { 28.0427, 19.8492, 37.8303, 24.1638 });
         VerifyNothingToVectorIsRandomized(
             MakeZeroInputsInstruction(VECTOR_GAUSSIAN_SET_OP,
-                                      FloatDataSetter(20.0),
-                                      FloatDataSetter(10.0)));
+                FloatDataSetter(20.0),
+                FloatDataSetter(10.0)));
     }
 
     TEST_F(ExecuteInstructionTest, ProbabilityRelated_MatrixGaussianSetOp)
     {
         VerifyNothingToMatrixEquals(
             MakeZeroInputsInstruction(MATRIX_GAUSSIAN_SET_OP,
-                                      FloatDataSetter(0.0),
-                                      FloatDataSetter(0.1)),
-            {0.0804269, -0.00150771, 0.178303, 0.0416377,
-             0.126852, 0.0111104, -0.0138105, 0.0856213,
-             0.0580157, -0.0448301, 0.164389, 0.0162463,
-             -0.0230088, 0.268562, 0.0362391, -0.0849112});
+                FloatDataSetter(0.0),
+                FloatDataSetter(0.1)),
+            { 0.0804269, -0.00150771, 0.178303, 0.0416377,
+            0.126852, 0.0111104, -0.0138105, 0.0856213,
+            0.0580157, -0.0448301, 0.164389, 0.0162463,
+            -0.0230088, 0.268562, 0.0362391, -0.0849112 });
         VerifyNothingToMatrixIsRandomized(
             MakeZeroInputsInstruction(MATRIX_GAUSSIAN_SET_OP,
-                                      FloatDataSetter(0.0),
-                                      FloatDataSetter(0.1)));
+                FloatDataSetter(0.0),
+                FloatDataSetter(0.1)));
     }
 
     TEST_F(ExecuteInstructionTest, ProbabilityRelated_ScalarUniformSetOp)
     {
         VerifyNothingToScalarEquals(
             MakeZeroInputsInstruction(SCALAR_UNIFORM_SET_OP,
-                                      FloatDataSetter(-2.5),
-                                      FloatDataSetter(-2.0)),
+                FloatDataSetter(-2.5),
+                FloatDataSetter(-2.0)),
             -2.3562196);
         VerifyNothingToScalarIsRandomized(
             MakeZeroInputsInstruction(SCALAR_UNIFORM_SET_OP,
-                                      FloatDataSetter(-2.5),
-                                      FloatDataSetter(-2.0)));
+                FloatDataSetter(-2.5),
+                FloatDataSetter(-2.0)));
     }
 
     TEST_F(ExecuteInstructionTest, ProbabilityRelated_VectorUniformSetOp)
     {
         VerifyNothingToVectorEquals(
             MakeZeroInputsInstruction(VECTOR_UNIFORM_SET_OP,
-                                      FloatDataSetter(-2.5),
-                                      FloatDataSetter(-2.0)),
-            {-2.35622, -2.24588, -2.25098, -2.10917});
+                FloatDataSetter(-2.5),
+                FloatDataSetter(-2.0)),
+            { -2.35622, -2.24588, -2.25098, -2.10917 });
         VerifyNothingToVectorIsRandomized(
             MakeZeroInputsInstruction(VECTOR_UNIFORM_SET_OP,
-                                      FloatDataSetter(-2.5),
-                                      FloatDataSetter(-2.0)));
+                FloatDataSetter(-2.5),
+                FloatDataSetter(-2.0)));
     }
 
     TEST_F(ExecuteInstructionTest, ProbabilityRelated_MatrixUniformSetOp)
     {
         VerifyNothingToMatrixEquals(
             MakeZeroInputsInstruction(MATRIX_UNIFORM_SET_OP,
-                                      FloatDataSetter(-2.5),
-                                      FloatDataSetter(-2.0)),
-            {-2.35622, -2.24588, -2.25098, -2.10917,
-             -2.4388, -2.35507, -2.48641, -2.21651,
-             -2.2658, -2.2554, -2.04414, -2.17942,
-             -2.29889, -2.4564, -2.14704, -2.28224});
+                FloatDataSetter(-2.5),
+                FloatDataSetter(-2.0)),
+            { -2.35622, -2.24588, -2.25098, -2.10917,
+            -2.4388, -2.35507, -2.48641, -2.21651,
+            -2.2658, -2.2554, -2.04414, -2.17942,
+            -2.29889, -2.4564, -2.14704, -2.28224 });
         VerifyNothingToMatrixIsRandomized(
             MakeZeroInputsInstruction(MATRIX_UNIFORM_SET_OP,
-                                      FloatDataSetter(-2.5),
-                                      FloatDataSetter(-2.0)));
+                FloatDataSetter(-2.5),
+                FloatDataSetter(-2.0)));
     }
 
     TEST(SquashTest, MapsEndpointsCorrectly)
     {
         EXPECT_DOUBLE_EQ(FlipAndSquash(0.0), kMaxFitness);
         EXPECT_DOUBLE_EQ(FlipAndSquash(std::numeric_limits<double>::infinity()),
-                         kMinFitness);
+            kMinFitness);
     }
 
     TEST(FitnessTest, StaysWithinBounds)

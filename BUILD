@@ -107,6 +107,7 @@ cc_library(
         ":checkpointing_cc_proto",
         ":definitions",
         ":instruction",
+        ":componentfunction",
         ":random_generator",
         "@com_google_absl//absl/flags:flag",
         "@com_google_absl//absl/flags:parse",
@@ -411,6 +412,15 @@ cc_test(
         ":random_generator",
         ":test_util",
         "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_library(
+    name = "componentfunction",
+    srcs = ["componentfunction.cc"],
+    hdrs = ["componentfunction.h"],
+    deps = [
+        ":instruction",
     ],
 )
 

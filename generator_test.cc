@@ -61,36 +61,36 @@ namespace automl_zero
         const InstructionIndexT predict_instruction_index = 1;
         const InstructionIndexT learn_instruction_index = 3;
         Algorithm algorithm = generator.NoOp();
-        EXPECT_EQ(algorithm.setup_[setup_instruction_index]->op_, NO_OP);
-        EXPECT_EQ(algorithm.setup_[setup_instruction_index]->in1_, 0);
-        EXPECT_EQ(algorithm.setup_[setup_instruction_index]->in2_, 0);
-        EXPECT_EQ(algorithm.setup_[setup_instruction_index]->out_, 0);
-        EXPECT_EQ(algorithm.setup_[setup_instruction_index]->GetActivationData(),
-                  0.0);
-        EXPECT_EQ(algorithm.setup_[setup_instruction_index]->GetFloatData0(), 0.0);
-        EXPECT_EQ(algorithm.setup_[setup_instruction_index]->GetFloatData1(), 0.0);
-        EXPECT_EQ(algorithm.setup_[setup_instruction_index]->GetFloatData2(), 0.0);
-        EXPECT_EQ(algorithm.predict_[predict_instruction_index]->op_, NO_OP);
-        EXPECT_EQ(algorithm.predict_[predict_instruction_index]->in1_, 0);
-        EXPECT_EQ(algorithm.predict_[predict_instruction_index]->in2_, 0);
-        EXPECT_EQ(algorithm.predict_[predict_instruction_index]->out_, 0);
-        EXPECT_EQ(algorithm.predict_[predict_instruction_index]->GetActivationData(),
-                  0.0);
-        EXPECT_EQ(algorithm.predict_[predict_instruction_index]->GetFloatData0(),
-                  0.0);
-        EXPECT_EQ(algorithm.predict_[predict_instruction_index]->GetFloatData1(),
-                  0.0);
-        EXPECT_EQ(algorithm.predict_[predict_instruction_index]->GetFloatData2(),
-                  0.0);
-        EXPECT_EQ(algorithm.learn_[learn_instruction_index]->op_, NO_OP);
-        EXPECT_EQ(algorithm.learn_[learn_instruction_index]->in1_, 0);
-        EXPECT_EQ(algorithm.learn_[learn_instruction_index]->in2_, 0);
-        EXPECT_EQ(algorithm.learn_[learn_instruction_index]->out_, 0);
-        EXPECT_EQ(algorithm.learn_[learn_instruction_index]->GetActivationData(),
-                  0.0);
-        EXPECT_EQ(algorithm.learn_[learn_instruction_index]->GetFloatData0(), 0.0);
-        EXPECT_EQ(algorithm.learn_[learn_instruction_index]->GetFloatData1(), 0.0);
-        EXPECT_EQ(algorithm.learn_[learn_instruction_index]->GetFloatData2(), 0.0);
+        EXPECT_EQ(algorithm.setup_.instructions[setup_instruction_index]->op_, NO_OP);
+        EXPECT_EQ(algorithm.setup_.instructions[setup_instruction_index]->in1_, 0);
+        EXPECT_EQ(algorithm.setup_.instructions[setup_instruction_index]->in2_, 0);
+        EXPECT_EQ(algorithm.setup_.instructions[setup_instruction_index]->out_, 0);
+        EXPECT_EQ(algorithm.setup_.instructions[setup_instruction_index]->GetActivationData(),
+            0.0);
+        EXPECT_EQ(algorithm.setup_.instructions[setup_instruction_index]->GetFloatData0(), 0.0);
+        EXPECT_EQ(algorithm.setup_.instructions[setup_instruction_index]->GetFloatData1(), 0.0);
+        EXPECT_EQ(algorithm.setup_.instructions[setup_instruction_index]->GetFloatData2(), 0.0);
+        EXPECT_EQ(algorithm.predict_.instructions[predict_instruction_index]->op_, NO_OP);
+        EXPECT_EQ(algorithm.predict_.instructions[predict_instruction_index]->in1_, 0);
+        EXPECT_EQ(algorithm.predict_.instructions[predict_instruction_index]->in2_, 0);
+        EXPECT_EQ(algorithm.predict_.instructions[predict_instruction_index]->out_, 0);
+        EXPECT_EQ(algorithm.predict_.instructions[predict_instruction_index]->GetActivationData(),
+            0.0);
+        EXPECT_EQ(algorithm.predict_.instructions[predict_instruction_index]->GetFloatData0(),
+            0.0);
+        EXPECT_EQ(algorithm.predict_.instructions[predict_instruction_index]->GetFloatData1(),
+            0.0);
+        EXPECT_EQ(algorithm.predict_.instructions[predict_instruction_index]->GetFloatData2(),
+            0.0);
+        EXPECT_EQ(algorithm.learn_.instructions[learn_instruction_index]->op_, NO_OP);
+        EXPECT_EQ(algorithm.learn_.instructions[learn_instruction_index]->in1_, 0);
+        EXPECT_EQ(algorithm.learn_.instructions[learn_instruction_index]->in2_, 0);
+        EXPECT_EQ(algorithm.learn_.instructions[learn_instruction_index]->out_, 0);
+        EXPECT_EQ(algorithm.learn_.instructions[learn_instruction_index]->GetActivationData(),
+            0.0);
+        EXPECT_EQ(algorithm.learn_.instructions[learn_instruction_index]->GetFloatData0(), 0.0);
+        EXPECT_EQ(algorithm.learn_.instructions[learn_instruction_index]->GetFloatData1(), 0.0);
+        EXPECT_EQ(algorithm.learn_.instructions[learn_instruction_index]->GetFloatData2(), 0.0);
     }
 
     TEST(GeneratorTest, NoOpProducesCorrectComponentFunctionSize)
@@ -106,9 +106,9 @@ namespace automl_zero
             nullptr,         // bit_gen, irrelevant.
             nullptr);        // rand_gen, irrelevant.
         Algorithm algorithm = generator.NoOp();
-        EXPECT_EQ(algorithm.setup_.size(), 10);
-        EXPECT_EQ(algorithm.predict_.size(), 12);
-        EXPECT_EQ(algorithm.learn_.size(), 13);
+        EXPECT_EQ(algorithm.setup_.instructions.size(), 10);
+        EXPECT_EQ(algorithm.predict_.instructions.size(), 12);
+        EXPECT_EQ(algorithm.learn_.instructions.size(), 13);
     }
 
     TEST(GeneratorTest, Gz_Learns)
@@ -125,20 +125,20 @@ namespace automl_zero
             nullptr);        // rand_gen, irrelevant.
         Task<4> dataset =
             GenerateTask<4>(StrCat("scalar_linear_regression_task {} "
-                                   "num_train_examples: ",
-                                   kNumTrainExamples,
-                                   " "
-                                   "num_valid_examples: ",
-                                   kNumValidExamples,
-                                   " "
-                                   "eval_type: RMS_ERROR "
-                                   "param_seeds: 100 "
-                                   "data_seeds: 1000 "));
+                "num_train_examples: ",
+                kNumTrainExamples,
+                " "
+                "num_valid_examples: ",
+                kNumValidExamples,
+                " "
+                "eval_type: RMS_ERROR "
+                "param_seeds: 100 "
+                "data_seeds: 1000 "));
         Algorithm algorithm = generator.LinearModel(kDefaultLearningRate);
         mt19937 bit_gen(10000);
         RandomGenerator rand_gen(&bit_gen);
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
-                             &rand_gen, kLargeMaxAbsError);
+            &rand_gen, kLargeMaxAbsError);
         double fitness = executor.Execute();
         std::cout << "Gz_Learns fitness = " << fitness << std::endl;
         EXPECT_GE(fitness, 0.0);
@@ -160,20 +160,20 @@ namespace automl_zero
             nullptr);        // rand_gen, irrelevant.
         Task<4> dataset =
             GenerateTask<4>(StrCat("scalar_linear_regression_task {} "
-                                   "num_train_examples: ",
-                                   kNumTrainExamples,
-                                   " "
-                                   "num_valid_examples: ",
-                                   kNumValidExamples,
-                                   " "
-                                   "eval_type: RMS_ERROR "
-                                   "param_seeds: 100 "
-                                   "data_seeds: 1000 "));
+                "num_train_examples: ",
+                kNumTrainExamples,
+                " "
+                "num_valid_examples: ",
+                kNumValidExamples,
+                " "
+                "eval_type: RMS_ERROR "
+                "param_seeds: 100 "
+                "data_seeds: 1000 "));
         Algorithm algorithm = generator.LinearModel(kDefaultLearningRate);
         mt19937 bit_gen(10000);
         RandomGenerator rand_gen(&bit_gen);
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
-                             &rand_gen, kLargeMaxAbsError);
+            &rand_gen, kLargeMaxAbsError);
         double fitness = executor.Execute();
         std::cout << "Gz_Learns fitness = " << fitness << std::endl;
         EXPECT_GE(fitness, 0.0);
@@ -195,20 +195,20 @@ namespace automl_zero
             nullptr);        // rand_gen, irrelevant.
         Task<4> dataset =
             GenerateTask<4>(StrCat("sort_task {} "
-                                   "num_train_examples: ",
-                                   kNumTrainExamples,
-                                   " "
-                                   "num_valid_examples: ",
-                                   kNumValidExamples,
-                                   " "
-                                   "eval_type: SORTED "
-                                   "param_seeds: 100 "
-                                   "data_seeds: 1000 "));
+                "num_train_examples: ",
+                kNumTrainExamples,
+                " "
+                "num_valid_examples: ",
+                kNumValidExamples,
+                " "
+                "eval_type: SORTED "
+                "param_seeds: 100 "
+                "data_seeds: 1000 "));
         Algorithm algorithm = generator.SortAlgorithm(4);
         mt19937 bit_gen(10000);
         RandomGenerator rand_gen(&bit_gen);
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
-                             &rand_gen, kLargeMaxAbsError);
+            &rand_gen, kLargeMaxAbsError);
         double fitness = executor.Execute();
         std::cout << "Sortalgorithm_Learns fitness = " << fitness << std::endl;
         EXPECT_GE(fitness, 0.0);
@@ -231,13 +231,13 @@ namespace automl_zero
             nullptr);        // rand_gen, irrelevant.
 
         Algorithm algorithm = generator.SortAlgorithm(4);
-        const Vector<4> input = {12, 30, 5, 2};
+        const Vector<4> input ={ 12, 30, 5, 2 };
 
         // When
         const Vector<4> &output = ExecutePredict(algorithm, input);
 
         // Then
-        ASSERT_EQ(asStdVector(output), vector<double>({2, 5, 12, 30}));
+        ASSERT_EQ(asStdVector(output), vector<double>({ 2, 5, 12, 30 }));
     }
 
     TEST(GeneratorTest, Sortalgorithm_Predicts2)
@@ -255,13 +255,13 @@ namespace automl_zero
             nullptr);        // rand_gen, irrelevant.
 
         Algorithm algorithm = generator.SortAlgorithm(4);
-        const Vector<4> input = {2, 1, 0, -1};
+        const Vector<4> input ={ 2, 1, 0, -1 };
 
         // When
         const Vector<4> &output = ExecutePredict(algorithm, input);
 
         // Then
-        ASSERT_EQ(asStdVector(output), vector<double>({-1, 0, 1, 2}));
+        ASSERT_EQ(asStdVector(output), vector<double>({ -1, 0, 1, 2 }));
     }
 
     TEST(GeneratorTest, Sortalgorithm_Predicts3)
@@ -287,7 +287,7 @@ namespace automl_zero
         const Vector<8> &output = ExecutePredict<8>(algorithm, input);
 
         // Then
-        ASSERT_EQ(asStdVector(output), vector<double>({1, 2, 3, 4, 5, 6, 7, 8}));
+        ASSERT_EQ(asStdVector(output), vector<double>({ 1, 2, 3, 4, 5, 6, 7, 8 }));
     }
 
     TEST(GeneratorTest, GrTildeGrWithBias_PermanenceTest)
@@ -306,21 +306,21 @@ namespace automl_zero
             "scalar_2layer_nn_regression_task {} "
             "num_train_examples: ",
             kNumTrainExamples, " "
-                               "num_valid_examples: ",
+            "num_valid_examples: ",
             kNumValidExamples, " "
-                               "num_tasks: 1 "
-                               "eval_type: RMS_ERROR "
-                               "param_seeds: 1000 "
-                               "data_seeds: 10000 "));
+            "num_tasks: 1 "
+            "eval_type: RMS_ERROR "
+            "param_seeds: 1000 "
+            "data_seeds: 10000 "));
         Algorithm algorithm = generator.NeuralNet(
             kDefaultLearningRate, kDefaultInitScale, kDefaultInitScale);
         mt19937 bit_gen(10000);
         RandomGenerator rand_gen(&bit_gen);
         Executor<4> executor(algorithm, dataset, kNumTrainExamples, kNumValidExamples,
-                             &rand_gen, kLargeMaxAbsError);
+            &rand_gen, kLargeMaxAbsError);
         double fitness = executor.Execute();
         std::cout << "GrTildeGrWithBias_PermanenceTest fitness = " << fitness
-                  << std::endl;
+            << std::endl;
         EXPECT_GE(fitness, 0.80256736);
     }
 
@@ -333,9 +333,9 @@ namespace automl_zero
             2,               // setup_size_init
             4,               // predict_size_init
             5,               // learn_size_init
-            {NO_OP, SCALAR_SUM_OP, MATRIX_VECTOR_PRODUCT_OP, VECTOR_MEAN_OP},
-            {NO_OP, SCALAR_SUM_OP, MATRIX_VECTOR_PRODUCT_OP, VECTOR_MEAN_OP},
-            {NO_OP, SCALAR_SUM_OP, MATRIX_VECTOR_PRODUCT_OP, VECTOR_MEAN_OP},
+            { NO_OP, SCALAR_SUM_OP, MATRIX_VECTOR_PRODUCT_OP, VECTOR_MEAN_OP },
+            { NO_OP, SCALAR_SUM_OP, MATRIX_VECTOR_PRODUCT_OP, VECTOR_MEAN_OP },
+            { NO_OP, SCALAR_SUM_OP, MATRIX_VECTOR_PRODUCT_OP, VECTOR_MEAN_OP },
             &bit_gen,   // bit_gen
             &rand_gen); // rand_gen
         const Algorithm no_op_algorithm = generator.NoOp();
@@ -344,8 +344,8 @@ namespace automl_zero
             function<IntegerT(void)>([&]() {
                 Algorithm random_algorithm = generator.Random();
                 return CountDifferentInstructions(random_algorithm, no_op_algorithm);
-            }),
-            Range<IntegerT>(0, total_instructions + 1), {total_instructions}));
+                }),
+            Range<IntegerT>(0, total_instructions + 1), { total_instructions }));
     }
 
     TEST(GeneratorTest, RandomInstructionsProducesCorrectComponentFunctionSizes)
@@ -357,15 +357,15 @@ namespace automl_zero
             2,               // setup_size_init
             4,               // predict_size_init
             5,               // learn_size_init
-            {NO_OP, SCALAR_SUM_OP, MATRIX_VECTOR_PRODUCT_OP, VECTOR_MEAN_OP},
-            {NO_OP, SCALAR_SUM_OP, MATRIX_VECTOR_PRODUCT_OP, VECTOR_MEAN_OP},
-            {NO_OP, SCALAR_SUM_OP, MATRIX_VECTOR_PRODUCT_OP, VECTOR_MEAN_OP},
+            { NO_OP, SCALAR_SUM_OP, MATRIX_VECTOR_PRODUCT_OP, VECTOR_MEAN_OP },
+            { NO_OP, SCALAR_SUM_OP, MATRIX_VECTOR_PRODUCT_OP, VECTOR_MEAN_OP },
+            { NO_OP, SCALAR_SUM_OP, MATRIX_VECTOR_PRODUCT_OP, VECTOR_MEAN_OP },
             &bit_gen,   // bit_gen
             &rand_gen); // rand_gen
         Algorithm algorithm = generator.Random();
-        EXPECT_EQ(algorithm.setup_.size(), 2);
-        EXPECT_EQ(algorithm.predict_.size(), 4);
-        EXPECT_EQ(algorithm.learn_.size(), 5);
+        EXPECT_EQ(algorithm.setup_.instructions.size(), 2);
+        EXPECT_EQ(algorithm.predict_.instructions.size(), 4);
+        EXPECT_EQ(algorithm.learn_.instructions.size(), 5);
     }
 
     TEST(GeneratorTest, GzHasCorrectComponentFunctionSizes)
@@ -381,9 +381,9 @@ namespace automl_zero
             nullptr,         // bit_gen, irrelevant.
             nullptr);        // rand_gen, irrelevant.
         Algorithm algorithm = generator.LinearModel(kDefaultLearningRate);
-        EXPECT_EQ(algorithm.setup_.size(), 1);
-        EXPECT_EQ(algorithm.predict_.size(), 1);
-        EXPECT_EQ(algorithm.learn_.size(), 4);
+        EXPECT_EQ(algorithm.setup_.instructions.size(), 1);
+        EXPECT_EQ(algorithm.predict_.instructions.size(), 1);
+        EXPECT_EQ(algorithm.learn_.instructions.size(), 4);
     }
 
     TEST(GeneratorTest, GzTildeGzHasCorrectComponentFunctionSizes)
@@ -400,9 +400,9 @@ namespace automl_zero
             nullptr);        // rand_gen, irrelevant.
         Algorithm algorithm =
             generator.UnitTestNeuralNetNoBiasNoGradient(kDefaultLearningRate);
-        EXPECT_EQ(algorithm.setup_.size(), 2);
-        EXPECT_EQ(algorithm.predict_.size(), 4);
-        EXPECT_EQ(algorithm.learn_.size(), 11);
+        EXPECT_EQ(algorithm.setup_.instructions.size(), 2);
+        EXPECT_EQ(algorithm.predict_.instructions.size(), 4);
+        EXPECT_EQ(algorithm.learn_.instructions.size(), 11);
     }
 
     TEST(GeneratorTest, GzTildeGzPadsComponentFunctionSizesCorrectly)
@@ -419,9 +419,9 @@ namespace automl_zero
             nullptr);        // rand_gen, irrelevant.
         Algorithm algorithm =
             generator.UnitTestNeuralNetNoBiasNoGradient(kDefaultLearningRate);
-        EXPECT_EQ(algorithm.setup_.size(), 10);
-        EXPECT_EQ(algorithm.predict_.size(), 12);
-        EXPECT_EQ(algorithm.learn_.size(), 13);
+        EXPECT_EQ(algorithm.setup_.instructions.size(), 10);
+        EXPECT_EQ(algorithm.predict_.instructions.size(), 12);
+        EXPECT_EQ(algorithm.learn_.instructions.size(), 13);
     }
 
     TEST(GeneratorTest, GrTildeGrPadsComponentFunctionSizesCorrectly)
@@ -438,9 +438,9 @@ namespace automl_zero
             nullptr);        // rand_gen, irrelevant.
         Algorithm algorithm = generator.NeuralNet(
             kDefaultLearningRate, kDefaultInitScale, kDefaultInitScale);
-        EXPECT_EQ(algorithm.setup_.size(), 16);
-        EXPECT_EQ(algorithm.predict_.size(), 18);
-        EXPECT_EQ(algorithm.learn_.size(), 19);
+        EXPECT_EQ(algorithm.setup_.instructions.size(), 16);
+        EXPECT_EQ(algorithm.predict_.instructions.size(), 18);
+        EXPECT_EQ(algorithm.learn_.instructions.size(), 19);
     }
 
     TEST(GeneratorTest, GzPadsComponentFunctionSizesCorrectly)
@@ -456,9 +456,9 @@ namespace automl_zero
             nullptr,         // bit_gen, irrelevant.
             nullptr);        // rand_gen, irrelevant.
         Algorithm algorithm = generator.LinearModel(kDefaultLearningRate);
-        EXPECT_EQ(algorithm.setup_.size(), 10);
-        EXPECT_EQ(algorithm.predict_.size(), 12);
-        EXPECT_EQ(algorithm.learn_.size(), 13);
+        EXPECT_EQ(algorithm.setup_.instructions.size(), 10);
+        EXPECT_EQ(algorithm.predict_.instructions.size(), 12);
+        EXPECT_EQ(algorithm.learn_.instructions.size(), 13);
     }
 
 } // namespace automl_zero

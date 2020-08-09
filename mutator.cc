@@ -349,9 +349,9 @@ namespace automl_zero
     std::vector<std::shared_ptr<const Instruction>> &Mutator::getComponentFunction(Algorithm *algorithm, ComponentFunctionT componentFunction) {
         switch (componentFunction)
         {
-        case kSetupComponentFunction: return algorithm->setup_;
-        case kPredictComponentFunction: return algorithm->predict_;
-        case kLearnComponentFunction: return algorithm->learn_;
+        case kSetupComponentFunction: return algorithm->setup_.instructions;
+        case kPredictComponentFunction: return algorithm->predict_.instructions;
+        case kLearnComponentFunction: return algorithm->learn_.instructions;
         default: LOG(FATAL) << "Control flow should not reach here.";
         }
     }

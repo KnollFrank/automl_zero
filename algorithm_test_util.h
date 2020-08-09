@@ -43,13 +43,13 @@ MATCHER_P(DnaSharedPtrHasId, algorithm_id, "") {
 // Matcher to check the ID tag of a Algorithm.
 MATCHER_P(DnaSharedPtrPtrHasId, algorithm_id, "") {
   return (*arg)->predict_[0]->GetIntegerData() == algorithm_id;
-}
+} 
 
 // Matcher to check the ID tag of a serialized Algorithm.
 MATCHER_P(SerializedAlgorithmHasId, algorithm_id, "") {
   Algorithm algorithm;
   algorithm.FromProto(arg);
-  return algorithm.predict_[0]->GetIntegerData() == algorithm_id;
+  return algorithm.predict_.instructions[0]->GetIntegerData() == algorithm_id;
 }
 
 // Method to change the ID tag of a Algorithm in place.

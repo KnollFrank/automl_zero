@@ -82,12 +82,12 @@ namespace automl_zero {
             &bit_gen,
             &rand_gen);
         const Algorithm algorithm = SimpleRandomAlgorithm();
-        const IntegerT original_size = algorithm.predict_.size();
+        const IntegerT original_size = algorithm.predict_.instructions.size();
         EXPECT_TRUE(IsEventually(
             function<IntegerT(void)>([&]() {
                 auto mutated_algorithm = make_shared<const Algorithm>(algorithm);
                 mutator.Mutate(&mutated_algorithm);
-                return static_cast<IntegerT>(mutated_algorithm->predict_.size());
+                return static_cast<IntegerT>(mutated_algorithm->predict_.instructions.size());
                 }),
                 { original_size - 1, original_size, original_size + 1 },
             { original_size - 1, original_size, original_size + 1 }));
@@ -109,12 +109,12 @@ namespace automl_zero {
             &bit_gen,
             &rand_gen);
         const Algorithm algorithm = SimpleRandomAlgorithm();
-        const IntegerT original_size = algorithm.predict_.size();
+        const IntegerT original_size = algorithm.predict_.instructions.size();
         EXPECT_TRUE(IsEventually(
             function<IntegerT(void)>([&]() {
                 auto mutated_algorithm = make_shared<const Algorithm>(algorithm);
                 mutator.Mutate(&mutated_algorithm);
-                return static_cast<IntegerT>(mutated_algorithm->predict_.size());
+                return static_cast<IntegerT>(mutated_algorithm->predict_.instructions.size());
                 }),
                 { original_size, original_size + 1 },
             { original_size, original_size + 1 }));
@@ -337,9 +337,9 @@ namespace automl_zero {
         RandomGenerator rand_gen;
         const Algorithm algorithm = SimpleRandomAlgorithm();
         Mutator mutator;
-        const IntegerT setup_size = algorithm.setup_.size();
-        const IntegerT predict_size = algorithm.predict_.size();
-        const IntegerT learn_size = algorithm.learn_.size();
+        const IntegerT setup_size = algorithm.setup_.instructions.size();
+        const IntegerT predict_size = algorithm.predict_.instructions.size();
+        const IntegerT learn_size = algorithm.learn_.instructions.size();
         vector<IntegerT> num_instr ={ setup_size, predict_size, learn_size };
         const IntegerT max_instructions =
             *max_element(num_instr.begin(), num_instr.end());
@@ -418,7 +418,7 @@ namespace automl_zero {
 
     TEST(InsertInstructionMutationTypeTest, CoversSetupPositions) {
         const Algorithm no_op_algorithm = SimpleNoOpAlgorithm();
-        const IntegerT component_function_size = no_op_algorithm.setup_.size();
+        const IntegerT component_function_size = no_op_algorithm.setup_.instructions.size();
         mt19937 bit_gen;
         RandomGenerator rand_gen(&bit_gen);
         Mutator mutator(
@@ -435,7 +435,7 @@ namespace automl_zero {
             function<IntegerT(void)>([&mutator, no_op_algorithm]() {
                 auto mutated_algorithm = make_shared<const Algorithm>(no_op_algorithm);
                 mutator.Mutate(&mutated_algorithm);
-                return ScalarSumOpPosition(mutated_algorithm->setup_);
+                return ScalarSumOpPosition(mutated_algorithm->setup_.instructions);
                 }),
             Range<IntegerT>(0, component_function_size + 1),
                     Range<IntegerT>(0, component_function_size + 1),
@@ -444,7 +444,7 @@ namespace automl_zero {
 
     TEST(InsertInstructionMutationTypeTest, CoversPredictPositions) {
         const Algorithm no_op_algorithm = SimpleNoOpAlgorithm();
-        const IntegerT component_function_size = no_op_algorithm.predict_.size();
+        const IntegerT component_function_size = no_op_algorithm.predict_.instructions.size();
         mt19937 bit_gen;
         RandomGenerator rand_gen(&bit_gen);
         Mutator mutator(
@@ -461,7 +461,7 @@ namespace automl_zero {
             function<IntegerT(void)>([&mutator, no_op_algorithm]() {
                 auto mutated_algorithm = make_shared<const Algorithm>(no_op_algorithm);
                 mutator.Mutate(&mutated_algorithm);
-                return ScalarSumOpPosition(mutated_algorithm->predict_);
+                return ScalarSumOpPosition(mutated_algorithm->predict_.instructions);
                 }),
             Range<IntegerT>(0, component_function_size + 1),
                     Range<IntegerT>(0, component_function_size + 1),
@@ -470,7 +470,7 @@ namespace automl_zero {
 
     TEST(InsertInstructionMutationTypeTest, CoversLearnPositions) {
         const Algorithm no_op_algorithm = SimpleNoOpAlgorithm();
-        const IntegerT component_function_size = no_op_algorithm.learn_.size();
+        const IntegerT component_function_size = no_op_algorithm.learn_.instructions.size();
         mt19937 bit_gen;
         RandomGenerator rand_gen(&bit_gen);
         Mutator mutator(
@@ -487,7 +487,7 @@ namespace automl_zero {
             function<IntegerT(void)>([&mutator, no_op_algorithm]() {
                 auto mutated_algorithm = make_shared<const Algorithm>(no_op_algorithm);
                 mutator.Mutate(&mutated_algorithm);
-                return ScalarSumOpPosition(mutated_algorithm->learn_);
+                return ScalarSumOpPosition(mutated_algorithm->learn_.instructions);
                 }),
             Range<IntegerT>(0, component_function_size + 1),
                     Range<IntegerT>(0, component_function_size + 1),
@@ -496,10 +496,10 @@ namespace automl_zero {
 
     TEST(InsertInstructionMutationTypeTest, InsertsWhenUnderMinSize) {
         const Algorithm no_op_algorithm = SimpleNoOpAlgorithm();
-        const IntegerT setup_component_function_size = no_op_algorithm.setup_.size();
+        const IntegerT setup_component_function_size = no_op_algorithm.setup_.instructions.size();
         const IntegerT predict_component_function_size =
-            no_op_algorithm.predict_.size();
-        const IntegerT learn_component_function_size = no_op_algorithm.learn_.size();
+            no_op_algorithm.predict_.instructions.size();
+        const IntegerT learn_component_function_size = no_op_algorithm.learn_.instructions.size();
         mt19937 bit_gen;
         RandomGenerator rand_gen(&bit_gen);
         Mutator mutator(
@@ -513,11 +513,11 @@ namespace automl_zero {
             &bit_gen, &rand_gen);
         auto mutated_algorithm = make_shared<const Algorithm>(no_op_algorithm);
         mutator.Mutate(&mutated_algorithm);
-        EXPECT_TRUE(mutated_algorithm->setup_.size() ==
+        EXPECT_TRUE(mutated_algorithm->setup_.instructions.size() ==
             setup_component_function_size + 1 ||
-            mutated_algorithm->predict_.size() ==
+            mutated_algorithm->predict_.instructions.size() ==
             predict_component_function_size + 1 ||
-            mutated_algorithm->learn_.size() ==
+            mutated_algorithm->learn_.instructions.size() ==
             learn_component_function_size + 1);
     }
 
@@ -556,8 +556,8 @@ namespace automl_zero {
             function<IntegerT(void)>([&mutator, empty_algorithm]() {
                 auto mutated_algorithm = make_shared<const Algorithm>(empty_algorithm);
                 mutator.Mutate(&mutated_algorithm);
-                if (mutated_algorithm->setup_.size() == 1) {
-                    return static_cast<IntegerT>(mutated_algorithm->setup_[0]->op_);
+                if (mutated_algorithm->setup_.instructions.size() == 1) {
+                    return static_cast<IntegerT>(mutated_algorithm->setup_.instructions[0]->op_);
                 }
                 else {
                     return static_cast<IntegerT>(-1);
@@ -583,8 +583,8 @@ namespace automl_zero {
             function<IntegerT(void)>([&mutator, empty_algorithm]() {
                 auto mutated_algorithm = make_shared<const Algorithm>(empty_algorithm);
                 mutator.Mutate(&mutated_algorithm);
-                if (mutated_algorithm->predict_.size() == 1) {
-                    return static_cast<IntegerT>(mutated_algorithm->predict_[0]->op_);
+                if (mutated_algorithm->predict_.instructions.size() == 1) {
+                    return static_cast<IntegerT>(mutated_algorithm->predict_.instructions[0]->op_);
                 }
                 else {
                     return static_cast<IntegerT>(-1);
@@ -610,8 +610,8 @@ namespace automl_zero {
             function<IntegerT(void)>([&mutator, empty_algorithm]() {
                 auto mutated_algorithm = make_shared<const Algorithm>(empty_algorithm);
                 mutator.Mutate(&mutated_algorithm);
-                if (mutated_algorithm->learn_.size() == 1) {
-                    return static_cast<IntegerT>(mutated_algorithm->learn_[0]->op_);
+                if (mutated_algorithm->learn_.instructions.size() == 1) {
+                    return static_cast<IntegerT>(mutated_algorithm->learn_.instructions[0]->op_);
                 }
                 else {
                     return static_cast<IntegerT>(-1);
@@ -641,7 +641,7 @@ namespace automl_zero {
 
     TEST(RemoveInstructionMutationTypeTest, CoversSetupPositions) {
         const Algorithm algorithm = SimpleIncreasingDataAlgorithm();
-        const IntegerT component_function_size = algorithm.setup_.size();
+        const IntegerT component_function_size = algorithm.setup_.instructions.size();
         mt19937 bit_gen;
         RandomGenerator rand_gen(&bit_gen);
         Mutator mutator(
@@ -659,7 +659,7 @@ namespace automl_zero {
                 auto mutated_algorithm = make_shared<const Algorithm>(algorithm);
                 mutator.Mutate(&mutated_algorithm);
                 return MissingDataInComponentFunction(
-                    algorithm.setup_, mutated_algorithm->setup_);
+                    algorithm.setup_.instructions, mutated_algorithm->setup_.instructions);
                 }),
             Range<IntegerT>(0, component_function_size),
                     Range<IntegerT>(0, component_function_size),
@@ -668,7 +668,7 @@ namespace automl_zero {
 
     TEST(RemoveInstructionMutationTypeTest, CoversPredictPositions) {
         const Algorithm algorithm = SimpleIncreasingDataAlgorithm();
-        const IntegerT component_function_size = algorithm.predict_.size();
+        const IntegerT component_function_size = algorithm.predict_.instructions.size();
         mt19937 bit_gen;
         RandomGenerator rand_gen(&bit_gen);
         Mutator mutator(
@@ -686,7 +686,7 @@ namespace automl_zero {
                 auto mutated_algorithm = make_shared<const Algorithm>(algorithm);
                 mutator.Mutate(&mutated_algorithm);
                 return MissingDataInComponentFunction(
-                    algorithm.predict_, mutated_algorithm->predict_);
+                    algorithm.predict_.instructions, mutated_algorithm->predict_.instructions);
                 }),
             Range<IntegerT>(0, component_function_size),
                     Range<IntegerT>(0, component_function_size),
@@ -695,7 +695,7 @@ namespace automl_zero {
 
     TEST(RemoveInstructionMutationTypeTest, CoversLearnPositions) {
         const Algorithm algorithm = SimpleIncreasingDataAlgorithm();
-        const IntegerT component_function_size = algorithm.learn_.size();
+        const IntegerT component_function_size = algorithm.learn_.instructions.size();
         mt19937 bit_gen;
         RandomGenerator rand_gen(&bit_gen);
         Mutator mutator(
@@ -713,7 +713,7 @@ namespace automl_zero {
                 auto mutated_algorithm = make_shared<const Algorithm>(algorithm);
                 mutator.Mutate(&mutated_algorithm);
                 return MissingDataInComponentFunction(
-                    algorithm.learn_, mutated_algorithm->learn_);
+                    algorithm.learn_.instructions, mutated_algorithm->learn_.instructions);
                 }),
             Range<IntegerT>(0, component_function_size),
                     Range<IntegerT>(0, component_function_size),
@@ -740,10 +740,10 @@ namespace automl_zero {
 
     TEST(RemoveInstructionMutationTypeTest, RemovesWhenOverMaxSize) {
         const Algorithm no_op_algorithm = SimpleNoOpAlgorithm();
-        const IntegerT setup_component_function_size = no_op_algorithm.setup_.size();
+        const IntegerT setup_component_function_size = no_op_algorithm.setup_.instructions.size();
         const IntegerT predict_component_function_size =
-            no_op_algorithm.predict_.size();
-        const IntegerT learn_component_function_size = no_op_algorithm.learn_.size();
+            no_op_algorithm.predict_.instructions.size();
+        const IntegerT learn_component_function_size = no_op_algorithm.learn_.instructions.size();
         mt19937 bit_gen;
         RandomGenerator rand_gen(&bit_gen);
         Mutator mutator(
@@ -757,11 +757,11 @@ namespace automl_zero {
             &bit_gen, &rand_gen);
         auto mutated_algorithm = make_shared<const Algorithm>(no_op_algorithm);
         mutator.Mutate(&mutated_algorithm);
-        EXPECT_TRUE(mutated_algorithm->setup_.size() ==
+        EXPECT_TRUE(mutated_algorithm->setup_.instructions.size() ==
             setup_component_function_size - 1 ||
-            mutated_algorithm->predict_.size() ==
+            mutated_algorithm->predict_.instructions.size() ==
             predict_component_function_size - 1 ||
-            mutated_algorithm->learn_.size() ==
+            mutated_algorithm->learn_.instructions.size() ==
             learn_component_function_size - 1);
     }
 
@@ -796,18 +796,18 @@ namespace automl_zero {
             &bit_gen, &rand_gen);
         auto mutated_algorithm = make_shared<const Algorithm>(random_algorithm);
         mutator.Mutate(&mutated_algorithm);
-        EXPECT_EQ(mutated_algorithm->setup_.size(), random_algorithm.setup_.size());
-        EXPECT_EQ(mutated_algorithm->predict_.size(), random_algorithm.predict_.size());
-        EXPECT_EQ(mutated_algorithm->learn_.size(), random_algorithm.learn_.size());
+        EXPECT_EQ(mutated_algorithm->setup_.instructions.size(), random_algorithm.setup_.instructions.size());
+        EXPECT_EQ(mutated_algorithm->predict_.instructions.size(), random_algorithm.predict_.instructions.size());
+        EXPECT_EQ(mutated_algorithm->learn_.instructions.size(), random_algorithm.learn_.instructions.size());
     }
 
     TEST(MutatorTest, RandomizeAlgorithm) {
         RandomGenerator rand_gen;
         mt19937 bit_gen;
         const Algorithm algorithm = SimpleRandomAlgorithm();
-        const IntegerT setup_size = algorithm.setup_.size();
-        const IntegerT predict_size = algorithm.predict_.size();
-        const IntegerT learn_size = algorithm.learn_.size();
+        const IntegerT setup_size = algorithm.setup_.instructions.size();
+        const IntegerT predict_size = algorithm.predict_.instructions.size();
+        const IntegerT learn_size = algorithm.learn_.instructions.size();
         Mutator mutator(
             ParseTextFormat<MutationTypeList>(
                 "mutation_types: [RANDOMIZE_ALGORITHM_MUTATION_TYPE] "),

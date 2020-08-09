@@ -22,57 +22,58 @@
 
 #include "algorithm.pb.h"
 #include "instruction.h"
+#include "componentfunction.h"
 #include "absl/flags/flag.h"
 
 namespace automl_zero {
 
-class RandomGenerator;
+    class RandomGenerator;
 
-// Denotes one of the three component functions in the Algorithm.
-enum ComponentFunctionT : IntegerT {
-  kSetupComponentFunction = 0,
-  kPredictComponentFunction = 1,
-  kLearnComponentFunction = 2
-};
+    // Denotes one of the three component functions in the Algorithm.
+    enum ComponentFunctionT : IntegerT {
+        kSetupComponentFunction = 0,
+        kPredictComponentFunction = 1,
+        kLearnComponentFunction = 2
+    };
 
-// The Algorithm describing an individual.
-// NOTE: the default constructor does NOT serve as a way to initialize the
-// Instruction.
-class Algorithm {
- public:
-  // A Algorithm without any instructions.
-  Algorithm() {}
+    // The Algorithm describing an individual.
+    // NOTE: the default constructor does NOT serve as a way to initialize the
+    // Instruction.
+    class Algorithm {
+    public:
+        // A Algorithm without any instructions.
+        Algorithm() {}
 
-  explicit Algorithm(const SerializedAlgorithm& checkpoint_algorithm);
+        explicit Algorithm(const SerializedAlgorithm& checkpoint_algorithm);
 
-  Algorithm(const Algorithm& other);
-  Algorithm& operator=(const Algorithm& other);
-  Algorithm(Algorithm&& other);
-  Algorithm& operator=(Algorithm&& other);
+        Algorithm(const Algorithm& other);
+        Algorithm& operator=(const Algorithm& other);
+        Algorithm(Algorithm&& other);
+        Algorithm& operator=(Algorithm&& other);
 
-  bool operator ==(const Algorithm& other) const;
-  bool operator !=(const Algorithm& other) const {
-    return !(*this == other);
-  }
+        bool operator ==(const Algorithm& other) const;
+        bool operator !=(const Algorithm& other) const {
+            return !(*this == other);
+        }
 
-  // Returns a human-readable representation.
-  std::string ToReadable() const;
+        // Returns a human-readable representation.
+        std::string ToReadable() const;
 
-  // Serializes/deserializes a Algorithm to/from a amlz-specific proto.
-  SerializedAlgorithm ToProto() const;
-  void FromProto(const SerializedAlgorithm& checkpoint_algorithm);
+        // Serializes/deserializes a Algorithm to/from a amlz-specific proto.
+        SerializedAlgorithm ToProto() const;
+        void FromProto(const SerializedAlgorithm& checkpoint_algorithm);
 
-  // Returns a reference to the given component function in the Algorithm.
-  const std::vector<std::shared_ptr<const Instruction>>&
-      ComponentFunction(ComponentFunctionT component_function_type) const;
-  std::vector<std::shared_ptr<const Instruction>>* MutableComponentFunction(
-      ComponentFunctionT component_function_type);
+        // Returns a reference to the given component function in the Algorithm.
+        const std::vector<std::shared_ptr<const Instruction>>&
+            ComponentFunction(ComponentFunctionT component_function_type) const;
+        std::vector<std::shared_ptr<const Instruction>>* MutableComponentFunction(
+            ComponentFunctionT component_function_type);
 
-  // Setup, predict, and learn component functions.
-  std::vector<std::shared_ptr<const Instruction>> setup_;
-  std::vector<std::shared_ptr<const Instruction>> predict_;
-  std::vector<std::shared_ptr<const Instruction>> learn_;
-};
+        // Setup, predict, and learn component functions.
+        automl_zero::ComponentFunction setup_;
+        automl_zero::ComponentFunction predict_;
+        automl_zero::ComponentFunction learn_;
+    };
 
 }  // namespace automl_zero
 
