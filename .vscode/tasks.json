@@ -53,6 +53,15 @@
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "label": "Build Algorithm Test",
+            "type": "shell",
+            "command": "bazel build --compilation_mode=dbg //:algorithm_test",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
         }
     ]
 }
