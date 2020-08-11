@@ -1201,8 +1201,7 @@ namespace automl_zero
         num_train_steps_completed_(0)
     {
         memory_.Wipe();
-        for (const std::shared_ptr<const Instruction> &instruction :
-            algorithm_.setup_.instructions)
+        for (const std::shared_ptr<const Instruction> &instruction : algorithm_.setup_.instructions)
         {
             ExecuteInstruction(*instruction, rand_gen_, &memory_);
         }

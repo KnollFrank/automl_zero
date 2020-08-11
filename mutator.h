@@ -127,7 +127,7 @@ namespace automl_zero {
 
         // Returns which component function to mutate.
         ComponentFunctionT RandomComponentFunction();
-        std::vector<std::shared_ptr<const Instruction>> &getComponentFunction(Algorithm *algorithm, ComponentFunctionT componentFunction);
+        ComponentFunction &getComponentFunction(Algorithm *algorithm, ComponentFunctionT componentFunction);
         InstructionIndexT getMaxSize(ComponentFunctionT componentFunction);
         InstructionIndexT getMinSize(ComponentFunctionT componentFunction);
 

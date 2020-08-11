@@ -172,22 +172,22 @@ namespace automl_zero
 
     void Mutator::AlterParam(Algorithm *algorithm)
     {
-        std::vector<std::shared_ptr<const Instruction>> &componentFunction = getComponentFunction(algorithm, RandomComponentFunction());
-        if (!componentFunction.empty())
+        ComponentFunction &componentFunction = getComponentFunction(algorithm, RandomComponentFunction());
+        if (!componentFunction.instructions.empty())
         {
-            InstructionIndexT index = RandomInstructionIndex(componentFunction.size());
-            componentFunction[index] = make_shared<const Instruction>(*componentFunction[index], rand_gen_);
+            InstructionIndexT index = RandomInstructionIndex(componentFunction.instructions.size());
+            componentFunction.instructions[index] = make_shared<const Instruction>(*componentFunction.instructions[index], rand_gen_);
         }
     }
 
     void Mutator::RandomizeInstruction(Algorithm *algorithm)
     {
         ComponentFunctionT componentFunctionType = RandomComponentFunction();
-        std::vector<std::shared_ptr<const Instruction>> &componentFunction = getComponentFunction(algorithm, componentFunctionType);
-        if (!componentFunction.empty())
+        ComponentFunction &componentFunction = getComponentFunction(algorithm, componentFunctionType);
+        if (!componentFunction.instructions.empty())
         {
-            InstructionIndexT index = RandomInstructionIndex(componentFunction.size());
-            componentFunction[index] = make_shared<const Instruction>(getRandomOp(componentFunctionType), rand_gen_);
+            InstructionIndexT index = RandomInstructionIndex(componentFunction.instructions.size());
+            componentFunction.instructions[index] = make_shared<const Instruction>(getRandomOp(componentFunctionType), rand_gen_);
         }
     }
 
@@ -217,11 +217,11 @@ namespace automl_zero
     void Mutator::InsertInstruction(Algorithm *algorithm)
     {
         ComponentFunctionT componentFunctionType = RandomComponentFunction();
-        vector<shared_ptr<const Instruction>> &component_function = getComponentFunction(algorithm, componentFunctionType); // To modify.
+        ComponentFunction &component_function = getComponentFunction(algorithm, componentFunctionType); // To modify.
         InstructionIndexT maxSize = getMaxSize(componentFunctionType);
-        if (component_function.size() >= maxSize - 1)
+        if (component_function.instructions.size() >= maxSize - 1)
             return;
-        InsertInstructionUnconditionally(getRandomOp(componentFunctionType), &component_function);
+        InsertInstructionUnconditionally(getRandomOp(componentFunctionType), &component_function.instructions);
     }
 
     InstructionIndexT Mutator::getMaxSize(ComponentFunctionT componentFunction) {
@@ -245,20 +245,20 @@ namespace automl_zero
     void Mutator::RemoveInstruction(Algorithm *algorithm)
     {
         ComponentFunctionT componentFunctionType = RandomComponentFunction();
-        vector<shared_ptr<const Instruction>> &component_function = getComponentFunction(algorithm, componentFunctionType); // To modify.
+        ComponentFunction &component_function = getComponentFunction(algorithm, componentFunctionType); // To modify.
         InstructionIndexT minSize = getMinSize(componentFunctionType);
-        if (component_function.size() <= minSize)
+        if (component_function.instructions.size() <= minSize)
             return;
-        RemoveInstructionUnconditionally(&component_function);
+        RemoveInstructionUnconditionally(&component_function.instructions);
     }
 
     void Mutator::TradeInstruction(Algorithm *algorithm)
     {
         ComponentFunctionT componentFunctionType = RandomComponentFunction();
-        vector<shared_ptr<const Instruction>> &component_function = getComponentFunction(algorithm, componentFunctionType); // To modify.
+        ComponentFunction &component_function = getComponentFunction(algorithm, componentFunctionType); // To modify.
 
-        InsertInstructionUnconditionally(getRandomOp(componentFunctionType), &component_function);
-        RemoveInstructionUnconditionally(&component_function);
+        InsertInstructionUnconditionally(getRandomOp(componentFunctionType), &component_function.instructions);
+        RemoveInstructionUnconditionally(&component_function.instructions);
     }
 
     void Mutator::RandomizeAlgorithm(Algorithm *algorithm)
@@ -346,12 +346,12 @@ namespace automl_zero
         return allowed_component_functions[index];
     }
 
-    std::vector<std::shared_ptr<const Instruction>> &Mutator::getComponentFunction(Algorithm *algorithm, ComponentFunctionT componentFunction) {
+    ComponentFunction &Mutator::getComponentFunction(Algorithm *algorithm, ComponentFunctionT componentFunction) {
         switch (componentFunction)
         {
-        case kSetupComponentFunction: return algorithm->setup_.instructions;
-        case kPredictComponentFunction: return algorithm->predict_.instructions;
-        case kLearnComponentFunction: return algorithm->learn_.instructions;
+        case kSetupComponentFunction: return algorithm->setup_;
+        case kPredictComponentFunction: return algorithm->predict_;
+        case kLearnComponentFunction: return algorithm->learn_;
         default: LOG(FATAL) << "Control flow should not reach here.";
         }
     }
