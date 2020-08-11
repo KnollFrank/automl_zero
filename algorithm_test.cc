@@ -32,102 +32,102 @@
 #include "gtest/gtest.h"
 
 namespace automl_zero {
-namespace {
+    namespace {
 
-using ::std::make_shared;  // NOLINT
+        using ::std::make_shared;  // NOLINT
 
-TEST(AlgorithmTest, DefaultConstructionProducesCorrectComponentFunctionSizes) {
-  Algorithm algorithm;
-  EXPECT_EQ(algorithm.setup_.instructions.size(), 0);
-  EXPECT_EQ(algorithm.predict_.instructions.size(), 0);
-  EXPECT_EQ(algorithm.learn_.instructions.size(), 0);
-}
+        TEST(AlgorithmTest, DefaultConstructionProducesCorrectComponentFunctionSizes) {
+            Algorithm algorithm;
+            EXPECT_EQ(algorithm.setup_.size(), 0);
+            EXPECT_EQ(algorithm.predict_.size(), 0);
+            EXPECT_EQ(algorithm.learn_.size(), 0);
+        }
 
-TEST(AlgorithmTest, CopyConstructor) {
-  Algorithm algorithm = SimpleRandomAlgorithm();
-  Algorithm algorithm_copy = algorithm;
-  EXPECT_TRUE(algorithm_copy == algorithm);
-}
+        TEST(AlgorithmTest, CopyConstructor) {
+            Algorithm algorithm = SimpleRandomAlgorithm();
+            Algorithm algorithm_copy = algorithm;
+            EXPECT_TRUE(algorithm_copy == algorithm);
+        }
 
-TEST(AlgorithmTest, CopyAssignmentOperator) {
-  Algorithm algorithm = SimpleRandomAlgorithm();
-  Algorithm algorithm_copy;
-  algorithm_copy = algorithm;
-  EXPECT_TRUE(algorithm_copy == algorithm);
-}
+        TEST(AlgorithmTest, CopyAssignmentOperator) {
+            Algorithm algorithm = SimpleRandomAlgorithm();
+            Algorithm algorithm_copy;
+            algorithm_copy = algorithm;
+            EXPECT_TRUE(algorithm_copy == algorithm);
+        }
 
-TEST(AlgorithmTest, MoveConstructor) {
-  Algorithm algorithm = SimpleRandomAlgorithm();
-  Algorithm algorithm_copy = algorithm;
-  Algorithm algorithm_move = std::move(algorithm);
-  EXPECT_TRUE(algorithm_move == algorithm_copy);
-}
+        TEST(AlgorithmTest, MoveConstructor) {
+            Algorithm algorithm = SimpleRandomAlgorithm();
+            Algorithm algorithm_copy = algorithm;
+            Algorithm algorithm_move = std::move(algorithm);
+            EXPECT_TRUE(algorithm_move == algorithm_copy);
+        }
 
-TEST(AlgorithmTest, MoveAssignmentOperator) {
-  Algorithm algorithm = SimpleRandomAlgorithm();
-  Algorithm algorithm_copy = algorithm;
-  Algorithm algorithm_move;
-  algorithm_move = std::move(algorithm);
-  EXPECT_TRUE(algorithm_move == algorithm_copy);
-}
+        TEST(AlgorithmTest, MoveAssignmentOperator) {
+            Algorithm algorithm = SimpleRandomAlgorithm();
+            Algorithm algorithm_copy = algorithm;
+            Algorithm algorithm_move;
+            algorithm_move = std::move(algorithm);
+            EXPECT_TRUE(algorithm_move == algorithm_copy);
+        }
 
-TEST(AlgorithmTest, CopyAssignmentOperator_SelfCopy) {
-  Algorithm algorithm = SimpleRandomAlgorithm();
-  Algorithm algorithm_copy = algorithm;
-  algorithm_copy = algorithm_copy;
-  EXPECT_TRUE(algorithm_copy == algorithm);
-}
+        TEST(AlgorithmTest, CopyAssignmentOperator_SelfCopy) {
+            Algorithm algorithm = SimpleRandomAlgorithm();
+            Algorithm algorithm_copy = algorithm;
+            algorithm_copy = algorithm_copy;
+            EXPECT_TRUE(algorithm_copy == algorithm);
+        }
 
-TEST(AlgorithmTest, EqualsOperator) {
-  Algorithm algorithm = SimpleNoOpAlgorithm();
-  algorithm.predict_.instructions[1] =
-      make_shared<const Instruction>(VECTOR_SUM_OP, 1, 2, 3);
+        TEST(AlgorithmTest, EqualsOperator) {
+            Algorithm algorithm = SimpleNoOpAlgorithm();
+            algorithm.predict_.instructions[1] =
+                make_shared<const Instruction>(VECTOR_SUM_OP, 1, 2, 3);
 
-  Algorithm algorithm_same = SimpleNoOpAlgorithm();
-  algorithm_same.predict_.instructions[1] =
-      make_shared<const Instruction>(VECTOR_SUM_OP, 1, 2, 3);
+            Algorithm algorithm_same = SimpleNoOpAlgorithm();
+            algorithm_same.predict_.instructions[1] =
+                make_shared<const Instruction>(VECTOR_SUM_OP, 1, 2, 3);
 
-  Algorithm algorithm_different_instruction = SimpleNoOpAlgorithm();
-  algorithm_different_instruction.predict_.instructions[1] =
-      make_shared<const Instruction>(VECTOR_SUM_OP, 1, 1, 3);
+            Algorithm algorithm_different_instruction = SimpleNoOpAlgorithm();
+            algorithm_different_instruction.predict_.instructions[1] =
+                make_shared<const Instruction>(VECTOR_SUM_OP, 1, 1, 3);
 
-  Algorithm algorithm_different_position = SimpleNoOpAlgorithm();
-  algorithm_different_position.predict_.instructions[0] =
-      make_shared<const Instruction>(VECTOR_SUM_OP, 1, 2, 3);
+            Algorithm algorithm_different_position = SimpleNoOpAlgorithm();
+            algorithm_different_position.predict_.instructions[0] =
+                make_shared<const Instruction>(VECTOR_SUM_OP, 1, 2, 3);
 
-  Algorithm algorithm_different_component_function = SimpleNoOpAlgorithm();
-  algorithm_different_component_function.learn_.instructions[0] =
-      make_shared<const Instruction>(VECTOR_SUM_OP, 1, 2, 3);
+            Algorithm algorithm_different_component_function = SimpleNoOpAlgorithm();
+            algorithm_different_component_function.learn_.instructions[0] =
+                make_shared<const Instruction>(VECTOR_SUM_OP, 1, 2, 3);
 
-  EXPECT_TRUE(algorithm == algorithm_same);
-  EXPECT_FALSE(algorithm != algorithm_same);
-  EXPECT_FALSE(algorithm == algorithm_different_instruction);
-  EXPECT_TRUE(algorithm != algorithm_different_instruction);
-  EXPECT_FALSE(algorithm == algorithm_different_position);
-  EXPECT_TRUE(algorithm != algorithm_different_position);
-  EXPECT_FALSE(algorithm == algorithm_different_component_function);
-  EXPECT_TRUE(algorithm != algorithm_different_component_function);
+            EXPECT_TRUE(algorithm == algorithm_same);
+            EXPECT_FALSE(algorithm != algorithm_same);
+            EXPECT_FALSE(algorithm == algorithm_different_instruction);
+            EXPECT_TRUE(algorithm != algorithm_different_instruction);
+            EXPECT_FALSE(algorithm == algorithm_different_position);
+            EXPECT_TRUE(algorithm != algorithm_different_position);
+            EXPECT_FALSE(algorithm == algorithm_different_component_function);
+            EXPECT_TRUE(algorithm != algorithm_different_component_function);
 
-  Algorithm random_algorithm = SimpleRandomAlgorithm();
-  Algorithm same_random_algorithm = random_algorithm;
-  EXPECT_TRUE(random_algorithm == same_random_algorithm);
-  EXPECT_FALSE(random_algorithm != same_random_algorithm);
-}
+            Algorithm random_algorithm = SimpleRandomAlgorithm();
+            Algorithm same_random_algorithm = random_algorithm;
+            EXPECT_TRUE(random_algorithm == same_random_algorithm);
+            EXPECT_FALSE(random_algorithm != same_random_algorithm);
+        }
 
-TEST(AlgorithmTest, ToFromProto) {
-  Algorithm algorithm_src = SimpleRandomAlgorithm();
-  Algorithm algorithm_dest;
-  algorithm_dest = SimpleNoOpAlgorithm();
-  algorithm_dest.FromProto(algorithm_src.ToProto());
-  EXPECT_TRUE(algorithm_dest == algorithm_src);
-}
+        TEST(AlgorithmTest, ToFromProto) {
+            Algorithm algorithm_src = SimpleRandomAlgorithm();
+            Algorithm algorithm_dest;
+            algorithm_dest = SimpleNoOpAlgorithm();
+            algorithm_dest.FromProto(algorithm_src.ToProto());
+            EXPECT_TRUE(algorithm_dest == algorithm_src);
+        }
 
-TEST(AlgorithmTest, ToFromProtoIntoDifferentComponentFunctionSizes) {
-  Algorithm algorithm_src = SimpleRandomAlgorithm();
-  Algorithm algorithm_dest;
-  algorithm_dest.FromProto(algorithm_src.ToProto());
-  EXPECT_TRUE(algorithm_dest == algorithm_src);
-}
+        TEST(AlgorithmTest, ToFromProtoIntoDifferentComponentFunctionSizes) {
+            Algorithm algorithm_src = SimpleRandomAlgorithm();
+            Algorithm algorithm_dest;
+            algorithm_dest.FromProto(algorithm_src.ToProto());
+            EXPECT_TRUE(algorithm_dest == algorithm_src);
+        }
 
-}  // namespace
+    }  // namespace
 }  // namespace automl_zero
