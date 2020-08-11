@@ -1702,9 +1702,9 @@ namespace automl_zero
                 3,
                 FloatDataSetter(IndexToFloat(2, 4)));
         memory_.scalar_[1] = 0.0;
-        memory_.vector_[3] = Vector<4>(((const vector<double>) {            
-0.0, 10.0, 20.0, 30.0        
-}).data());
+        memory_.vector_[3] = Vector<4>(((const vector<double>) {
+            0.0, 10.0, 20.0, 30.0
+        }).data());
 
         // When
         ExecuteInstruction(instruction, &train_rand_gen_, &memory_);
@@ -1718,9 +1718,9 @@ namespace automl_zero
     {
         // Given
         const Instruction &instruction = Instruction(VECTOR_SWAP_OP, 2, 3, 1);
-        memory_.vector_[1] = Vector<4>(((const vector<double>) {            
-0.0, 10.0, 20.0, 30.0        
-}).data());
+        memory_.vector_[1] = Vector<4>(((const vector<double>) {
+            0.0, 10.0, 20.0, 30.0
+        }).data());
         memory_.scalar_[2] = IndexToFloat(0, 4);
         memory_.scalar_[3] = IndexToFloat(2, 4);
 
@@ -1737,8 +1737,8 @@ namespace automl_zero
         // Given
         const Instruction &instruction = Instruction(VECTOR_SWAP_OP, 2, 3, 1);
         memory_.vector_[1] = Vector<4>(((const vector<double>) {
-            0.0, 10.0, 20.0, 30.0        
-}).data());
+            0.0, 10.0, 20.0, 30.0
+        }).data());
         memory_.scalar_[2] = IndexToFloat(-1, 4); // => IndexToFloat(0, 4)
         memory_.scalar_[3] = IndexToFloat(4, 4);  // => IndexToFloat(3, 4)
 
@@ -1754,9 +1754,9 @@ namespace automl_zero
     {
         // Given
         const Instruction &instruction = Instruction(VECTOR_SWAP_OP, 2, 3, 1);
-        memory_.vector_[1] = Vector<4>(((const vector<double>) {            
-0.0, 10.0, 20.0, 30.0        
-}).data());
+        memory_.vector_[1] = Vector<4>(((const vector<double>) {
+            0.0, 10.0, 20.0, 30.0
+        }).data());
         memory_.scalar_[2] = IndexToFloat(4, 4);  // => IndexToFloat(3, 4)
         memory_.scalar_[3] = IndexToFloat(-1, 4); // => IndexToFloat(0, 4)
 
@@ -1796,9 +1796,9 @@ namespace automl_zero
         const Instruction &instruction = Instruction(VECTOR_ARG_MIN_OP, 3, 1, 5);
         memory_.scalar_[1] = IndexToFloat(1, 4);
         memory_.scalar_[5] = -1;
-        memory_.vector_[3] = Vector<4>(((const vector<double>) {            
-0.0, 20.0, 10.0, 30.0        
-}).data());
+        memory_.vector_[3] = Vector<4>(((const vector<double>) {
+            0.0, 20.0, 10.0, 30.0
+        }).data());
 
         // When
         ExecuteInstruction(instruction, &train_rand_gen_, &memory_);
@@ -1814,8 +1814,8 @@ namespace automl_zero
         const Instruction &instruction = Instruction(VECTOR_ARG_MIN_OP, 3, 0, 5);
         memory_.scalar_[0] = IndexToFloat(0, 4);
         memory_.scalar_[5] = -1;
-        memory_.vector_[3] = Vector<4>(((const vector<double>) {            
-0.0, 20.0, 10.0, 30.0
+        memory_.vector_[3] = Vector<4>(((const vector<double>) {
+            0.0, 20.0, 10.0, 30.0
         }).data());
 
         // When
@@ -1833,9 +1833,9 @@ namespace automl_zero
         const Instruction &instruction = Instruction(VECTOR_ARG_MIN_OP, 3, 0, 5);
         memory_.scalar_[0] = indexTooLow; // => IndexToFloat(0, 4)
         memory_.scalar_[5] = -1;
-        memory_.vector_[3] = Vector<4>(((const vector<double>) {            
-0.0, 20.0, 10.0, 30.0        
-}).data());
+        memory_.vector_[3] = Vector<4>(((const vector<double>) {
+            0.0, 20.0, 10.0, 30.0
+        }).data());
 
         // When
         ExecuteInstruction(instruction, &train_rand_gen_, &memory_);
@@ -1852,9 +1852,9 @@ namespace automl_zero
         const Instruction &instruction = Instruction(VECTOR_ARG_MIN_OP, 3, 0, 5);
         memory_.scalar_[0] = indexTooHigh; // => IndexToFloat(3, 4)
         memory_.scalar_[5] = -1;
-        memory_.vector_[3] = Vector<4>(((const vector<double>) {            
-0.0, 20.0, 10.0, 30.0        
-}).data());
+        memory_.vector_[3] = Vector<4>(((const vector<double>) {
+            0.0, 20.0, 10.0, 30.0
+        }).data());
 
         // When
         ExecuteInstruction(instruction, &train_rand_gen_, &memory_);

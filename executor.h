@@ -138,6 +138,8 @@ namespace automl_zero
 
         const double max_abs_error_;
         IntegerT num_train_steps_completed_;
+
+        void ExecuteComponentFunction(const ComponentFunction &componentFunction);
     };
 
     // Fills the training and validation labels, using the given Algorithm and
@@ -1111,9 +1113,7 @@ namespace automl_zero
     };
 
     template <FeatureIndexT F>
-    inline void ExecuteInstruction(
-        const Instruction &instruction, RandomGenerator *rand_gen,
-        Memory<F> *memory)
+    inline void ExecuteInstruction(const Instruction &instruction, RandomGenerator *rand_gen, Memory<F> *memory)
     {
         (*kOpIndexToExecuteFunction<F>[instruction.op_])(
             instruction, rand_gen, memory);
@@ -1201,10 +1201,24 @@ namespace automl_zero
         num_train_steps_completed_(0)
     {
         memory_.Wipe();
-        for (const std::shared_ptr<const Instruction> &instruction : algorithm_.setup_.instructions)
+        ExecuteComponentFunction(algorithm_.setup_);
+    }
+
+    template <FeatureIndexT F>
+    void ExecuteComponentFunction_(
+        const ComponentFunction &componentFunction,
+        Memory<F> *memory,
+        RandomGenerator *rand_gen_)
+    {
+        for (const std::shared_ptr<const Instruction> &instruction : componentFunction.instructions)
         {
-            ExecuteInstruction(*instruction, rand_gen_, &memory_);
+            ExecuteInstruction(*instruction, rand_gen_, memory);
         }
+    }
+
+    template <FeatureIndexT F>
+    void Executor<F>::ExecuteComponentFunction(const ComponentFunction &componentFunction) {
+        ExecuteComponentFunction_(componentFunction, &memory_, rand_gen_);
     }
 
     template <FeatureIndexT F>
@@ -1329,11 +1343,7 @@ namespace automl_zero
             const Vector<F> &features = train_it->GetFeatures();
             memory_.vector_[k_FEATURES_VECTOR_ADDRESS] = features;
             ZeroLabelAssigner<F>::Assign(&memory_);
-            for (const std::shared_ptr<const Instruction> &instruction :
-                algorithm_.predict_.instructions)
-            {
-                ExecuteInstruction(*instruction, rand_gen_, &memory_);
-            }
+            ExecuteComponentFunction(algorithm_.predict_);
 
             if (dataset_.eval_type_ == ACCURACY)
             {
@@ -1355,11 +1365,7 @@ namespace automl_zero
             // Run learn component function for this example.
             memory_.vector_[k_FEATURES_VECTOR_ADDRESS] = features;
             LabelAssigner<F>::Assign(label, &memory_);
-            for (const std::shared_ptr<const Instruction> &instruction :
-                algorithm_.learn_.instructions)
-            {
-                ExecuteInstruction(*instruction, rand_gen_, &memory_);
-            }
+            ExecuteComponentFunction(algorithm_.learn_);
 
             // Check whether we are done.
             train_it->Next();
@@ -1386,8 +1392,7 @@ namespace automl_zero
             optimized_predict_component_function;
         typename std::array<Instruction, max_component_function_size>::iterator
             optimized_predict_instr_it = optimized_predict_component_function.begin();
-        for (const std::shared_ptr<const Instruction> &predict_instr :
-            algorithm_.predict_.instructions)
+        for (const std::shared_ptr<const Instruction> &predict_instr : algorithm_.predict_.instructions)
         {
             *optimized_predict_instr_it = *predict_instr;
             ++optimized_predict_instr_it;
@@ -1398,8 +1403,7 @@ namespace automl_zero
             optimized_learn_component_function;
         typename std::array<Instruction, max_component_function_size>::iterator
             optimized_learn_instr_it = optimized_learn_component_function.begin();
-        for (const std::shared_ptr<const Instruction> &learn_instr :
-            algorithm_.learn_.instructions)
+        for (const std::shared_ptr<const Instruction> &learn_instr : algorithm_.learn_.instructions)
         {
             *optimized_learn_instr_it = *learn_instr;
             ++optimized_learn_instr_it;
@@ -1567,11 +1571,7 @@ namespace automl_zero
             const Vector<F> &features = valid_it.GetFeatures();
             memory_.vector_[k_FEATURES_VECTOR_ADDRESS] = features;
             ZeroLabelAssigner<F>::Assign(&memory_);
-            for (const std::shared_ptr<const Instruction> &instruction :
-                algorithm_.predict_.instructions)
-            {
-                ExecuteInstruction(*instruction, rand_gen_, &memory_);
-            }
+            ExecuteComponentFunction(algorithm_.predict_);
 
             // Accumulate the loss.
             double error = 0.0;
@@ -1647,7 +1647,9 @@ namespace automl_zero
     }
 
     template <FeatureIndexT F>
-    void ExecuteAndFillLabels(const Algorithm &algorithm, Memory<F> *memory,
+    void ExecuteAndFillLabels(
+        const Algorithm &algorithm,
+        Memory<F> *memory,
         TaskBuffer<F> *buffer,
         RandomGenerator *rand_gen)
     {
@@ -1658,11 +1660,7 @@ namespace automl_zero
             // Run predict component function for this example.
             memory->vector_[k_FEATURES_VECTOR_ADDRESS] = train_features;
             ZeroLabelAssigner<F>::Assign(memory);
-            for (const std::shared_ptr<const Instruction> &instruction :
-                algorithm.predict_.instructions)
-            {
-                ExecuteInstruction(*instruction, rand_gen, memory);
-            }
+            ExecuteComponentFunction_(algorithm.predict_, memory, rand_gen);
             *train_label_it = PredictionGetter<F>::Get(memory);
             ++train_label_it;
         }
@@ -1674,11 +1672,7 @@ namespace automl_zero
             // Run predict component function for this example.
             memory->vector_[k_FEATURES_VECTOR_ADDRESS] = valid_features;
             ZeroLabelAssigner<F>::Assign(memory);
-            for (const std::shared_ptr<const Instruction> &instruction :
-                algorithm.predict_.instructions)
-            {
-                ExecuteInstruction(*instruction, rand_gen, memory);
-            }
+            ExecuteComponentFunction_(algorithm.predict_, memory, rand_gen);
             *valid_label_it = PredictionGetter<F>::Get(memory);
             ++valid_label_it;
         }
@@ -1693,10 +1687,7 @@ namespace automl_zero
         memory.Wipe();
 
         VectorInputPredictionAssigner<F>::Assign(input, &memory);
-        for (const std::shared_ptr<const Instruction> &instruction : algorithm.predict_.instructions)
-        {
-            ExecuteInstruction(*instruction, &rand_gen, &memory);
-        }
+        ExecuteComponentFunction_(algorithm.predict_, &memory, &rand_gen);
         const Vector<F> &output = VectorPredictionGetter<F>::Get(&memory);
         return output;
     }
