@@ -1304,17 +1304,17 @@ namespace automl_zero
         }
         else
         {
-            if (algorithm_.predict_.instructions.size() <= 10 && algorithm_.learn_.instructions.size() <= 10)
+            if (algorithm_.predict_.size() <= 10 && algorithm_.learn_.size() <= 10)
             {
                 return TrainOptImpl<10>(max_steps, errors, train_it);
             }
-            else if (algorithm_.predict_.instructions.size() <= 100 &&
-                algorithm_.learn_.instructions.size() <= 100)
+            else if (algorithm_.predict_.size() <= 100 &&
+                algorithm_.learn_.size() <= 100)
             {
                 return TrainOptImpl<100>(max_steps, errors, train_it);
             }
-            else if (algorithm_.predict_.instructions.size() <= 1000 &&
-                algorithm_.learn_.instructions.size() <= 1000)
+            else if (algorithm_.predict_.size() <= 1000 &&
+                algorithm_.learn_.size() <= 1000)
             {
                 return TrainOptImpl<1000>(max_steps, errors, train_it);
             }
@@ -1397,7 +1397,7 @@ namespace automl_zero
             *optimized_predict_instr_it = *predict_instr;
             ++optimized_predict_instr_it;
         }
-        const IntegerT num_predict_instr = algorithm_.predict_.instructions.size();
+        const IntegerT num_predict_instr = algorithm_.predict_.size();
 
         std::array<Instruction, max_component_function_size>
             optimized_learn_component_function;
@@ -1408,7 +1408,7 @@ namespace automl_zero
             *optimized_learn_instr_it = *learn_instr;
             ++optimized_learn_instr_it;
         }
-        const IntegerT num_learn_instr = algorithm_.learn_.instructions.size();
+        const IntegerT num_learn_instr = algorithm_.learn_.size();
 
         for (IntegerT step = 0; step < max_steps; ++step)
         {
