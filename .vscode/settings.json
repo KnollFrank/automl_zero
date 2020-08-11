@@ -26,6 +26,27 @@
     ],
     "gtest-adapter.supportLocation": true,
     "files.associations": {
-        "type_traits": "cpp"
+        "type_traits": "cpp",
+        "*.inc": "cpp",
+        "core": "cpp",
+        "bitset": "cpp",
+        "array": "cpp",
+        "string_view": "cpp",
+        "hash_map": "cpp",
+        "hash_set": "cpp",
+        "slist": "cpp",
+        "initializer_list": "cpp",
+        "regex": "cpp",
+        "utility": "cpp",
+        "valarray": "cpp",
+        "memory": "cpp",
+        "*.tcc": "cpp",
+        "deque": "cpp",
+        "list": "cpp",
+        "string": "cpp",
+        "unordered_map": "cpp",
+        "unordered_set": "cpp",
+        "vector": "cpp",
+        "ostream": "cpp"
     }
 }

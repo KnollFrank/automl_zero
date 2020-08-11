@@ -249,7 +249,7 @@ namespace automl_zero
         InstructionIndexT minSize = getMinSize(componentFunctionType);
         if (component_function.size() <= minSize)
             return;
-        RemoveInstructionUnconditionally(&component_function.instructions);
+        RemoveInstructionUnconditionally(component_function);
     }
 
     void Mutator::TradeInstruction(Algorithm *algorithm)
@@ -258,7 +258,7 @@ namespace automl_zero
         ComponentFunction &component_function = getComponentFunction(algorithm, componentFunctionType); // To modify.
 
         InsertInstructionUnconditionally(getRandomOp(componentFunctionType), component_function);
-        RemoveInstructionUnconditionally(&component_function.instructions);
+        RemoveInstructionUnconditionally(component_function);
     }
 
     void Mutator::RandomizeAlgorithm(Algorithm *algorithm)
@@ -279,16 +279,14 @@ namespace automl_zero
 
     void Mutator::InsertInstructionUnconditionally(const Op op, ComponentFunction &component_function)
     {
-        const InstructionIndexT position = RandomInstructionIndex(component_function.size() + 1);
-        component_function.insert(position, make_shared<const Instruction>(op, rand_gen_));
+        component_function.insert(
+            RandomInstructionIndex(component_function.size() + 1),
+            make_shared<const Instruction>(op, rand_gen_));
     }
 
-    void Mutator::RemoveInstructionUnconditionally(
-        vector<shared_ptr<const Instruction>> *component_function)
+    void Mutator::RemoveInstructionUnconditionally(ComponentFunction &component_function)
     {
-        CHECK_GT(component_function->size(), 0);
-        const InstructionIndexT position = RandomInstructionIndex(component_function->size());
-        component_function->erase(component_function->begin() + position);
+        component_function.remove(RandomInstructionIndex(component_function.size()));
     }
 
     Op Mutator::RandomSetupOp()

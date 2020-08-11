@@ -113,8 +113,7 @@ namespace automl_zero {
             const Op op,
             ComponentFunction &component_function);
 
-        void RemoveInstructionUnconditionally(
-            std::vector<std::shared_ptr<const Instruction>>* component_function);
+        void RemoveInstructionUnconditionally(ComponentFunction &component_function);
 
         // Return operations to introduce into the component functions.
         Op RandomSetupOp();
