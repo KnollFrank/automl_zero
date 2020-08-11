@@ -10,6 +10,7 @@ namespace automl_zero {
 
     class ComponentFunction {
     public:
+        bool empty() const;
         std::vector<std::shared_ptr<const Instruction>> instructions;
     };
 }

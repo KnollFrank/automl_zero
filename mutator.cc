@@ -173,7 +173,7 @@ namespace automl_zero
     void Mutator::AlterParam(Algorithm *algorithm)
     {
         ComponentFunction &componentFunction = getComponentFunction(algorithm, RandomComponentFunction());
-        if (!componentFunction.instructions.empty())
+        if (!componentFunction.empty())
         {
             InstructionIndexT index = RandomInstructionIndex(componentFunction.instructions.size());
             componentFunction.instructions[index] = make_shared<const Instruction>(*componentFunction.instructions[index], rand_gen_);
@@ -184,7 +184,7 @@ namespace automl_zero
     {
         ComponentFunctionT componentFunctionType = RandomComponentFunction();
         ComponentFunction &componentFunction = getComponentFunction(algorithm, componentFunctionType);
-        if (!componentFunction.instructions.empty())
+        if (!componentFunction.empty())
         {
             InstructionIndexT index = RandomInstructionIndex(componentFunction.instructions.size());
             componentFunction.instructions[index] = make_shared<const Instruction>(getRandomOp(componentFunctionType), rand_gen_);
