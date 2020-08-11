@@ -64,10 +64,8 @@ namespace automl_zero {
         void FromProto(const SerializedAlgorithm& checkpoint_algorithm);
 
         // Returns a reference to the given component function in the Algorithm.
-        const std::vector<std::shared_ptr<const Instruction>>&
-            ComponentFunction(ComponentFunctionT component_function_type) const;
-        std::vector<std::shared_ptr<const Instruction>>* MutableComponentFunction(
-            ComponentFunctionT component_function_type);
+        const automl_zero::ComponentFunction& ComponentFunction(ComponentFunctionT component_function_type) const;
+        automl_zero::ComponentFunction* MutableComponentFunction(ComponentFunctionT component_function_type);
 
         // Setup, predict, and learn component functions.
         automl_zero::ComponentFunction setup_;

@@ -126,27 +126,25 @@ namespace automl_zero {
         }
     }
 
-    const vector<shared_ptr<const Instruction>>& Algorithm::ComponentFunction(
-        const ComponentFunctionT component_function_type) const {
+    const ComponentFunction& Algorithm::ComponentFunction(const ComponentFunctionT component_function_type) const {
         switch (component_function_type) {
         case kSetupComponentFunction:
-            return setup_.instructions;
+            return setup_;
         case kPredictComponentFunction:
-            return predict_.instructions;
+            return predict_;
         case kLearnComponentFunction:
-            return learn_.instructions;
+            return learn_;
         }
     }
 
-    vector<shared_ptr<const Instruction>>* Algorithm::MutableComponentFunction(
-        const ComponentFunctionT component_function_type) {
+    ComponentFunction* Algorithm::MutableComponentFunction(const ComponentFunctionT component_function_type) {
         switch (component_function_type) {
         case kSetupComponentFunction:
-            return &setup_.instructions;
+            return &setup_;
         case kPredictComponentFunction:
-            return &predict_.instructions;
+            return &predict_;
         case kLearnComponentFunction:
-            return &learn_.instructions;
+            return &learn_;
         }
     }
 
