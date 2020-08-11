@@ -12,6 +12,7 @@ namespace automl_zero {
     public:
         bool empty() const;
         int size() const;
+        void insert(const InstructionIndexT position, std::shared_ptr<const Instruction> instruction);
         std::vector<std::shared_ptr<const Instruction>> instructions;
     };
 }

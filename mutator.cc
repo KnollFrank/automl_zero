@@ -277,17 +277,11 @@ namespace automl_zero
         }
     }
 
-    void insert(ComponentFunction &component_function, const InstructionIndexT position, shared_ptr<const Instruction> instruction) {
-        component_function.instructions.insert(
-            component_function.instructions.begin() + position,
-            instruction);
-    }
-
     void Mutator::InsertInstructionUnconditionally(const Op op, ComponentFunction &component_function)
     {
         const InstructionIndexT position = RandomInstructionIndex(component_function.size() + 1);
-        insert(component_function, position, make_shared<const Instruction>(op, rand_gen_));
-    }
+        component_function.insert(position, make_shared<const Instruction>(op, rand_gen_));
+    }insert
 
     void Mutator::RemoveInstructionUnconditionally(
         vector<shared_ptr<const Instruction>> *component_function)
