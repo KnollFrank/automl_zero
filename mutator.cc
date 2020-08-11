@@ -281,7 +281,7 @@ namespace automl_zero
     {
         const InstructionIndexT position = RandomInstructionIndex(component_function.size() + 1);
         component_function.insert(position, make_shared<const Instruction>(op, rand_gen_));
-    }insert
+    }
 
     void Mutator::RemoveInstructionUnconditionally(
         vector<shared_ptr<const Instruction>> *component_function)
