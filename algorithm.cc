@@ -38,27 +38,17 @@ namespace automl_zero {
         this->FromProto(checkpoint_algorithm);
     }
 
-    inline void ShallowCopyComponentFunction(
-        const vector<shared_ptr<const Instruction>>& src,
-        vector<shared_ptr<const Instruction>>* dest) {
-        dest->reserve(src.size());
-        dest->clear();
-        for (const shared_ptr<const Instruction>& src_instr : src) {
-            dest->emplace_back(src_instr);
-        }
-    }
-
     Algorithm::Algorithm(const Algorithm& other) {
-        ShallowCopyComponentFunction(other.setup_.instructions, &this->setup_.instructions);
-        ShallowCopyComponentFunction(other.predict_.instructions, &this->predict_.instructions);
-        ShallowCopyComponentFunction(other.learn_.instructions, &this->learn_.instructions);
+        other.setup_.ShallowCopyTo(this->setup_);
+        other.predict_.ShallowCopyTo(this->predict_);
+        other.learn_.ShallowCopyTo(this->learn_);
     }
 
     Algorithm& Algorithm::operator=(const Algorithm& other) {
         if (&other != this) {
-            ShallowCopyComponentFunction(other.setup_.instructions, &this->setup_.instructions);
-            ShallowCopyComponentFunction(other.predict_.instructions, &this->predict_.instructions);
-            ShallowCopyComponentFunction(other.learn_.instructions, &this->learn_.instructions);
+            other.setup_.ShallowCopyTo(this->setup_);
+            other.predict_.ShallowCopyTo(this->predict_);
+            other.learn_.ShallowCopyTo(this->learn_);
         }
         return *this;
     }

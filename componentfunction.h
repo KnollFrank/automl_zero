@@ -18,6 +18,7 @@ namespace automl_zero {
         bool operator !=(const ComponentFunction& other) const {
             return !(*this == other);
         }
+        void ShallowCopyTo(ComponentFunction &dest) const;
 
         std::vector<std::shared_ptr<const Instruction>> instructions;
     };

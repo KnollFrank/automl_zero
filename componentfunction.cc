@@ -36,4 +36,13 @@ namespace automl_zero {
         CHECK(instruction1_it == component_function1.end());
         return true;
     }
+
+    void ComponentFunction::ShallowCopyTo(ComponentFunction &dest) const {
+        dest.instructions.reserve(size());
+        dest.instructions.clear();
+        for (const std::shared_ptr<const Instruction>& src_instr : instructions) {
+            dest.instructions.emplace_back(src_instr);
+        }
+    }
+
 }
