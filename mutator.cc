@@ -175,7 +175,7 @@ namespace automl_zero
         ComponentFunction &componentFunction = getComponentFunction(algorithm, RandomComponentFunction());
         if (!componentFunction.empty())
         {
-            InstructionIndexT index = RandomInstructionIndex(componentFunction.instructions.size());
+            InstructionIndexT index = RandomInstructionIndex(componentFunction.size());
             componentFunction.instructions[index] = make_shared<const Instruction>(*componentFunction.instructions[index], rand_gen_);
         }
     }
@@ -186,7 +186,7 @@ namespace automl_zero
         ComponentFunction &componentFunction = getComponentFunction(algorithm, componentFunctionType);
         if (!componentFunction.empty())
         {
-            InstructionIndexT index = RandomInstructionIndex(componentFunction.instructions.size());
+            InstructionIndexT index = RandomInstructionIndex(componentFunction.size());
             componentFunction.instructions[index] = make_shared<const Instruction>(getRandomOp(componentFunctionType), rand_gen_);
         }
     }
@@ -219,7 +219,7 @@ namespace automl_zero
         ComponentFunctionT componentFunctionType = RandomComponentFunction();
         ComponentFunction &component_function = getComponentFunction(algorithm, componentFunctionType); // To modify.
         InstructionIndexT maxSize = getMaxSize(componentFunctionType);
-        if (component_function.instructions.size() >= maxSize - 1)
+        if (component_function.size() >= maxSize - 1)
             return;
         InsertInstructionUnconditionally(getRandomOp(componentFunctionType), &component_function.instructions);
     }
@@ -247,7 +247,7 @@ namespace automl_zero
         ComponentFunctionT componentFunctionType = RandomComponentFunction();
         ComponentFunction &component_function = getComponentFunction(algorithm, componentFunctionType); // To modify.
         InstructionIndexT minSize = getMinSize(componentFunctionType);
-        if (component_function.instructions.size() <= minSize)
+        if (component_function.size() <= minSize)
             return;
         RemoveInstructionUnconditionally(&component_function.instructions);
     }

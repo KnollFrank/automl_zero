@@ -11,6 +11,7 @@ namespace automl_zero {
     class ComponentFunction {
     public:
         bool empty() const;
+        int size() const;
         std::vector<std::shared_ptr<const Instruction>> instructions;
     };
 }
