@@ -14,6 +14,11 @@ namespace automl_zero {
         int size() const;
         void insert(const InstructionIndexT position, std::shared_ptr<const Instruction> instruction);
         void remove(const InstructionIndexT position);
+        bool operator ==(const ComponentFunction& other) const;
+        bool operator !=(const ComponentFunction& other) const {
+            return !(*this == other);
+        }
+
         std::vector<std::shared_ptr<const Instruction>> instructions;
     };
 }

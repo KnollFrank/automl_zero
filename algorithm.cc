@@ -78,28 +78,8 @@ namespace automl_zero {
         return *this;
     }
 
-    inline bool IsComponentFunctionEqual(
-        const vector<shared_ptr<const Instruction>>& component_function1,
-        const vector<shared_ptr<const Instruction>>& component_function2) {
-        if (component_function1.size() != component_function2.size()) {
-            return false;
-        }
-        vector<shared_ptr<const Instruction>>::const_iterator instruction1_it =
-            component_function1.begin();
-        for (const shared_ptr<const Instruction>& instruction2 :
-            component_function2) {
-            if (*instruction2 != **instruction1_it) return false;
-            ++instruction1_it;
-        }
-        CHECK(instruction1_it == component_function1.end());
-        return true;
-    }
-
     bool Algorithm::operator==(const Algorithm& other) const {
-        if (!IsComponentFunctionEqual(setup_.instructions, other.setup_.instructions)) return false;
-        if (!IsComponentFunctionEqual(predict_.instructions, other.predict_.instructions)) return false;
-        if (!IsComponentFunctionEqual(learn_.instructions, other.learn_.instructions)) return false;
-        return true;
+        return (setup_ == other.setup_) && (predict_ == other.predict_) && (learn_ == other.learn_);
     }
 
     string Algorithm::ToReadable() const {
