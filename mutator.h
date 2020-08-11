@@ -111,7 +111,7 @@ namespace automl_zero {
 
         void InsertInstructionUnconditionally(
             const Op op,
-            std::vector<std::shared_ptr<const Instruction>>* component_function);
+            ComponentFunction &component_function);
 
         void RemoveInstructionUnconditionally(
             std::vector<std::shared_ptr<const Instruction>>* component_function);

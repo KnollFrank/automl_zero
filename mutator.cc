@@ -221,7 +221,7 @@ namespace automl_zero
         InstructionIndexT maxSize = getMaxSize(componentFunctionType);
         if (component_function.size() >= maxSize - 1)
             return;
-        InsertInstructionUnconditionally(getRandomOp(componentFunctionType), &component_function.instructions);
+        InsertInstructionUnconditionally(getRandomOp(componentFunctionType), component_function);
     }
 
     InstructionIndexT Mutator::getMaxSize(ComponentFunctionT componentFunction) {
@@ -257,7 +257,7 @@ namespace automl_zero
         ComponentFunctionT componentFunctionType = RandomComponentFunction();
         ComponentFunction &component_function = getComponentFunction(algorithm, componentFunctionType); // To modify.
 
-        InsertInstructionUnconditionally(getRandomOp(componentFunctionType), &component_function.instructions);
+        InsertInstructionUnconditionally(getRandomOp(componentFunctionType), component_function);
         RemoveInstructionUnconditionally(&component_function.instructions);
     }
 
@@ -277,12 +277,11 @@ namespace automl_zero
         }
     }
 
-    void Mutator::InsertInstructionUnconditionally(
-        const Op op, vector<shared_ptr<const Instruction>> *component_function)
+    void Mutator::InsertInstructionUnconditionally(const Op op, ComponentFunction &component_function)
     {
-        const InstructionIndexT position = RandomInstructionIndex(component_function->size() + 1);
-        component_function->insert(
-            component_function->begin() + position,
+        const InstructionIndexT position = RandomInstructionIndex(component_function.size() + 1);
+        component_function.instructions.insert(
+            component_function.instructions.begin() + position,
             make_shared<const Instruction>(op, rand_gen_));
     }
 
