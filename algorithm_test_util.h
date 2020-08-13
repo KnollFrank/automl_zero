@@ -49,7 +49,7 @@ MATCHER_P(DnaSharedPtrPtrHasId, algorithm_id, "") {
 MATCHER_P(SerializedAlgorithmHasId, algorithm_id, "") {
   Algorithm algorithm;
   algorithm.FromProto(arg);
-  return algorithm.predict_.instructions[0]->GetIntegerData() == algorithm_id;
+  return algorithm.predict_.getInstructions()[0]->GetIntegerData() == algorithm_id;
 }
 
 // Method to change the ID tag of a Algorithm in place.

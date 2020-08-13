@@ -51,19 +51,19 @@ void Randomizer::Randomize(Algorithm* algorithm) {
 }
 
 void Randomizer::RandomizeSetup(Algorithm* algorithm) {
-  for (shared_ptr<const Instruction>& instruction : algorithm->setup_.instructions) {
+  for (shared_ptr<const Instruction>& instruction : algorithm->setup_.getInstructions()) {
     instruction = make_shared<const Instruction>(SetupOp(), rand_gen_);
   }
 }
 
 void Randomizer::RandomizePredict(Algorithm* algorithm) {
-  for (shared_ptr<const Instruction>& instruction : algorithm->predict_.instructions) {
+  for (shared_ptr<const Instruction>& instruction : algorithm->predict_.getInstructions()) {
     instruction = make_shared<const Instruction>(PredictOp(), rand_gen_);
   }
 }
 
 void Randomizer::RandomizeLearn(Algorithm* algorithm) {
-  for (shared_ptr<const Instruction>& instruction : algorithm->learn_.instructions) {
+  for (shared_ptr<const Instruction>& instruction : algorithm->learn_.getInstructions()) {
     instruction = make_shared<const Instruction>(LearnOp(), rand_gen_);
   }
 }

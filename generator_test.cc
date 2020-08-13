@@ -61,36 +61,36 @@ namespace automl_zero
         const InstructionIndexT predict_instruction_index = 1;
         const InstructionIndexT learn_instruction_index = 3;
         Algorithm algorithm = generator.NoOp();
-        EXPECT_EQ(algorithm.setup_.instructions[setup_instruction_index]->op_, NO_OP);
-        EXPECT_EQ(algorithm.setup_.instructions[setup_instruction_index]->in1_, 0);
-        EXPECT_EQ(algorithm.setup_.instructions[setup_instruction_index]->in2_, 0);
-        EXPECT_EQ(algorithm.setup_.instructions[setup_instruction_index]->out_, 0);
-        EXPECT_EQ(algorithm.setup_.instructions[setup_instruction_index]->GetActivationData(),
+        EXPECT_EQ(algorithm.setup_.getInstructions()[setup_instruction_index]->op_, NO_OP);
+        EXPECT_EQ(algorithm.setup_.getInstructions()[setup_instruction_index]->in1_, 0);
+        EXPECT_EQ(algorithm.setup_.getInstructions()[setup_instruction_index]->in2_, 0);
+        EXPECT_EQ(algorithm.setup_.getInstructions()[setup_instruction_index]->out_, 0);
+        EXPECT_EQ(algorithm.setup_.getInstructions()[setup_instruction_index]->GetActivationData(),
             0.0);
-        EXPECT_EQ(algorithm.setup_.instructions[setup_instruction_index]->GetFloatData0(), 0.0);
-        EXPECT_EQ(algorithm.setup_.instructions[setup_instruction_index]->GetFloatData1(), 0.0);
-        EXPECT_EQ(algorithm.setup_.instructions[setup_instruction_index]->GetFloatData2(), 0.0);
-        EXPECT_EQ(algorithm.predict_.instructions[predict_instruction_index]->op_, NO_OP);
-        EXPECT_EQ(algorithm.predict_.instructions[predict_instruction_index]->in1_, 0);
-        EXPECT_EQ(algorithm.predict_.instructions[predict_instruction_index]->in2_, 0);
-        EXPECT_EQ(algorithm.predict_.instructions[predict_instruction_index]->out_, 0);
-        EXPECT_EQ(algorithm.predict_.instructions[predict_instruction_index]->GetActivationData(),
+        EXPECT_EQ(algorithm.setup_.getInstructions()[setup_instruction_index]->GetFloatData0(), 0.0);
+        EXPECT_EQ(algorithm.setup_.getInstructions()[setup_instruction_index]->GetFloatData1(), 0.0);
+        EXPECT_EQ(algorithm.setup_.getInstructions()[setup_instruction_index]->GetFloatData2(), 0.0);
+        EXPECT_EQ(algorithm.predict_.getInstructions()[predict_instruction_index]->op_, NO_OP);
+        EXPECT_EQ(algorithm.predict_.getInstructions()[predict_instruction_index]->in1_, 0);
+        EXPECT_EQ(algorithm.predict_.getInstructions()[predict_instruction_index]->in2_, 0);
+        EXPECT_EQ(algorithm.predict_.getInstructions()[predict_instruction_index]->out_, 0);
+        EXPECT_EQ(algorithm.predict_.getInstructions()[predict_instruction_index]->GetActivationData(),
             0.0);
-        EXPECT_EQ(algorithm.predict_.instructions[predict_instruction_index]->GetFloatData0(),
+        EXPECT_EQ(algorithm.predict_.getInstructions()[predict_instruction_index]->GetFloatData0(),
             0.0);
-        EXPECT_EQ(algorithm.predict_.instructions[predict_instruction_index]->GetFloatData1(),
+        EXPECT_EQ(algorithm.predict_.getInstructions()[predict_instruction_index]->GetFloatData1(),
             0.0);
-        EXPECT_EQ(algorithm.predict_.instructions[predict_instruction_index]->GetFloatData2(),
+        EXPECT_EQ(algorithm.predict_.getInstructions()[predict_instruction_index]->GetFloatData2(),
             0.0);
-        EXPECT_EQ(algorithm.learn_.instructions[learn_instruction_index]->op_, NO_OP);
-        EXPECT_EQ(algorithm.learn_.instructions[learn_instruction_index]->in1_, 0);
-        EXPECT_EQ(algorithm.learn_.instructions[learn_instruction_index]->in2_, 0);
-        EXPECT_EQ(algorithm.learn_.instructions[learn_instruction_index]->out_, 0);
-        EXPECT_EQ(algorithm.learn_.instructions[learn_instruction_index]->GetActivationData(),
+        EXPECT_EQ(algorithm.learn_.getInstructions()[learn_instruction_index]->op_, NO_OP);
+        EXPECT_EQ(algorithm.learn_.getInstructions()[learn_instruction_index]->in1_, 0);
+        EXPECT_EQ(algorithm.learn_.getInstructions()[learn_instruction_index]->in2_, 0);
+        EXPECT_EQ(algorithm.learn_.getInstructions()[learn_instruction_index]->out_, 0);
+        EXPECT_EQ(algorithm.learn_.getInstructions()[learn_instruction_index]->GetActivationData(),
             0.0);
-        EXPECT_EQ(algorithm.learn_.instructions[learn_instruction_index]->GetFloatData0(), 0.0);
-        EXPECT_EQ(algorithm.learn_.instructions[learn_instruction_index]->GetFloatData1(), 0.0);
-        EXPECT_EQ(algorithm.learn_.instructions[learn_instruction_index]->GetFloatData2(), 0.0);
+        EXPECT_EQ(algorithm.learn_.getInstructions()[learn_instruction_index]->GetFloatData0(), 0.0);
+        EXPECT_EQ(algorithm.learn_.getInstructions()[learn_instruction_index]->GetFloatData1(), 0.0);
+        EXPECT_EQ(algorithm.learn_.getInstructions()[learn_instruction_index]->GetFloatData2(), 0.0);
     }
 
     TEST(GeneratorTest, NoOpProducesCorrectComponentFunctionSize)
@@ -106,9 +106,9 @@ namespace automl_zero
             nullptr,         // bit_gen, irrelevant.
             nullptr);        // rand_gen, irrelevant.
         Algorithm algorithm = generator.NoOp();
-        EXPECT_EQ(algorithm.setup_.instructions.size(), 10);
-        EXPECT_EQ(algorithm.predict_.instructions.size(), 12);
-        EXPECT_EQ(algorithm.learn_.instructions.size(), 13);
+        EXPECT_EQ(algorithm.setup_.getInstructions().size(), 10);
+        EXPECT_EQ(algorithm.predict_.getInstructions().size(), 12);
+        EXPECT_EQ(algorithm.learn_.getInstructions().size(), 13);
     }
 
     TEST(GeneratorTest, Gz_Learns)
@@ -363,9 +363,9 @@ namespace automl_zero
             &bit_gen,   // bit_gen
             &rand_gen); // rand_gen
         Algorithm algorithm = generator.Random();
-        EXPECT_EQ(algorithm.setup_.instructions.size(), 2);
-        EXPECT_EQ(algorithm.predict_.instructions.size(), 4);
-        EXPECT_EQ(algorithm.learn_.instructions.size(), 5);
+        EXPECT_EQ(algorithm.setup_.getInstructions().size(), 2);
+        EXPECT_EQ(algorithm.predict_.getInstructions().size(), 4);
+        EXPECT_EQ(algorithm.learn_.getInstructions().size(), 5);
     }
 
     TEST(GeneratorTest, GzHasCorrectComponentFunctionSizes)
@@ -381,9 +381,9 @@ namespace automl_zero
             nullptr,         // bit_gen, irrelevant.
             nullptr);        // rand_gen, irrelevant.
         Algorithm algorithm = generator.LinearModel(kDefaultLearningRate);
-        EXPECT_EQ(algorithm.setup_.instructions.size(), 1);
-        EXPECT_EQ(algorithm.predict_.instructions.size(), 1);
-        EXPECT_EQ(algorithm.learn_.instructions.size(), 4);
+        EXPECT_EQ(algorithm.setup_.getInstructions().size(), 1);
+        EXPECT_EQ(algorithm.predict_.getInstructions().size(), 1);
+        EXPECT_EQ(algorithm.learn_.getInstructions().size(), 4);
     }
 
     TEST(GeneratorTest, GzTildeGzHasCorrectComponentFunctionSizes)
@@ -400,9 +400,9 @@ namespace automl_zero
             nullptr);        // rand_gen, irrelevant.
         Algorithm algorithm =
             generator.UnitTestNeuralNetNoBiasNoGradient(kDefaultLearningRate);
-        EXPECT_EQ(algorithm.setup_.instructions.size(), 2);
-        EXPECT_EQ(algorithm.predict_.instructions.size(), 4);
-        EXPECT_EQ(algorithm.learn_.instructions.size(), 11);
+        EXPECT_EQ(algorithm.setup_.getInstructions().size(), 2);
+        EXPECT_EQ(algorithm.predict_.getInstructions().size(), 4);
+        EXPECT_EQ(algorithm.learn_.getInstructions().size(), 11);
     }
 
     TEST(GeneratorTest, GzTildeGzPadsComponentFunctionSizesCorrectly)
@@ -419,9 +419,9 @@ namespace automl_zero
             nullptr);        // rand_gen, irrelevant.
         Algorithm algorithm =
             generator.UnitTestNeuralNetNoBiasNoGradient(kDefaultLearningRate);
-        EXPECT_EQ(algorithm.setup_.instructions.size(), 10);
-        EXPECT_EQ(algorithm.predict_.instructions.size(), 12);
-        EXPECT_EQ(algorithm.learn_.instructions.size(), 13);
+        EXPECT_EQ(algorithm.setup_.getInstructions().size(), 10);
+        EXPECT_EQ(algorithm.predict_.getInstructions().size(), 12);
+        EXPECT_EQ(algorithm.learn_.getInstructions().size(), 13);
     }
 
     TEST(GeneratorTest, GrTildeGrPadsComponentFunctionSizesCorrectly)
@@ -438,9 +438,9 @@ namespace automl_zero
             nullptr);        // rand_gen, irrelevant.
         Algorithm algorithm = generator.NeuralNet(
             kDefaultLearningRate, kDefaultInitScale, kDefaultInitScale);
-        EXPECT_EQ(algorithm.setup_.instructions.size(), 16);
-        EXPECT_EQ(algorithm.predict_.instructions.size(), 18);
-        EXPECT_EQ(algorithm.learn_.instructions.size(), 19);
+        EXPECT_EQ(algorithm.setup_.getInstructions().size(), 16);
+        EXPECT_EQ(algorithm.predict_.getInstructions().size(), 18);
+        EXPECT_EQ(algorithm.learn_.getInstructions().size(), 19);
     }
 
     TEST(GeneratorTest, GzPadsComponentFunctionSizesCorrectly)
@@ -456,9 +456,9 @@ namespace automl_zero
             nullptr,         // bit_gen, irrelevant.
             nullptr);        // rand_gen, irrelevant.
         Algorithm algorithm = generator.LinearModel(kDefaultLearningRate);
-        EXPECT_EQ(algorithm.setup_.instructions.size(), 10);
-        EXPECT_EQ(algorithm.predict_.instructions.size(), 12);
-        EXPECT_EQ(algorithm.learn_.instructions.size(), 13);
+        EXPECT_EQ(algorithm.setup_.getInstructions().size(), 10);
+        EXPECT_EQ(algorithm.predict_.getInstructions().size(), 12);
+        EXPECT_EQ(algorithm.learn_.getInstructions().size(), 13);
     }
 
 } // namespace automl_zero

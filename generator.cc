@@ -90,8 +90,8 @@ namespace automl_zero
                 kDefaultLearningRate, 0.1, 0.1);
             // Delete the first two instructions in setup which are the
             // gaussian initialization of the first and final layer weights.
-            algorithm.setup_.instructions.erase(algorithm.setup_.instructions.begin());
-            algorithm.setup_.instructions.erase(algorithm.setup_.instructions.begin());
+            algorithm.setup_.getInstructions().erase(algorithm.setup_.getInstructions().begin());
+            algorithm.setup_.getInstructions().erase(algorithm.setup_.getInstructions().begin());
             return algorithm;
         }
         case LINEAR_ALGORITHM:
@@ -118,11 +118,11 @@ namespace automl_zero
     {
         Algorithm algorithm;
         FillComponentFunctionWithInstruction(
-            setup_size_init_, no_op_instruction_, &algorithm.setup_.instructions);
+            setup_size_init_, no_op_instruction_, &algorithm.setup_.getInstructions());
         FillComponentFunctionWithInstruction(
-            predict_size_init_, no_op_instruction_, &algorithm.predict_.instructions);
+            predict_size_init_, no_op_instruction_, &algorithm.predict_.getInstructions());
         FillComponentFunctionWithInstruction(
-            learn_size_init_, no_op_instruction_, &algorithm.learn_.instructions);
+            learn_size_init_, no_op_instruction_, &algorithm.learn_.getInstructions());
         return algorithm;
     }
 
@@ -208,90 +208,90 @@ namespace automl_zero
         shared_ptr<const Instruction> no_op_instruction =
             make_shared<const Instruction>();
 
-        algorithm.setup_.instructions.emplace_back(make_shared<const Instruction>(
+        algorithm.setup_.getInstructions().emplace_back(make_shared<const Instruction>(
             SCALAR_CONST_SET_OP,
             kLearningRateAddress,
             ActivationDataSetter(learning_rate)));
         // memory.vector_[Generator::kOneFollowedByZeroesVectorAddress](0) = 1;
-        algorithm.setup_.instructions.emplace_back(make_shared<const Instruction>(
+        algorithm.setup_.getInstructions().emplace_back(make_shared<const Instruction>(
             VECTOR_CONST_SET_OP,
             kOneFollowedByZeroesVectorAddress,
             FloatDataSetter(0),
             FloatDataSetter(1)));
         PadComponentFunctionWithInstruction(
-            setup_size_init_, no_op_instruction, &algorithm.setup_.instructions);
+            setup_size_init_, no_op_instruction, &algorithm.setup_.getInstructions());
 
         IntegerT num_predict_instructions = 5;
-        algorithm.predict_.instructions.reserve(num_predict_instructions);
+        algorithm.predict_.getInstructions().reserve(num_predict_instructions);
         // Multiply with first layer weight matrix.
-        algorithm.predict_.instructions.emplace_back(make_shared<const Instruction>(
+        algorithm.predict_.getInstructions().emplace_back(make_shared<const Instruction>(
             MATRIX_VECTOR_PRODUCT_OP,
             kFirstLayerWeightsAddress, k_FEATURES_VECTOR_ADDRESS,
             kFirstLayerOutputBeforeReluAddress));
         // Apply RELU.
-        algorithm.predict_.instructions.emplace_back(make_shared<const Instruction>(
+        algorithm.predict_.getInstructions().emplace_back(make_shared<const Instruction>(
             VECTOR_MAX_OP, kFirstLayerOutputBeforeReluAddress, kZerosAddress,
             kFirstLayerOutputAfterReluAddress));
         // Dot product with final layer weight vector.
-        algorithm.predict_.instructions.emplace_back(make_shared<const Instruction>(
+        algorithm.predict_.getInstructions().emplace_back(make_shared<const Instruction>(
             VECTOR_INNER_PRODUCT_OP, kFirstLayerOutputAfterReluAddress,
             kFinalLayerWeightsAddress, k_PREDICTIONS_SCALAR_ADDRESS));
         // memory->vector_[k_PREDICTIONS_VECTOR_ADDRESS] = memory->scalar_[k_PREDICTIONS_SCALAR_ADDRESS] * {1, 0, 0, ...}
-        algorithm.predict_.instructions.emplace_back(make_shared<const Instruction>(
+        algorithm.predict_.getInstructions().emplace_back(make_shared<const Instruction>(
             SCALAR_VECTOR_PRODUCT_OP,
             k_PREDICTIONS_SCALAR_ADDRESS,
             kOneFollowedByZeroesVectorAddress,
             k_PREDICTIONS_VECTOR_ADDRESS));
         PadComponentFunctionWithInstruction(
-            predict_size_init_, no_op_instruction, &algorithm.predict_.instructions);
+            predict_size_init_, no_op_instruction, &algorithm.predict_.getInstructions());
 
-        algorithm.learn_.instructions.reserve(11);
+        algorithm.learn_.getInstructions().reserve(11);
         // memory->scalar_[k_PREDICTIONS_SCALAR_ADDRESS] = memory->vector_[k_PREDICTIONS_VECTOR_ADDRESS][0]
-        algorithm.learn_.instructions.emplace_back(make_shared<const Instruction>(
+        algorithm.learn_.getInstructions().emplace_back(make_shared<const Instruction>(
             SCALAR_VECTOR_AT_INDEX_SET_OP,
             k_PREDICTIONS_SCALAR_ADDRESS,
             k_PREDICTIONS_VECTOR_ADDRESS,
             FloatDataSetter(0)));
         // memory->scalar_[k_LABELS_SCALAR_ADDRESS] = memory->vector_[k_LABELS_VECTOR_ADDRESS][0]
-        algorithm.learn_.instructions.emplace_back(make_shared<const Instruction>(
+        algorithm.learn_.getInstructions().emplace_back(make_shared<const Instruction>(
             SCALAR_VECTOR_AT_INDEX_SET_OP,
             k_LABELS_SCALAR_ADDRESS,
             k_LABELS_VECTOR_ADDRESS,
             FloatDataSetter(0)));
-        algorithm.learn_.instructions.emplace_back(make_shared<const Instruction>(
+        algorithm.learn_.getInstructions().emplace_back(make_shared<const Instruction>(
             SCALAR_DIFF_OP, k_LABELS_SCALAR_ADDRESS, k_PREDICTIONS_SCALAR_ADDRESS,
             kPredictionErrorAddress));
-        algorithm.learn_.instructions.emplace_back(make_shared<const Instruction>(
+        algorithm.learn_.getInstructions().emplace_back(make_shared<const Instruction>(
             SCALAR_PRODUCT_OP,
             kLearningRateAddress, kPredictionErrorAddress, kPredictionErrorAddress));
-        algorithm.learn_.instructions.emplace_back(make_shared<const Instruction>(
+        algorithm.learn_.getInstructions().emplace_back(make_shared<const Instruction>(
             SCALAR_VECTOR_PRODUCT_OP, kPredictionErrorAddress,
             kFirstLayerOutputAfterReluAddress, kGradientWrtFinalLayerWeightsAddress));
-        algorithm.learn_.instructions.emplace_back(make_shared<const Instruction>(
+        algorithm.learn_.getInstructions().emplace_back(make_shared<const Instruction>(
             VECTOR_SUM_OP,
             kFinalLayerWeightsAddress, kGradientWrtFinalLayerWeightsAddress,
             kFinalLayerWeightsAddress));
-        algorithm.learn_.instructions.emplace_back(make_shared<const Instruction>(
+        algorithm.learn_.getInstructions().emplace_back(make_shared<const Instruction>(
             SCALAR_VECTOR_PRODUCT_OP,
             kPredictionErrorAddress, kFinalLayerWeightsAddress,
             kGradientWrtActivationsAddress));
-        algorithm.learn_.instructions.emplace_back(make_shared<const Instruction>(
+        algorithm.learn_.getInstructions().emplace_back(make_shared<const Instruction>(
             VECTOR_HEAVYSIDE_OP,
             kFirstLayerOutputBeforeReluAddress, 0, kGradientOfReluAddress));
-        algorithm.learn_.instructions.emplace_back(make_shared<const Instruction>(
+        algorithm.learn_.getInstructions().emplace_back(make_shared<const Instruction>(
             VECTOR_PRODUCT_OP,
             kGradientOfReluAddress, kGradientWrtActivationsAddress,
             kGradientWrtActivationsAddress));
-        algorithm.learn_.instructions.emplace_back(make_shared<const Instruction>(
+        algorithm.learn_.getInstructions().emplace_back(make_shared<const Instruction>(
             VECTOR_OUTER_PRODUCT_OP,
             kGradientWrtActivationsAddress, k_FEATURES_VECTOR_ADDRESS,
             kGradientWrtFirstLayerWeightsAddress));
-        algorithm.learn_.instructions.emplace_back(make_shared<const Instruction>(
+        algorithm.learn_.getInstructions().emplace_back(make_shared<const Instruction>(
             MATRIX_SUM_OP,
             kFirstLayerWeightsAddress, kGradientWrtFirstLayerWeightsAddress,
             kFirstLayerWeightsAddress));
         PadComponentFunctionWithInstruction(
-            learn_size_init_, no_op_instruction, &algorithm.learn_.instructions);
+            learn_size_init_, no_op_instruction, &algorithm.learn_.getInstructions());
 
         return algorithm;
     }
@@ -332,142 +332,142 @@ namespace automl_zero
         shared_ptr<const Instruction> no_op_instruction =
             make_shared<const Instruction>();
 
-        algorithm.setup_.instructions.emplace_back(make_shared<const Instruction>(
+        algorithm.setup_.getInstructions().emplace_back(make_shared<const Instruction>(
             VECTOR_GAUSSIAN_SET_OP,
             kFinalLayerWeightsAddress,
             FloatDataSetter(0.0),
             FloatDataSetter(final_init_scale)));
-        algorithm.setup_.instructions.emplace_back(make_shared<const Instruction>(
+        algorithm.setup_.getInstructions().emplace_back(make_shared<const Instruction>(
             MATRIX_GAUSSIAN_SET_OP,
             kFirstLayerWeightsAddress,
             FloatDataSetter(0.0),
             FloatDataSetter(first_init_scale)));
-        algorithm.setup_.instructions.emplace_back(make_shared<const Instruction>(
+        algorithm.setup_.getInstructions().emplace_back(make_shared<const Instruction>(
             SCALAR_CONST_SET_OP,
             kLearningRateAddress,
             ActivationDataSetter(learning_rate)));
         // memory.vector_[Generator::kOneFollowedByZeroesVectorAddress](0) = 1;
-        algorithm.setup_.instructions.emplace_back(make_shared<const Instruction>(
+        algorithm.setup_.getInstructions().emplace_back(make_shared<const Instruction>(
             VECTOR_CONST_SET_OP,
             kOneFollowedByZeroesVectorAddress,
             FloatDataSetter(0),
             FloatDataSetter(1)));
         PadComponentFunctionWithInstruction(
-            setup_size_init_, no_op_instruction, &algorithm.setup_.instructions);
+            setup_size_init_, no_op_instruction, &algorithm.setup_.getInstructions());
 
         // Multiply with first layer weight matrix.
-        algorithm.predict_.instructions.emplace_back(make_shared<const Instruction>(
+        algorithm.predict_.getInstructions().emplace_back(make_shared<const Instruction>(
             MATRIX_VECTOR_PRODUCT_OP,
             kFirstLayerWeightsAddress,
             k_FEATURES_VECTOR_ADDRESS,
             kFirstLayerOutputBeforeReluAddress));
         // Add first layer bias.
-        algorithm.predict_.instructions.emplace_back(make_shared<const Instruction>(
+        algorithm.predict_.getInstructions().emplace_back(make_shared<const Instruction>(
             VECTOR_SUM_OP,
             kFirstLayerOutputBeforeReluAddress,
             kFirstLayerBiasAddress,
             kFirstLayerOutputBeforeReluAddress));
         // Apply RELU.
-        algorithm.predict_.instructions.emplace_back(make_shared<const Instruction>(
+        algorithm.predict_.getInstructions().emplace_back(make_shared<const Instruction>(
             VECTOR_MAX_OP,
             kFirstLayerOutputBeforeReluAddress,
             kZerosAddress,
             kFirstLayerOutputAfterReluAddress));
         // Dot product with final layer weight vector.
-        algorithm.predict_.instructions.emplace_back(make_shared<const Instruction>(
+        algorithm.predict_.getInstructions().emplace_back(make_shared<const Instruction>(
             VECTOR_INNER_PRODUCT_OP,
             kFirstLayerOutputAfterReluAddress,
             kFinalLayerWeightsAddress,
             k_PREDICTIONS_SCALAR_ADDRESS));
         // Add final layer bias.
         CHECK_LE(kFinalLayerBiasAddress, k_MAX_SCALAR_ADDRESSES);
-        algorithm.predict_.instructions.emplace_back(make_shared<const Instruction>(
+        algorithm.predict_.getInstructions().emplace_back(make_shared<const Instruction>(
             SCALAR_SUM_OP,
             k_PREDICTIONS_SCALAR_ADDRESS,
             kFinalLayerBiasAddress,
             k_PREDICTIONS_SCALAR_ADDRESS));
         // memory->vector_[k_PREDICTIONS_VECTOR_ADDRESS] = memory->scalar_[k_PREDICTIONS_SCALAR_ADDRESS] * {1, 0, 0, ...}
-        algorithm.predict_.instructions.emplace_back(make_shared<const Instruction>(
+        algorithm.predict_.getInstructions().emplace_back(make_shared<const Instruction>(
             SCALAR_VECTOR_PRODUCT_OP,
             k_PREDICTIONS_SCALAR_ADDRESS,
             kOneFollowedByZeroesVectorAddress,
             k_PREDICTIONS_VECTOR_ADDRESS));
         PadComponentFunctionWithInstruction(
-            predict_size_init_, no_op_instruction, &algorithm.predict_.instructions);
+            predict_size_init_, no_op_instruction, &algorithm.predict_.getInstructions());
 
-        algorithm.learn_.instructions.reserve(11);
+        algorithm.learn_.getInstructions().reserve(11);
         // memory->scalar_[k_PREDICTIONS_SCALAR_ADDRESS] = memory->vector_[k_PREDICTIONS_VECTOR_ADDRESS][0]
-        algorithm.learn_.instructions.emplace_back(make_shared<const Instruction>(
+        algorithm.learn_.getInstructions().emplace_back(make_shared<const Instruction>(
             SCALAR_VECTOR_AT_INDEX_SET_OP,
             k_PREDICTIONS_SCALAR_ADDRESS,
             k_PREDICTIONS_VECTOR_ADDRESS,
             FloatDataSetter(0)));
         // memory->scalar_[k_LABELS_SCALAR_ADDRESS] = memory->vector_[k_LABELS_VECTOR_ADDRESS][0]
-        algorithm.learn_.instructions.emplace_back(make_shared<const Instruction>(
+        algorithm.learn_.getInstructions().emplace_back(make_shared<const Instruction>(
             SCALAR_VECTOR_AT_INDEX_SET_OP,
             k_LABELS_SCALAR_ADDRESS,
             k_LABELS_VECTOR_ADDRESS,
             FloatDataSetter(0)));
-        algorithm.learn_.instructions.emplace_back(make_shared<const Instruction>(
+        algorithm.learn_.getInstructions().emplace_back(make_shared<const Instruction>(
             SCALAR_DIFF_OP,
             k_LABELS_SCALAR_ADDRESS,
             k_PREDICTIONS_SCALAR_ADDRESS,
             kPredictionErrorAddress));
-        algorithm.learn_.instructions.emplace_back(make_shared<const Instruction>(
+        algorithm.learn_.getInstructions().emplace_back(make_shared<const Instruction>(
             SCALAR_PRODUCT_OP,
             kLearningRateAddress,
             kPredictionErrorAddress,
             kPredictionErrorAddress));
         CHECK_LE(kFinalLayerBiasAddress, k_MAX_SCALAR_ADDRESSES);
         // Update final layer bias.
-        algorithm.learn_.instructions.emplace_back(make_shared<const Instruction>(
+        algorithm.learn_.getInstructions().emplace_back(make_shared<const Instruction>(
             SCALAR_SUM_OP,
             kFinalLayerBiasAddress,
             kPredictionErrorAddress,
             kFinalLayerBiasAddress));
-        algorithm.learn_.instructions.emplace_back(make_shared<const Instruction>(
+        algorithm.learn_.getInstructions().emplace_back(make_shared<const Instruction>(
             SCALAR_VECTOR_PRODUCT_OP,
             kPredictionErrorAddress,
             kFirstLayerOutputAfterReluAddress,
             kGradientWrtFinalLayerWeightsAddress));
-        algorithm.learn_.instructions.emplace_back(make_shared<const Instruction>(
+        algorithm.learn_.getInstructions().emplace_back(make_shared<const Instruction>(
             VECTOR_SUM_OP,
             kFinalLayerWeightsAddress,
             kGradientWrtFinalLayerWeightsAddress,
             kFinalLayerWeightsAddress));
-        algorithm.learn_.instructions.emplace_back(make_shared<const Instruction>(
+        algorithm.learn_.getInstructions().emplace_back(make_shared<const Instruction>(
             SCALAR_VECTOR_PRODUCT_OP,
             kPredictionErrorAddress,
             kFinalLayerWeightsAddress,
             kGradientWrtActivationsAddress));
-        algorithm.learn_.instructions.emplace_back(make_shared<const Instruction>(
+        algorithm.learn_.getInstructions().emplace_back(make_shared<const Instruction>(
             VECTOR_HEAVYSIDE_OP,
             kFirstLayerOutputBeforeReluAddress,
             0,
             kGradientOfReluAddress));
-        algorithm.learn_.instructions.emplace_back(make_shared<const Instruction>(
+        algorithm.learn_.getInstructions().emplace_back(make_shared<const Instruction>(
             VECTOR_PRODUCT_OP,
             kGradientOfReluAddress,
             kGradientWrtActivationsAddress,
             kGradientWrtActivationsAddress));
         // Update first layer bias.
-        algorithm.learn_.instructions.emplace_back(make_shared<const Instruction>(
+        algorithm.learn_.getInstructions().emplace_back(make_shared<const Instruction>(
             VECTOR_SUM_OP,
             kFirstLayerBiasAddress,
             kGradientWrtActivationsAddress,
             kFirstLayerBiasAddress));
-        algorithm.learn_.instructions.emplace_back(make_shared<const Instruction>(
+        algorithm.learn_.getInstructions().emplace_back(make_shared<const Instruction>(
             VECTOR_OUTER_PRODUCT_OP,
             kGradientWrtActivationsAddress,
             k_FEATURES_VECTOR_ADDRESS,
             kGradientWrtFirstLayerWeightsAddress));
-        algorithm.learn_.instructions.emplace_back(make_shared<const Instruction>(
+        algorithm.learn_.getInstructions().emplace_back(make_shared<const Instruction>(
             MATRIX_SUM_OP,
             kFirstLayerWeightsAddress,
             kGradientWrtFirstLayerWeightsAddress,
             kFirstLayerWeightsAddress));
         PadComponentFunctionWithInstruction(
-            learn_size_init_, no_op_instruction, &algorithm.learn_.instructions);
+            learn_size_init_, no_op_instruction, &algorithm.learn_.getInstructions());
 
         return algorithm;
     }
@@ -491,35 +491,35 @@ namespace automl_zero
         shared_ptr<const Instruction> no_op_instruction =
             make_shared<const Instruction>();
 
-        algorithm.setup_.instructions.emplace_back(make_shared<const Instruction>(
+        algorithm.setup_.getInstructions().emplace_back(make_shared<const Instruction>(
             SCALAR_CONST_SET_OP,
             kLearningRateAddress,
             ActivationDataSetter(learning_rate)));
         PadComponentFunctionWithInstruction(
-            setup_size_init_, no_op_instruction, &algorithm.setup_.instructions);
+            setup_size_init_, no_op_instruction, &algorithm.setup_.getInstructions());
 
-        algorithm.predict_.instructions.emplace_back(make_shared<const Instruction>(
+        algorithm.predict_.getInstructions().emplace_back(make_shared<const Instruction>(
             VECTOR_INNER_PRODUCT_OP,
             kWeightsAddress, k_FEATURES_VECTOR_ADDRESS, k_PREDICTIONS_SCALAR_ADDRESS));
         PadComponentFunctionWithInstruction(
-            predict_size_init_, no_op_instruction, &algorithm.predict_.instructions);
+            predict_size_init_, no_op_instruction, &algorithm.predict_.getInstructions());
 
-        algorithm.learn_.instructions.emplace_back(make_shared<const Instruction>(
+        algorithm.learn_.getInstructions().emplace_back(make_shared<const Instruction>(
             SCALAR_DIFF_OP,
             k_LABELS_SCALAR_ADDRESS, k_PREDICTIONS_SCALAR_ADDRESS,
             kPredictionErrorAddress));
-        algorithm.learn_.instructions.emplace_back(make_shared<const Instruction>(
+        algorithm.learn_.getInstructions().emplace_back(make_shared<const Instruction>(
             SCALAR_PRODUCT_OP,
             kLearningRateAddress, kPredictionErrorAddress,
             kPredictionErrorAddress));
-        algorithm.learn_.instructions.emplace_back(make_shared<const Instruction>(
+        algorithm.learn_.getInstructions().emplace_back(make_shared<const Instruction>(
             SCALAR_VECTOR_PRODUCT_OP,
             kPredictionErrorAddress, k_FEATURES_VECTOR_ADDRESS, kCorrectionAddress));
-        algorithm.learn_.instructions.emplace_back(make_shared<const Instruction>(
+        algorithm.learn_.getInstructions().emplace_back(make_shared<const Instruction>(
             VECTOR_SUM_OP,
             kWeightsAddress, kCorrectionAddress, kWeightsAddress));
         PadComponentFunctionWithInstruction(
-            learn_size_init_, no_op_instruction, &algorithm.learn_.instructions);
+            learn_size_init_, no_op_instruction, &algorithm.learn_.getInstructions());
         return algorithm;
     }
 
@@ -535,9 +535,9 @@ namespace automl_zero
 
         shared_ptr<const Instruction> no_op_instruction = make_shared<const Instruction>();
 
-        SortAlgorithmSetup(algorithm.setup_.instructions, no_op_instruction);
-        SortAlgorithmPredict(algorithm.predict_.instructions, F, no_op_instruction);
-        SortAlgorithmLearn(algorithm.learn_.instructions, no_op_instruction);
+        SortAlgorithmSetup(algorithm.setup_.getInstructions(), no_op_instruction);
+        SortAlgorithmPredict(algorithm.predict_.getInstructions(), F, no_op_instruction);
+        SortAlgorithmLearn(algorithm.learn_.getInstructions(), no_op_instruction);
 
         return algorithm;
     }

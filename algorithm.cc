@@ -75,15 +75,15 @@ namespace automl_zero {
     string Algorithm::ToReadable() const {
         ostringstream stream;
         stream << "def Setup():" << std::endl;
-        for (const shared_ptr<const Instruction>& instruction : setup_.instructions) {
+        for (const shared_ptr<const Instruction>& instruction : setup_.getConstInstructions()) {
             stream << instruction->ToString();
         }
         stream << "def Predict():" << std::endl;
-        for (const shared_ptr<const Instruction>& instruction : predict_.instructions) {
+        for (const shared_ptr<const Instruction>& instruction : predict_.getConstInstructions()) {
             stream << instruction->ToString();
         }
         stream << "def Learn():" << std::endl;
-        for (const shared_ptr<const Instruction>& instruction : learn_.instructions) {
+        for (const shared_ptr<const Instruction>& instruction : learn_.getConstInstructions()) {
             stream << instruction->ToString();
         }
         return stream.str();
@@ -91,37 +91,37 @@ namespace automl_zero {
 
     SerializedAlgorithm Algorithm::ToProto() const {
         SerializedAlgorithm checkpoint_algorithm;
-        for (const shared_ptr<const Instruction>& instr : setup_.instructions) {
+        for (const shared_ptr<const Instruction>& instr : setup_.getConstInstructions()) {
             *checkpoint_algorithm.add_setup_instructions() = instr->Serialize();
         }
-        for (const shared_ptr<const Instruction>& instr : predict_.instructions) {
+        for (const shared_ptr<const Instruction>& instr : predict_.getConstInstructions()) {
             *checkpoint_algorithm.add_predict_instructions() = instr->Serialize();
         }
-        for (const shared_ptr<const Instruction>& instr : learn_.instructions) {
+        for (const shared_ptr<const Instruction>& instr : learn_.getConstInstructions()) {
             *checkpoint_algorithm.add_learn_instructions() = instr->Serialize();
         }
         return checkpoint_algorithm;
     }
 
     void Algorithm::FromProto(const SerializedAlgorithm& checkpoint_algorithm) {
-        setup_.instructions.reserve(checkpoint_algorithm.setup_instructions_size());
-        setup_.instructions.clear();
+        setup_.getInstructions().reserve(checkpoint_algorithm.setup_instructions_size());
+        setup_.getInstructions().clear();
         for (const SerializedInstruction& checkpoint_instruction: checkpoint_algorithm.setup_instructions()) {
-            setup_.instructions.emplace_back(
+            setup_.getInstructions().emplace_back(
                 make_shared<const Instruction>(checkpoint_instruction));
         }
 
-        predict_.instructions.reserve(checkpoint_algorithm.predict_instructions_size());
-        predict_.instructions.clear();
+        predict_.getInstructions().reserve(checkpoint_algorithm.predict_instructions_size());
+        predict_.getInstructions().clear();
         for (const SerializedInstruction& checkpoint_instruction: checkpoint_algorithm.predict_instructions()) {
-            predict_.instructions.emplace_back(
+            predict_.getInstructions().emplace_back(
                 make_shared<const Instruction>(checkpoint_instruction));
         }
 
-        learn_.instructions.reserve(checkpoint_algorithm.learn_instructions_size());
-        learn_.instructions.clear();
+        learn_.getInstructions().reserve(checkpoint_algorithm.learn_instructions_size());
+        learn_.getInstructions().clear();
         for (const SerializedInstruction& checkpoint_instruction: checkpoint_algorithm.learn_instructions()) {
-            learn_.instructions.emplace_back(
+            learn_.getInstructions().emplace_back(
                 make_shared<const Instruction>(checkpoint_instruction));
         }
     }

@@ -87,9 +87,9 @@ namespace automl_zero
         // k_PREDICTIONS_SCALAR_ADDRESS.
         Algorithm algorithm = SimpleNoOpAlgorithm();
         constexpr AddressT temp_scalar_address = 2;
-        algorithm.predict_.instructions[0] = make_shared<const Instruction>(
+        algorithm.predict_.getInstructions()[0] = make_shared<const Instruction>(
             SCALAR_CONST_SET_OP, temp_scalar_address, ActivationDataSetter(1.0));
-        algorithm.predict_.instructions[2] = make_shared<const Instruction>(
+        algorithm.predict_.getInstructions()[2] = make_shared<const Instruction>(
             SCALAR_SUM_OP,
             temp_scalar_address, k_PREDICTIONS_SCALAR_ADDRESS,
             k_PREDICTIONS_SCALAR_ADDRESS);
@@ -123,9 +123,9 @@ namespace automl_zero
         // k_PREDICTIONS_SCALAR_ADDRESS.
         Algorithm algorithm = SimpleNoOpAlgorithm();
         constexpr AddressT temp_scalar_address = 2;
-        algorithm.learn_.instructions[0] = make_shared<const Instruction>(
+        algorithm.learn_.getInstructions()[0] = make_shared<const Instruction>(
             SCALAR_CONST_SET_OP, temp_scalar_address, ActivationDataSetter(1.0));
-        algorithm.learn_.instructions[2] = make_shared<const Instruction>(
+        algorithm.learn_.getInstructions()[2] = make_shared<const Instruction>(
             SCALAR_SUM_OP,
             temp_scalar_address, k_PREDICTIONS_SCALAR_ADDRESS,
             k_PREDICTIONS_SCALAR_ADDRESS);
@@ -148,27 +148,27 @@ namespace automl_zero
             kOneFollowedByZeroesVectorAddress,
             Generator::kOneFollowedByZeroesVectorAddress);
         // memory.vector_[Generator::kOneFollowedByZeroesVectorAddress](0) = 1;
-        algorithm.setup_.instructions.push_back(make_shared<const Instruction>(
+        algorithm.setup_.getInstructions().push_back(make_shared<const Instruction>(
             VECTOR_CONST_SET_OP,
             kOneFollowedByZeroesVectorAddress,
             FloatDataSetter(0),
             FloatDataSetter(1)));
 
         // memory->vector_[k_PREDICTIONS_VECTOR_ADDRESS] = memory->scalar_[k_PREDICTIONS_SCALAR_ADDRESS] * {1, 0, 0, ...}
-        algorithm.predict_.instructions.push_back(make_shared<const Instruction>(
+        algorithm.predict_.getInstructions().push_back(make_shared<const Instruction>(
             SCALAR_VECTOR_PRODUCT_OP,
             k_PREDICTIONS_SCALAR_ADDRESS,
             kOneFollowedByZeroesVectorAddress,
             k_PREDICTIONS_VECTOR_ADDRESS));
 
         // memory->scalar_[k_LABELS_SCALAR_ADDRESS] = memory->vector_[k_LABELS_VECTOR_ADDRESS][0]
-        algorithm.learn_.instructions.insert(algorithm.learn_.instructions.begin(), make_shared<const Instruction>(
+        algorithm.learn_.getInstructions().insert(algorithm.learn_.getInstructions().begin(), make_shared<const Instruction>(
             SCALAR_VECTOR_AT_INDEX_SET_OP,
             k_LABELS_SCALAR_ADDRESS,
             k_LABELS_VECTOR_ADDRESS,
             FloatDataSetter(0)));
         // memory->scalar_[k_PREDICTIONS_SCALAR_ADDRESS] = memory->vector_[k_PREDICTIONS_VECTOR_ADDRESS][0]
-        algorithm.learn_.instructions.insert(algorithm.learn_.instructions.begin(), make_shared<const Instruction>(
+        algorithm.learn_.getInstructions().insert(algorithm.learn_.getInstructions().begin(), make_shared<const Instruction>(
             SCALAR_VECTOR_AT_INDEX_SET_OP,
             k_PREDICTIONS_SCALAR_ADDRESS,
             k_PREDICTIONS_VECTOR_ADDRESS,
@@ -191,7 +191,7 @@ namespace automl_zero
 
         // Create a Algorithm in which the error is always 0.1.
         Algorithm algorithm = SimpleNoOpAlgorithm();
-        algorithm.predict_.instructions[0] = make_shared<const Instruction>(
+        algorithm.predict_.getInstructions()[0] = make_shared<const Instruction>(
             SCALAR_CONST_SET_OP,
             k_PREDICTIONS_SCALAR_ADDRESS,
             ActivationDataSetter(0.9));
@@ -219,7 +219,7 @@ namespace automl_zero
 
         // Create a Algorithm in which the accuracy is always 0.0.
         Algorithm algorithm_0 = SimpleNoOpAlgorithm();
-        algorithm_0.predict_.instructions[0] = make_shared<const Instruction>(
+        algorithm_0.predict_.getInstructions()[0] = make_shared<const Instruction>(
             SCALAR_CONST_SET_OP,
             k_PREDICTIONS_SCALAR_ADDRESS,
             ActivationDataSetter(-3.0));
@@ -234,7 +234,7 @@ namespace automl_zero
 
         // Create a Algorithm in which the accuracy is always 1.0.
         Algorithm algorithm_1 = SimpleNoOpAlgorithm();
-        algorithm_1.predict_.instructions[0] = make_shared<const Instruction>(
+        algorithm_1.predict_.getInstructions()[0] = make_shared<const Instruction>(
             SCALAR_CONST_SET_OP,
             k_PREDICTIONS_SCALAR_ADDRESS,
             ActivationDataSetter(3.0));
@@ -248,7 +248,7 @@ namespace automl_zero
 
         // Create a Algorithm, whose logit is infinity.
         Algorithm algorithm_inf = SimpleNoOpAlgorithm();
-        algorithm_inf.predict_.instructions[0] = make_shared<const Instruction>(
+        algorithm_inf.predict_.getInstructions()[0] = make_shared<const Instruction>(
             SCALAR_CONST_SET_OP,
             k_PREDICTIONS_SCALAR_ADDRESS,
             ActivationDataSetter(std::numeric_limits<double>::infinity()));
@@ -261,7 +261,7 @@ namespace automl_zero
 
         // Create a Algorithm, whose logit is negative infinity.
         Algorithm algorithm_ninf = SimpleNoOpAlgorithm();
-        algorithm_ninf.predict_.instructions[0] = make_shared<const Instruction>(
+        algorithm_ninf.predict_.getInstructions()[0] = make_shared<const Instruction>(
             SCALAR_CONST_SET_OP,
             k_PREDICTIONS_SCALAR_ADDRESS,
             ActivationDataSetter(-std::numeric_limits<double>::infinity()));
@@ -361,9 +361,9 @@ namespace automl_zero
         // Create a Algorithm that aggretates the mean value of the features.
         Algorithm algorithm = SimpleNoOpAlgorithm();
         constexpr AddressT temp_scalar_address = 2;
-        algorithm.predict_.instructions[0] = make_shared<const Instruction>(
+        algorithm.predict_.getInstructions()[0] = make_shared<const Instruction>(
             VECTOR_MEAN_OP, k_FEATURES_VECTOR_ADDRESS, temp_scalar_address);
-        algorithm.predict_.instructions[1] = make_shared<const Instruction>(
+        algorithm.predict_.getInstructions()[1] = make_shared<const Instruction>(
             SCALAR_SUM_OP,
             temp_scalar_address, k_PREDICTIONS_SCALAR_ADDRESS,
             k_PREDICTIONS_SCALAR_ADDRESS);
@@ -394,7 +394,7 @@ namespace automl_zero
 
         // Create a Algorithm that aggretates the mean value of the labels.
         Algorithm algorithm = SimpleNoOpAlgorithm();
-        algorithm.learn_.instructions[0] = make_shared<const Instruction>(
+        algorithm.learn_.getInstructions()[0] = make_shared<const Instruction>(
             SCALAR_SUM_OP,
             k_LABELS_SCALAR_ADDRESS, k_PREDICTIONS_SCALAR_ADDRESS,
             k_PREDICTIONS_SCALAR_ADDRESS);
@@ -449,12 +449,12 @@ namespace automl_zero
 
         // Create a Algorithm that aggretates the mean value of the labels.
         Algorithm algorithm = SimpleNoOpAlgorithm();
-        algorithm.predict_.instructions[0] = make_shared<const Instruction>(
+        algorithm.predict_.getInstructions()[0] = make_shared<const Instruction>(
             SCALAR_VECTOR_AT_INDEX_SET_OP,
             k_LABELS_SCALAR_ADDRESS,
             k_LABELS_VECTOR_ADDRESS,
             FloatDataSetter(0));
-        algorithm.predict_.instructions[1] = make_shared<const Instruction>(
+        algorithm.predict_.getInstructions()[1] = make_shared<const Instruction>(
             SCALAR_SUM_OP,
             k_LABELS_SCALAR_ADDRESS, k_PREDICTIONS_SCALAR_ADDRESS,
             k_PREDICTIONS_SCALAR_ADDRESS);
@@ -485,7 +485,7 @@ namespace automl_zero
 
         // Create a Algorithm that creates a NaN in the predict component function.
         Algorithm algorithm = SimpleNoOpAlgorithm();
-        algorithm.setup_.instructions[0] = make_shared<const Instruction>(
+        algorithm.setup_.getInstructions()[0] = make_shared<const Instruction>(
             SCALAR_CONST_SET_OP,
             k_PREDICTIONS_SCALAR_ADDRESS,
             ActivationDataSetter(kMaxAbsError + 10.0));
@@ -515,7 +515,7 @@ namespace automl_zero
 
         // Create a Algorithm that creates a NaN in the predict component function.
         Algorithm algorithm = SimpleNoOpAlgorithm();
-        algorithm.predict_.instructions[0] = make_shared<const Instruction>(
+        algorithm.predict_.getInstructions()[0] = make_shared<const Instruction>(
             SCALAR_CONST_SET_OP,
             k_PREDICTIONS_SCALAR_ADDRESS,
             ActivationDataSetter(kMaxAbsError + 10.0));
@@ -545,7 +545,7 @@ namespace automl_zero
 
         // Create a Algorithm that creates a NaN in the predict component function.
         Algorithm algorithm = SimpleNoOpAlgorithm();
-        algorithm.learn_.instructions[0] = make_shared<const Instruction>(
+        algorithm.learn_.getInstructions()[0] = make_shared<const Instruction>(
             SCALAR_CONST_SET_OP,
             k_PREDICTIONS_SCALAR_ADDRESS,
             ActivationDataSetter(kMaxAbsError + 10.0));
@@ -577,9 +577,9 @@ namespace automl_zero
         Algorithm algorithm = SimpleNoOpAlgorithm();
         AddressT one_address = 2;
         AddressT zero_address = 3;
-        algorithm.setup_.instructions[0] = make_shared<const Instruction>(
+        algorithm.setup_.getInstructions()[0] = make_shared<const Instruction>(
             SCALAR_CONST_SET_OP, one_address, ActivationDataSetter(1.0));
-        algorithm.setup_.instructions[1] = make_shared<const Instruction>(
+        algorithm.setup_.getInstructions()[1] = make_shared<const Instruction>(
             SCALAR_DIVISION_OP,
             one_address, zero_address, k_PREDICTIONS_SCALAR_ADDRESS);
         adaptAlgorithm2VectorLabels(algorithm);
@@ -610,9 +610,9 @@ namespace automl_zero
         Algorithm algorithm = SimpleNoOpAlgorithm();
         AddressT one_address = 2;
         AddressT zero_address = 3;
-        algorithm.setup_.instructions[0] = make_shared<const Instruction>(
+        algorithm.setup_.getInstructions()[0] = make_shared<const Instruction>(
             SCALAR_CONST_SET_OP, one_address, ActivationDataSetter(1.0));
-        algorithm.predict_.instructions[0] = make_shared<const Instruction>(
+        algorithm.predict_.getInstructions()[0] = make_shared<const Instruction>(
             SCALAR_DIVISION_OP,
             one_address, zero_address, k_PREDICTIONS_SCALAR_ADDRESS);
         adaptAlgorithm2VectorLabels(algorithm);
@@ -643,9 +643,9 @@ namespace automl_zero
         Algorithm algorithm = SimpleNoOpAlgorithm();
         AddressT one_address = 2;
         AddressT zero_address = 3;
-        algorithm.setup_.instructions[0] = make_shared<const Instruction>(
+        algorithm.setup_.getInstructions()[0] = make_shared<const Instruction>(
             SCALAR_CONST_SET_OP, one_address, ActivationDataSetter(1.0));
-        algorithm.learn_.instructions[0] = make_shared<const Instruction>(
+        algorithm.learn_.getInstructions()[0] = make_shared<const Instruction>(
             SCALAR_DIVISION_OP,
             one_address, zero_address, k_PREDICTIONS_SCALAR_ADDRESS);
         adaptAlgorithm2VectorLabels(algorithm);
@@ -675,7 +675,7 @@ namespace automl_zero
         // Create a Algorithm that creates a NaN in the predict component function.
         Algorithm algorithm = SimpleNoOpAlgorithm();
         AddressT zero_address = 2;
-        algorithm.setup_.instructions[1] = make_shared<const Instruction>(
+        algorithm.setup_.getInstructions()[1] = make_shared<const Instruction>(
             SCALAR_DIVISION_OP,
             zero_address, zero_address, k_PREDICTIONS_SCALAR_ADDRESS);
         adaptAlgorithm2VectorLabels(algorithm);
@@ -705,7 +705,7 @@ namespace automl_zero
         // Create a Algorithm that creates a NaN in the predict component function.
         Algorithm algorithm = SimpleNoOpAlgorithm();
         AddressT zero_address = 2;
-        algorithm.predict_.instructions[0] = make_shared<const Instruction>(
+        algorithm.predict_.getInstructions()[0] = make_shared<const Instruction>(
             SCALAR_DIVISION_OP,
             zero_address, zero_address, k_PREDICTIONS_SCALAR_ADDRESS);
         adaptAlgorithm2VectorLabels(algorithm);
@@ -735,7 +735,7 @@ namespace automl_zero
         // Create a Algorithm that creates a NaN in the predict component function.
         Algorithm algorithm = SimpleNoOpAlgorithm();
         AddressT zero_address = 2;
-        algorithm.learn_.instructions[0] = make_shared<const Instruction>(
+        algorithm.learn_.getInstructions()[0] = make_shared<const Instruction>(
             SCALAR_DIVISION_OP,
             zero_address, zero_address, k_PREDICTIONS_SCALAR_ADDRESS);
         adaptAlgorithm2VectorLabels(algorithm);

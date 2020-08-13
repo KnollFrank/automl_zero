@@ -74,9 +74,9 @@ namespace automl_zero {
 
     Algorithm SimpleIncreasingDataAlgorithm() {
         Algorithm algorithm = SimpleNoOpAlgorithm();
-        SetIncreasingDataInComponentFunction(&algorithm.setup_.instructions);
-        SetIncreasingDataInComponentFunction(&algorithm.predict_.instructions);
-        SetIncreasingDataInComponentFunction(&algorithm.learn_.instructions);
+        SetIncreasingDataInComponentFunction(&algorithm.setup_.getInstructions());
+        SetIncreasingDataInComponentFunction(&algorithm.predict_.getInstructions());
+        SetIncreasingDataInComponentFunction(&algorithm.learn_.getInstructions());
         return algorithm;
     }
 

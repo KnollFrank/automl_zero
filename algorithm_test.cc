@@ -80,23 +80,23 @@ namespace automl_zero {
 
         TEST(AlgorithmTest, EqualsOperator) {
             Algorithm algorithm = SimpleNoOpAlgorithm();
-            algorithm.predict_.instructions[1] =
+            algorithm.predict_.getInstructions()[1] =
                 make_shared<const Instruction>(VECTOR_SUM_OP, 1, 2, 3);
 
             Algorithm algorithm_same = SimpleNoOpAlgorithm();
-            algorithm_same.predict_.instructions[1] =
+            algorithm_same.predict_.getInstructions()[1] =
                 make_shared<const Instruction>(VECTOR_SUM_OP, 1, 2, 3);
 
             Algorithm algorithm_different_instruction = SimpleNoOpAlgorithm();
-            algorithm_different_instruction.predict_.instructions[1] =
+            algorithm_different_instruction.predict_.getInstructions()[1] =
                 make_shared<const Instruction>(VECTOR_SUM_OP, 1, 1, 3);
 
             Algorithm algorithm_different_position = SimpleNoOpAlgorithm();
-            algorithm_different_position.predict_.instructions[0] =
+            algorithm_different_position.predict_.getInstructions()[0] =
                 make_shared<const Instruction>(VECTOR_SUM_OP, 1, 2, 3);
 
             Algorithm algorithm_different_component_function = SimpleNoOpAlgorithm();
-            algorithm_different_component_function.learn_.instructions[0] =
+            algorithm_different_component_function.learn_.getInstructions()[0] =
                 make_shared<const Instruction>(VECTOR_SUM_OP, 1, 2, 3);
 
             EXPECT_TRUE(algorithm == algorithm_same);

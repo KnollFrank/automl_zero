@@ -50,15 +50,15 @@ namespace automl_zero
         // executes the setup component function. All arguments are stored by
         // reference, so they must out-live the Executor instance.
         Executor(const Algorithm &algorithm, const Task<F> &dataset,
-            // Includes the examples in all the training epochs.
-            IntegerT num_all_train_examples, IntegerT num_valid_examples,
-            RandomGenerator *rand_gen,
-            // Errors larger than this trigger early stopping, as they signal
-            // models that likely have runnaway behavior. Early stopping can also
-            // be triggered if the loss for an example is infinite, nan, or too
-            // large. If early stopping is triggered, the fitness for the
-            // execution will be set to the minimum value.
-            double max_abs_error);
+                 // Includes the examples in all the training epochs.
+                 IntegerT num_all_train_examples, IntegerT num_valid_examples,
+                 RandomGenerator *rand_gen,
+                 // Errors larger than this trigger early stopping, as they signal
+                 // models that likely have runnaway behavior. Early stopping can also
+                 // be triggered if the loss for an example is infinite, nan, or too
+                 // large. If early stopping is triggered, the fitness for the
+                 // execution will be set to the minimum value.
+                 double max_abs_error);
 
         Executor(const Executor &other) = delete;
 
@@ -75,7 +75,8 @@ namespace automl_zero
         IntegerT GetNumTrainStepsCompleted() const;
 
         // Use only from unit tests.
-        inline Memory<F> &MemoryRef() {
+        inline Memory<F> &MemoryRef()
+        {
             return memory_;
         }
 
@@ -101,23 +102,23 @@ namespace automl_zero
         // Performs training for a given number of steps. Returns whether successful.
         // If not, it means training stopped early.
         bool Train(IntegerT max_steps, std::vector<double> *errors,
-            // The iterators are used to track the training progress.
-            // They should point to dataset_.train_features_.begin(),
-            // dataset_.train_labels_.begin() and
-            // dataset_.vector_train_labels_.begin() initially, and will be
-            // updated after each training step.
-            TaskIterator<F> *train_it);
+                   // The iterators are used to track the training progress.
+                   // They should point to dataset_.train_features_.begin(),
+                   // dataset_.train_labels_.begin() and
+                   // dataset_.vector_train_labels_.begin() initially, and will be
+                   // updated after each training step.
+                   TaskIterator<F> *train_it);
 
         // Implementations of the train component function, with different
         // optimizations.
         bool TrainNoOptImpl(IntegerT max_steps, std::vector<double> *errors,
-            // See `Train` for more details about the following args.
-            TaskIterator<F> *train_it);
+                            // See `Train` for more details about the following args.
+                            TaskIterator<F> *train_it);
 
         template <size_t max_component_function_size>
         bool TrainOptImpl(IntegerT max_steps, std::vector<double> *errors,
-            // See `Train` for more details about the following args.
-            TaskIterator<F> *train_it);
+                          // See `Train` for more details about the following args.
+                          TaskIterator<F> *train_it);
 
         // Performs validation and returns the loss.
         double Validate(std::vector<double> *errors);
@@ -148,8 +149,8 @@ namespace automl_zero
     // dataset generators to generate labels.
     template <FeatureIndexT F>
     void ExecuteAndFillLabels(const Algorithm &algorithm, Memory<F> *memory,
-        TaskBuffer<F> *buffer,
-        RandomGenerator *rand_gen);
+                              TaskBuffer<F> *buffer,
+                              RandomGenerator *rand_gen);
 
     template <FeatureIndexT F>
     Vector<F> ExecutePredict(const Algorithm &algorithm, const Vector<F> &input);
@@ -162,7 +163,7 @@ namespace automl_zero
     inline double Sigmoid(double x)
     {
         return static_cast<double>(1.0) /
-            (static_cast<double>(1.0) + std::exp(-x));
+               (static_cast<double>(1.0) + std::exp(-x));
     }
 
     namespace internal
@@ -381,8 +382,8 @@ namespace automl_zero
     {
         memory->vector_[instruction.out_] =
             (memory->vector_[instruction.in1_].array() *
-                memory->vector_[instruction.in2_].array())
-            .matrix();
+             memory->vector_[instruction.in2_].array())
+                .matrix();
     }
 
     template <FeatureIndexT F>
@@ -392,8 +393,8 @@ namespace automl_zero
     {
         memory->vector_[instruction.out_] =
             (memory->vector_[instruction.in1_].array() /
-                memory->vector_[instruction.in2_].array())
-            .matrix();
+             memory->vector_[instruction.in2_].array())
+                .matrix();
     }
 
     template <FeatureIndexT F>
@@ -403,8 +404,8 @@ namespace automl_zero
     {
         memory->vector_[instruction.out_] =
             (memory->vector_[instruction.in1_].array().min(
-                memory->vector_[instruction.in2_].array()))
-            .matrix();
+                 memory->vector_[instruction.in2_].array()))
+                .matrix();
     }
 
     template <FeatureIndexT F>
@@ -414,8 +415,8 @@ namespace automl_zero
     {
         memory->vector_[instruction.out_] =
             (memory->vector_[instruction.in1_].array().max(
-                memory->vector_[instruction.in2_].array()))
-            .matrix();
+                 memory->vector_[instruction.in2_].array()))
+                .matrix();
     }
 
     template <FeatureIndexT F>
@@ -446,8 +447,8 @@ namespace automl_zero
     // v3[5]=-2.4
     template <FeatureIndexT F>
     inline void ExecuteVectorConstSetOp(const Instruction &instruction,
-        RandomGenerator *rand_gen,
-        Memory<F> *memory)
+                                        RandomGenerator *rand_gen,
+                                        Memory<F> *memory)
     {
         const FeatureIndexT index = FloatToIndex(instruction.GetFloatData0(), F);
         memory->vector_[instruction.out_](index) = instruction.GetFloatData1();
@@ -550,8 +551,8 @@ namespace automl_zero
     {
         memory->vector_[instruction.out_] =
             (static_cast<double>(1.0) /
-                memory->vector_[instruction.in1_].array())
-            .matrix();
+             memory->vector_[instruction.in1_].array())
+                .matrix();
     }
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -583,8 +584,8 @@ namespace automl_zero
     {
         memory->matrix_[instruction.out_] =
             (memory->matrix_[instruction.in1_].array() *
-                memory->matrix_[instruction.in2_].array())
-            .matrix();
+             memory->matrix_[instruction.in2_].array())
+                .matrix();
     }
 
     template <FeatureIndexT F>
@@ -594,8 +595,8 @@ namespace automl_zero
     {
         memory->matrix_[instruction.out_] =
             (memory->matrix_[instruction.in1_].array() /
-                memory->matrix_[instruction.in2_].array())
-            .matrix();
+             memory->matrix_[instruction.in2_].array())
+                .matrix();
     }
 
     template <FeatureIndexT F>
@@ -681,8 +682,8 @@ namespace automl_zero
     {
         memory->matrix_[instruction.out_] =
             (static_cast<double>(1.0) /
-                memory->matrix_[instruction.in1_].array())
-            .matrix();
+             memory->matrix_[instruction.in1_].array())
+                .matrix();
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -846,7 +847,7 @@ namespace automl_zero
         const double mean = values.mean();
         memory->scalar_[instruction.out_] =
             sqrt(values.dot(values) / static_cast<double>(F) -
-                mean * mean);
+                 mean * mean);
     }
 
     template <FeatureIndexT F>
@@ -867,8 +868,8 @@ namespace automl_zero
         const double mean = values.mean();
         memory->scalar_[instruction.out_] =
             sqrt((values.array() * values.array()).sum() /
-                static_cast<double>(F * F) -
-                mean * mean);
+                     static_cast<double>(F * F) -
+                 mean * mean);
     }
 
     template <FeatureIndexT F>
@@ -892,8 +893,8 @@ namespace automl_zero
             const double mean = values.mean();
             const double stdev =
                 sqrt((values.array() * values.array()).sum() /
-                    static_cast<double>(F) -
-                    mean * mean);
+                         static_cast<double>(F) -
+                     mean * mean);
             memory->vector_[instruction.out_](row) = stdev;
         }
     }
@@ -981,135 +982,135 @@ namespace automl_zero
     static constexpr std::array<
         void (*)(const Instruction &, RandomGenerator *, Memory<F> *),
         128>
-        kOpIndexToExecuteFunction ={
-        &ExecuteNoOp<F>,                  // NO_OP = 0
-        &ExecuteScalarSumOp<F>,           // SCALAR_SUM_OP = 1
-        &ExecuteScalarDiffOp,             // SCALAR_DIFF_OP = 2
-        &ExecuteScalarProductOp,          // SCALAR_PRODUCT_OP = 3
-        &ExecuteScalarDivisionOp,         // SCALAR_DIVISION_OP = 4
-        &ExecuteScalarAbsOp,              // SCALAR_ABS_OP = 5
-        &ExecuteScalarReciprocalOp,       // SCALAR_RECIPROCAL_OP = 6
-        &ExecuteScalarSinOp,              // SCALAR_SIN_OP = 7
-        &ExecuteScalarCosOp,              // SCALAR_COS_OP = 8
-        &ExecuteScalarTanOp,              // SCALAR_TAN_OP = 9
-        &ExecuteScalarArcSinOp,           // SCALAR_ARCSIN_OP = 10
-        &ExecuteScalarArcCosOp,           // SCALAR_ARCCOS_OP = 11
-        &ExecuteScalarArcTanOp,           // SCALAR_ARCTAN_OP = 12
-        &ExecuteScalarExpOp,              // SCALAR_EXP_OP = 13
-        &ExecuteScalarLogOp,              // SCALAR_LOG_OP = 14
-        &ExecuteScalarHeavisideOp,        // SCALAR_HEAVYSIDE_OP = 15
-        &ExecuteVectorHeavisideOp,        // VECTOR_HEAVYSIDE_OP = 16
-        &ExecuteMatrixHeavisideOp,        // MATRIX_HEAVYSIDE_OP = 17
-        &ExecuteScalarVectorProductOp,    // SCALAR_VECTOR_PRODUCT_OP = 18
-        &ExecuteScalarBroadcastOp,        // SCALAR_BROADCAST_OP = 19
-        &ExecuteVectorReciprocalOp,       // VECTOR_RECIPROCAL_OP = 20
-        &ExecuteVectorNormOp,             // VECTOR_NORM_OP = 21
-        &ExecuteVectorAbsOp,              // VECTOR_ABS_OP = 22
-        &ExecuteVectorSumOp,              // VECTOR_SUM_OP = 23
-        &ExecuteVectorDiffOp,             // VECTOR_DIFF_OP = 24
-        &ExecuteVectorProductOp,          // VECTOR_PRODUCT_OP = 25
-        &ExecuteVectorDvisionOp,          // VECTOR_DIVISION_OP = 26
-        &ExecuteVectorInnerProductOp,     // VECTOR_INNER_PRODUCT_OP = 27
-        &ExecuteVectorOuterProductOp,     // VECTOR_OUTER_PRODUCT_OP = 28
-        &ExecuteScalarMatrixProductOp,    // SCALAR_MATRIX_PRODUCT_OP = 29
-        &ExecuteMatrixReciprocalOp,       // MATRIX_RECIPROCAL_OP = 30
-        &ExecuteMatrixVectorProductOp<F>, // MATRIX_VECTOR_PRODUCT_OP = 31
-        &ExecuteVectorColumnBroadcastOp,  // VECTOR_COLUMN_BROADCAST_OP = 32
-        &ExecuteVectorRowBroadcastOp,     // VECTOR_ROW_BROADCAST_OP = 33
-        &ExecuteMatrixNormOp,             // MATRIX_NORM_OP = 34
-        &ExecuteMatrixColumnNormOp,       // MATRIX_COLUMN_NORM_OP = 35
-        &ExecuteMatrixRowNormOp,          // MATRIX_ROW_NORM_OP = 36
-        &ExecuteMatrixTransposeOp,        // MATRIX_TRANSPOSE_OP = 37
-        &ExecuteMatrixAbsOp,              // MATRIX_ABS_OP = 38
-        &ExecuteMatrixSumOp,              // MATRIX_SUM_OP = 39
-        &ExecuteMatrixDiffOp,             // MATRIX_DIFF_OP = 40
-        &ExecuteMatrixProductOp,          // MATRIX_PRODUCT_OP = 41
-        &ExecuteMatrixDivisionOp,         // MATRIX_DIVISION_OP = 42
-        &ExecuteMatrixMatrixProductOp,    // MATRIX_MATRIX_PRODUCT_OP = 43
-        &ExecuteScalarMinOp,              // SCALAR_MIN_OP = 44
-        &ExecuteVectorMinOp,              // VECTOR_MIN_OP = 45
-        &ExecuteMatrixMinOp,              // MATRIX_MIN_OP = 46
-        &ExecuteScalarMaxOp,              // SCALAR_MAX_OP = 47
-        &ExecuteVectorMaxOp,              // VECTOR_MAX_OP = 48
-        &ExecuteMatrixMaxOp,              // MATRIX_MAX_OP = 49
-        &ExecuteVectorMeanOp<F>,          // VECTOR_MEAN_OP = 50
-        &ExecuteMatrixMeanOp,             // MATRIX_MEAN_OP = 51
-        &ExecuteMatrixRowMeanOp,          // MATRIX_ROW_MEAN_OP = 52
-        &ExecuteMatrixRowStDevOp,         // MATRIX_ROW_ST_DEV_OP = 53
-        &ExecuteVectorStDevOp,            // VECTOR_ST_DEV_OP = 54
-        &ExecuteMatrixStDevOp,            // MATRIX_ST_DEV_OP = 55
-        &ExecuteScalarConstSetOp,         // SCALAR_CONST_SET_OP = 56
-        &ExecuteVectorConstSetOp,         // VECTOR_CONST_SET_OP = 57
-        &ExecuteMatrixConstSetOp,         // MATRIX_CONST_SET_OP = 58
-        &ExecuteScalarUniformSetOp,       // SCALAR_UNIFORM_SET_OP = 59
-        &ExecuteVectorUniformSetOp,       // VECTOR_UNIFORM_SET_OP = 60
-        &ExecuteMatrixUniformSetOp,       // MATRIX_UNIFORM_SET_OP = 61
-        &ExecuteScalarGaussianSetOp,      // SCALAR_GAUSSIAN_SET_OP = 62
-        &ExecuteVectorGaussianSetOp,      // VECTOR_GAUSSIAN_SET_OP = 63
-        &ExecuteMatrixGaussianSetOp,      // MATRIX_GAUSSIAN_SET_OP = 64
-        &ExecuteScalarVectorAtIndexSetOp, // SCALAR_VECTOR_AT_INDEX_SET_OP = 65
-        &ExecuteVectorArgMinOp,           // VECTOR_ARG_MIN_OP = 66
-        &ExecuteVectorSwapOp,             // VECTOR_SWAP_OP = 67
-        &ExecuteLoopOp,                   // LOOP = 68
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 69
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 70
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 71
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 72
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 73
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 74
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 75
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 76
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 77
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 78
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 79
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 80
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 81
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 82
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 83
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 84
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 85
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 86
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 87
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 88
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 89
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 90
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 91
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 92
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 93
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 94
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 95
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 96
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 97
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 98
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 99
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 100
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 101
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 102
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 103
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 104
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 105
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 106
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 107
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 108
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 109
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 110
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 111
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 112
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 113
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 114
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 115
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 116
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 117
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 118
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 119
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 120
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 121
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 122
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 123
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 124
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 125
-        &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 126
-        &ExecuteUnsupportedOp             // UNSUPPORTED_OP = 127
+        kOpIndexToExecuteFunction = {
+            &ExecuteNoOp<F>,                  // NO_OP = 0
+            &ExecuteScalarSumOp<F>,           // SCALAR_SUM_OP = 1
+            &ExecuteScalarDiffOp,             // SCALAR_DIFF_OP = 2
+            &ExecuteScalarProductOp,          // SCALAR_PRODUCT_OP = 3
+            &ExecuteScalarDivisionOp,         // SCALAR_DIVISION_OP = 4
+            &ExecuteScalarAbsOp,              // SCALAR_ABS_OP = 5
+            &ExecuteScalarReciprocalOp,       // SCALAR_RECIPROCAL_OP = 6
+            &ExecuteScalarSinOp,              // SCALAR_SIN_OP = 7
+            &ExecuteScalarCosOp,              // SCALAR_COS_OP = 8
+            &ExecuteScalarTanOp,              // SCALAR_TAN_OP = 9
+            &ExecuteScalarArcSinOp,           // SCALAR_ARCSIN_OP = 10
+            &ExecuteScalarArcCosOp,           // SCALAR_ARCCOS_OP = 11
+            &ExecuteScalarArcTanOp,           // SCALAR_ARCTAN_OP = 12
+            &ExecuteScalarExpOp,              // SCALAR_EXP_OP = 13
+            &ExecuteScalarLogOp,              // SCALAR_LOG_OP = 14
+            &ExecuteScalarHeavisideOp,        // SCALAR_HEAVYSIDE_OP = 15
+            &ExecuteVectorHeavisideOp,        // VECTOR_HEAVYSIDE_OP = 16
+            &ExecuteMatrixHeavisideOp,        // MATRIX_HEAVYSIDE_OP = 17
+            &ExecuteScalarVectorProductOp,    // SCALAR_VECTOR_PRODUCT_OP = 18
+            &ExecuteScalarBroadcastOp,        // SCALAR_BROADCAST_OP = 19
+            &ExecuteVectorReciprocalOp,       // VECTOR_RECIPROCAL_OP = 20
+            &ExecuteVectorNormOp,             // VECTOR_NORM_OP = 21
+            &ExecuteVectorAbsOp,              // VECTOR_ABS_OP = 22
+            &ExecuteVectorSumOp,              // VECTOR_SUM_OP = 23
+            &ExecuteVectorDiffOp,             // VECTOR_DIFF_OP = 24
+            &ExecuteVectorProductOp,          // VECTOR_PRODUCT_OP = 25
+            &ExecuteVectorDvisionOp,          // VECTOR_DIVISION_OP = 26
+            &ExecuteVectorInnerProductOp,     // VECTOR_INNER_PRODUCT_OP = 27
+            &ExecuteVectorOuterProductOp,     // VECTOR_OUTER_PRODUCT_OP = 28
+            &ExecuteScalarMatrixProductOp,    // SCALAR_MATRIX_PRODUCT_OP = 29
+            &ExecuteMatrixReciprocalOp,       // MATRIX_RECIPROCAL_OP = 30
+            &ExecuteMatrixVectorProductOp<F>, // MATRIX_VECTOR_PRODUCT_OP = 31
+            &ExecuteVectorColumnBroadcastOp,  // VECTOR_COLUMN_BROADCAST_OP = 32
+            &ExecuteVectorRowBroadcastOp,     // VECTOR_ROW_BROADCAST_OP = 33
+            &ExecuteMatrixNormOp,             // MATRIX_NORM_OP = 34
+            &ExecuteMatrixColumnNormOp,       // MATRIX_COLUMN_NORM_OP = 35
+            &ExecuteMatrixRowNormOp,          // MATRIX_ROW_NORM_OP = 36
+            &ExecuteMatrixTransposeOp,        // MATRIX_TRANSPOSE_OP = 37
+            &ExecuteMatrixAbsOp,              // MATRIX_ABS_OP = 38
+            &ExecuteMatrixSumOp,              // MATRIX_SUM_OP = 39
+            &ExecuteMatrixDiffOp,             // MATRIX_DIFF_OP = 40
+            &ExecuteMatrixProductOp,          // MATRIX_PRODUCT_OP = 41
+            &ExecuteMatrixDivisionOp,         // MATRIX_DIVISION_OP = 42
+            &ExecuteMatrixMatrixProductOp,    // MATRIX_MATRIX_PRODUCT_OP = 43
+            &ExecuteScalarMinOp,              // SCALAR_MIN_OP = 44
+            &ExecuteVectorMinOp,              // VECTOR_MIN_OP = 45
+            &ExecuteMatrixMinOp,              // MATRIX_MIN_OP = 46
+            &ExecuteScalarMaxOp,              // SCALAR_MAX_OP = 47
+            &ExecuteVectorMaxOp,              // VECTOR_MAX_OP = 48
+            &ExecuteMatrixMaxOp,              // MATRIX_MAX_OP = 49
+            &ExecuteVectorMeanOp<F>,          // VECTOR_MEAN_OP = 50
+            &ExecuteMatrixMeanOp,             // MATRIX_MEAN_OP = 51
+            &ExecuteMatrixRowMeanOp,          // MATRIX_ROW_MEAN_OP = 52
+            &ExecuteMatrixRowStDevOp,         // MATRIX_ROW_ST_DEV_OP = 53
+            &ExecuteVectorStDevOp,            // VECTOR_ST_DEV_OP = 54
+            &ExecuteMatrixStDevOp,            // MATRIX_ST_DEV_OP = 55
+            &ExecuteScalarConstSetOp,         // SCALAR_CONST_SET_OP = 56
+            &ExecuteVectorConstSetOp,         // VECTOR_CONST_SET_OP = 57
+            &ExecuteMatrixConstSetOp,         // MATRIX_CONST_SET_OP = 58
+            &ExecuteScalarUniformSetOp,       // SCALAR_UNIFORM_SET_OP = 59
+            &ExecuteVectorUniformSetOp,       // VECTOR_UNIFORM_SET_OP = 60
+            &ExecuteMatrixUniformSetOp,       // MATRIX_UNIFORM_SET_OP = 61
+            &ExecuteScalarGaussianSetOp,      // SCALAR_GAUSSIAN_SET_OP = 62
+            &ExecuteVectorGaussianSetOp,      // VECTOR_GAUSSIAN_SET_OP = 63
+            &ExecuteMatrixGaussianSetOp,      // MATRIX_GAUSSIAN_SET_OP = 64
+            &ExecuteScalarVectorAtIndexSetOp, // SCALAR_VECTOR_AT_INDEX_SET_OP = 65
+            &ExecuteVectorArgMinOp,           // VECTOR_ARG_MIN_OP = 66
+            &ExecuteVectorSwapOp,             // VECTOR_SWAP_OP = 67
+            &ExecuteLoopOp,                   // LOOP = 68
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 69
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 70
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 71
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 72
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 73
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 74
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 75
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 76
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 77
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 78
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 79
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 80
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 81
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 82
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 83
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 84
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 85
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 86
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 87
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 88
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 89
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 90
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 91
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 92
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 93
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 94
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 95
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 96
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 97
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 98
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 99
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 100
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 101
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 102
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 103
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 104
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 105
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 106
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 107
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 108
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 109
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 110
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 111
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 112
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 113
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 114
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 115
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 116
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 117
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 118
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 119
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 120
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 121
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 122
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 123
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 124
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 125
+            &ExecuteUnsupportedOp,            // UNSUPPORTED_OP = 126
+            &ExecuteUnsupportedOp             // UNSUPPORTED_OP = 127
     };
 
     template <FeatureIndexT F>
@@ -1188,17 +1189,17 @@ namespace automl_zero
 
     template <FeatureIndexT F>
     Executor<F>::Executor(const Algorithm &algorithm, const Task<F> &dataset,
-        const IntegerT num_all_train_examples,
-        const IntegerT num_valid_examples,
-        RandomGenerator *rand_gen,
-        const double max_abs_error)
+                          const IntegerT num_all_train_examples,
+                          const IntegerT num_valid_examples,
+                          RandomGenerator *rand_gen,
+                          const double max_abs_error)
         : algorithm_(algorithm),
-        dataset_(dataset),
-        num_all_train_examples_(num_all_train_examples),
-        num_valid_examples_(num_valid_examples),
-        rand_gen_(rand_gen),
-        max_abs_error_(max_abs_error),
-        num_train_steps_completed_(0)
+          dataset_(dataset),
+          num_all_train_examples_(num_all_train_examples),
+          num_valid_examples_(num_valid_examples),
+          rand_gen_(rand_gen),
+          max_abs_error_(max_abs_error),
+          num_train_steps_completed_(0)
     {
         memory_.Wipe();
         ExecuteComponentFunction(algorithm_.setup_);
@@ -1210,20 +1211,21 @@ namespace automl_zero
         Memory<F> *memory,
         RandomGenerator *rand_gen_)
     {
-        for (const std::shared_ptr<const Instruction> &instruction : componentFunction.instructions)
+        for (const std::shared_ptr<const Instruction> &instruction : componentFunction.getConstInstructions())
         {
             ExecuteInstruction(*instruction, rand_gen_, memory);
         }
     }
 
     template <FeatureIndexT F>
-    void Executor<F>::ExecuteComponentFunction(const ComponentFunction &componentFunction) {
+    void Executor<F>::ExecuteComponentFunction(const ComponentFunction &componentFunction)
+    {
         ExecuteComponentFunction_(componentFunction, &memory_, rand_gen_);
     }
 
     template <FeatureIndexT F>
     double Executor<F>::Execute(std::vector<double> *train_errors,
-        std::vector<double> *valid_errors)
+                                std::vector<double> *valid_errors)
     {
         CHECK_GE(dataset_.NumTrainEpochs(), 1);
 
@@ -1234,7 +1236,7 @@ namespace automl_zero
         // after each epoch and take the best validation result as fitness.
         const IntegerT num_all_train_examples =
             std::min(num_all_train_examples_,
-                static_cast<IntegerT>(dataset_.MaxTrainExamples()));
+                     static_cast<IntegerT>(dataset_.MaxTrainExamples()));
         const IntegerT num_examples_per_epoch =
             dataset_.TrainExamplesPerEpoch() == kNumTrainExamplesNotSet ? num_all_train_examples : dataset_.TrainExamplesPerEpoch();
         IntegerT num_remaining = num_all_train_examples;
@@ -1242,8 +1244,8 @@ namespace automl_zero
         while (num_remaining > 0)
         {
             if (!Train(
-                std::min(num_examples_per_epoch, num_remaining),
-                train_errors, &train_it))
+                    std::min(num_examples_per_epoch, num_remaining),
+                    train_errors, &train_it))
             {
                 if (num_remaining == num_all_train_examples)
                 {
@@ -1284,9 +1286,9 @@ namespace automl_zero
             dataset_.train_labels_.begin();
         const IntegerT num_all_train_examples =
             std::min(num_all_train_examples_,
-                static_cast<IntegerT>(dataset_.train_features_.size()));
+                     static_cast<IntegerT>(dataset_.train_features_.size()));
         return Train(num_all_train_examples, errors, &train_feature_it,
-            &train_label_it);
+                     &train_label_it);
     }
 
     // At or above these many steps, we optimize the train component function.
@@ -1294,10 +1296,10 @@ namespace automl_zero
 
     template <FeatureIndexT F>
     bool Executor<F>::Train(const IntegerT max_steps, std::vector<double> *errors,
-        TaskIterator<F> *train_it)
+                            TaskIterator<F> *train_it)
     {
         CHECK(errors == nullptr || max_steps <= 100) << "You should only record the training errors for few training steps."
-            << std::endl;
+                                                     << std::endl;
         if (max_steps < kTrainStepsOptThreshold)
         {
             return TrainNoOptImpl(max_steps, errors, train_it);
@@ -1309,12 +1311,12 @@ namespace automl_zero
                 return TrainOptImpl<10>(max_steps, errors, train_it);
             }
             else if (algorithm_.predict_.size() <= 100 &&
-                algorithm_.learn_.size() <= 100)
+                     algorithm_.learn_.size() <= 100)
             {
                 return TrainOptImpl<100>(max_steps, errors, train_it);
             }
             else if (algorithm_.predict_.size() <= 1000 &&
-                algorithm_.learn_.size() <= 1000)
+                     algorithm_.learn_.size() <= 1000)
             {
                 return TrainOptImpl<1000>(max_steps, errors, train_it);
             }
@@ -1329,8 +1331,8 @@ namespace automl_zero
     // next to TrainOptImpl (below).
     template <FeatureIndexT F>
     inline bool Executor<F>::TrainNoOptImpl(const IntegerT max_steps,
-        std::vector<double> *errors,
-        TaskIterator<F> *train_it)
+                                            std::vector<double> *errors,
+                                            TaskIterator<F> *train_it)
     {
         if (errors != nullptr)
         {
@@ -1380,8 +1382,8 @@ namespace automl_zero
     template <FeatureIndexT F>
     template <size_t max_component_function_size>
     bool Executor<F>::TrainOptImpl(const IntegerT max_steps,
-        std::vector<double> *errors,
-        TaskIterator<F> *train_it)
+                                   std::vector<double> *errors,
+                                   TaskIterator<F> *train_it)
     {
         if (errors != nullptr)
         {
@@ -1392,7 +1394,7 @@ namespace automl_zero
             optimized_predict_component_function;
         typename std::array<Instruction, max_component_function_size>::iterator
             optimized_predict_instr_it = optimized_predict_component_function.begin();
-        for (const std::shared_ptr<const Instruction> &predict_instr : algorithm_.predict_.instructions)
+        for (const std::shared_ptr<const Instruction> &predict_instr : algorithm_.predict_.getConstInstructions())
         {
             *optimized_predict_instr_it = *predict_instr;
             ++optimized_predict_instr_it;
@@ -1403,7 +1405,7 @@ namespace automl_zero
             optimized_learn_component_function;
         typename std::array<Instruction, max_component_function_size>::iterator
             optimized_learn_instr_it = optimized_learn_component_function.begin();
-        for (const std::shared_ptr<const Instruction> &learn_instr : algorithm_.learn_.instructions)
+        for (const std::shared_ptr<const Instruction> &learn_instr : algorithm_.learn_.getConstInstructions())
         {
             *optimized_learn_instr_it = *learn_instr;
             ++optimized_learn_instr_it;
@@ -1419,7 +1421,7 @@ namespace automl_zero
             ZeroLabelAssigner<F>::Assign(&memory_);
             IntegerT predict_instr_num = 0;
             for (const Instruction &instruction :
-                optimized_predict_component_function)
+                 optimized_predict_component_function)
             {
                 if (predict_instr_num == num_predict_instr)
                 {
@@ -1559,10 +1561,10 @@ namespace automl_zero
         }
         const IntegerT num_steps =
             std::min(num_valid_examples_,
-                static_cast<IntegerT>(dataset_.ValidSteps()));
+                     static_cast<IntegerT>(dataset_.ValidSteps()));
 
         CHECK(errors == nullptr || num_steps <= 100) << "You should only record the validation errors for few validation steps."
-            << std::endl;
+                                                     << std::endl;
 
         TaskIterator<F> valid_it = dataset_.ValidIterator();
         for (IntegerT step = 0; step < num_steps; ++step)
