@@ -536,8 +536,7 @@ namespace automl_zero
             }
             for (Label<F> &label : buffer->train_labels_)
             {
-                Vector<F> vec;
-                vec[0] = incrementing_scalar;
+                Vector<F> vec = Vector<F>::Ones(F, 1) * incrementing_scalar;
                 label.setVector(vec);
                 incrementing_scalar += increment;
             }
@@ -552,8 +551,7 @@ namespace automl_zero
             }
             for (Label<F> &label : buffer->valid_labels_)
             {
-                Vector<F> vec;
-                vec[0] = incrementing_scalar;
+                Vector<F> vec = Vector<F>::Ones(F, 1) * incrementing_scalar;
                 label.setVector(vec);
                 incrementing_scalar += increment;
             }
