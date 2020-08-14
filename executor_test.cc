@@ -404,12 +404,18 @@ namespace automl_zero
         // Create a Algorithm that aggretates the mean value of the features.
         Algorithm algorithm = SimpleNoOpAlgorithm();
         constexpr AddressT temp_scalar_address = 2;
-        algorithm.predict_.getInstructions()[0] = make_shared<const Instruction>(
-            VECTOR_MEAN_OP, k_FEATURES_VECTOR_ADDRESS, temp_scalar_address);
-        algorithm.predict_.getInstructions()[1] = make_shared<const Instruction>(
-            SCALAR_SUM_OP,
-            temp_scalar_address, k_PREDICTIONS_SCALAR_ADDRESS,
-            k_PREDICTIONS_SCALAR_ADDRESS);
+        // s2 = mean(v0)
+        algorithm.predict_.getInstructions()[0] =
+            make_shared<const Instruction>(
+                VECTOR_MEAN_OP, k_FEATURES_VECTOR_ADDRESS, temp_scalar_address);
+        // s1 = s2 + s1
+        algorithm.predict_.getInstructions()[1] =
+            make_shared<const Instruction>(
+                SCALAR_SUM_OP,
+                temp_scalar_address,
+                k_PREDICTIONS_SCALAR_ADDRESS,
+                k_PREDICTIONS_SCALAR_ADDRESS);
+        // v2[0] = s1
         adaptAlgorithm2VectorLabels(algorithm);
 
         RandomGenerator rand_gen;
@@ -418,7 +424,7 @@ namespace automl_zero
         executor.Execute();
         Memory<4> memory;
         executor.GetMemory(&memory);
-        EXPECT_FLOAT_EQ(memory.vector_[k_PREDICTIONS_VECTOR_ADDRESS][0], 504450.0);
+        EXPECT_FLOAT_EQ(memory.vector_[k_PREDICTIONS_VECTOR_ADDRESS][0], 499500.0);
     }
 
     TEST(ExecutorTest, ItereatesThroughLabelsDuringTraining)
