@@ -223,60 +223,97 @@ namespace automl_zero
                                    "num_tasks: 1 "
                                    "features_size: 4 "));
 
-        // Create a Algorithm in which the accuracy is always 0.0.
-        Algorithm algorithm_0 = SimpleNoOpAlgorithm();
-        algorithm_0.predict_.getInstructions()[0] = make_shared<const Instruction>(
-            SCALAR_CONST_SET_OP,
-            k_PREDICTIONS_SCALAR_ADDRESS,
-            ActivationDataSetter(-3.0));
-        adaptAlgorithm2VectorLabels(algorithm_0);
-
         RandomGenerator rand_gen;
-        Executor<4> executor_0(
-            algorithm_0, dataset, kNumTrainExamples, kNumValidExamples,
-            &rand_gen, kLargeMaxAbsError);
-        double fitness_0 = executor_0.Execute();
-        EXPECT_FLOAT_EQ(fitness_0, 0.0);
 
-        // Create a Algorithm in which the accuracy is always 1.0.
-        Algorithm algorithm_1 = SimpleNoOpAlgorithm();
-        algorithm_1.predict_.getInstructions()[0] = make_shared<const Instruction>(
-            SCALAR_CONST_SET_OP,
-            k_PREDICTIONS_SCALAR_ADDRESS,
-            ActivationDataSetter(3.0));
-        adaptAlgorithm2VectorLabels(algorithm_1);
+        {
+            // Create a Algorithm in which the accuracy is always 0.0.
+            Algorithm algorithm = SimpleNoOpAlgorithm();
+            // s1 = -3.0
+            algorithm.predict_.getInstructions()[0] =
+                make_shared<const Instruction>(
+                    SCALAR_CONST_SET_OP,
+                    k_PREDICTIONS_SCALAR_ADDRESS,
+                    ActivationDataSetter(-3.0));
+            // v2 = bcast(s1) = {-3.0, -3.0, -3.0, -3.0}
+            algorithm.predict_.getInstructions()[1] =
+                make_shared<const Instruction>(
+                    SCALAR_BROADCAST_OP,
+                    k_PREDICTIONS_SCALAR_ADDRESS,
+                    k_PREDICTIONS_VECTOR_ADDRESS);
 
-        Executor<4> executor_1(
-            algorithm_1, dataset, kNumTrainExamples, kNumValidExamples,
-            &rand_gen, kLargeMaxAbsError);
-        double fitness_1 = executor_1.Execute();
-        EXPECT_FLOAT_EQ(fitness_1, 1.0);
+            Executor<4> executor(
+                algorithm, dataset, kNumTrainExamples, kNumValidExamples,
+                &rand_gen, kLargeMaxAbsError);
+            double fitness = executor.Execute();
+            EXPECT_FLOAT_EQ(fitness, 0.0);
+        }
 
-        // Create a Algorithm, whose logit is infinity.
-        Algorithm algorithm_inf = SimpleNoOpAlgorithm();
-        algorithm_inf.predict_.getInstructions()[0] = make_shared<const Instruction>(
-            SCALAR_CONST_SET_OP,
-            k_PREDICTIONS_SCALAR_ADDRESS,
-            ActivationDataSetter(std::numeric_limits<double>::infinity()));
-        adaptAlgorithm2VectorLabels(algorithm_inf);
+        {
+            // Create a Algorithm in which the accuracy is always 1.0.
+            Algorithm algorithm = SimpleNoOpAlgorithm();
+            // s1 = 3.0
+            algorithm.predict_.getInstructions()[0] =
+                make_shared<const Instruction>(
+                    SCALAR_CONST_SET_OP,
+                    k_PREDICTIONS_SCALAR_ADDRESS,
+                    ActivationDataSetter(3.0));
+            // v2 = bcast(s1) = {3.0, 3.0, 3.0, 3.0}
+            algorithm.predict_.getInstructions()[1] =
+                make_shared<const Instruction>(
+                    SCALAR_BROADCAST_OP,
+                    k_PREDICTIONS_SCALAR_ADDRESS,
+                    k_PREDICTIONS_VECTOR_ADDRESS);
 
-        Executor<4> executor_inf(algorithm_inf, dataset, kNumTrainExamples,
+            Executor<4> executor(
+                algorithm, dataset, kNumTrainExamples, kNumValidExamples,
+                &rand_gen, kLargeMaxAbsError);
+            double fitness = executor.Execute();
+            EXPECT_FLOAT_EQ(fitness, 1.0);
+        }
+
+        {
+            // Create a Algorithm, whose logit is infinity.
+            Algorithm algorithm = SimpleNoOpAlgorithm();
+            // s1 = infinity
+            algorithm.predict_.getInstructions()[0] =
+                make_shared<const Instruction>(
+                    SCALAR_CONST_SET_OP,
+                    k_PREDICTIONS_SCALAR_ADDRESS,
+                    ActivationDataSetter(std::numeric_limits<double>::infinity()));
+            // v2 = bcast(s1) = {infinity, infinity, infinity, infinity}
+            algorithm.predict_.getInstructions()[1] =
+                make_shared<const Instruction>(
+                    SCALAR_BROADCAST_OP,
+                    k_PREDICTIONS_SCALAR_ADDRESS,
+                    k_PREDICTIONS_VECTOR_ADDRESS);
+
+            Executor<4> executor(algorithm, dataset, kNumTrainExamples,
                                  kNumValidExamples, &rand_gen, kLargeMaxAbsError);
-        double fitness_inf = executor_inf.Execute();
-        EXPECT_FLOAT_EQ(fitness_inf, 1.0);
+            double fitness = executor.Execute();
+            EXPECT_FLOAT_EQ(fitness, 1.0);
+        }
 
-        // Create a Algorithm, whose logit is negative infinity.
-        Algorithm algorithm_ninf = SimpleNoOpAlgorithm();
-        algorithm_ninf.predict_.getInstructions()[0] = make_shared<const Instruction>(
-            SCALAR_CONST_SET_OP,
-            k_PREDICTIONS_SCALAR_ADDRESS,
-            ActivationDataSetter(-std::numeric_limits<double>::infinity()));
-        adaptAlgorithm2VectorLabels(algorithm_ninf);
+        {
+            // Create a Algorithm, whose logit is negative infinity.
+            Algorithm algorithm = SimpleNoOpAlgorithm();
+            // s1 = -infinity
+            algorithm.predict_.getInstructions()[0] =
+                make_shared<const Instruction>(
+                    SCALAR_CONST_SET_OP,
+                    k_PREDICTIONS_SCALAR_ADDRESS,
+                    ActivationDataSetter(-std::numeric_limits<double>::infinity()));
+            // v2 = bcast(s1) = {-infinity, -infinity, -infinity, -infinity}
+            algorithm.predict_.getInstructions()[1] =
+                make_shared<const Instruction>(
+                    SCALAR_BROADCAST_OP,
+                    k_PREDICTIONS_SCALAR_ADDRESS,
+                    k_PREDICTIONS_VECTOR_ADDRESS);
 
-        Executor<4> executor_ninf(algorithm_ninf, dataset, kNumTrainExamples,
-                                  kNumValidExamples, &rand_gen, kLargeMaxAbsError);
-        double fitness_ninf = executor_ninf.Execute();
-        EXPECT_FLOAT_EQ(fitness_ninf, kMinFitness);
+            Executor<4> executor(algorithm, dataset, kNumTrainExamples,
+                                 kNumValidExamples, &rand_gen, kLargeMaxAbsError);
+            double fitness = executor.Execute();
+            EXPECT_FLOAT_EQ(fitness, kMinFitness);
+        }
     }
 
     // FK-TODO: use parameterized Tests: http://sandordargo.com/blog/2019/04/24/parameterized-testing-with-gtest
