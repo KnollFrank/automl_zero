@@ -62,6 +62,15 @@
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "label": "Build dataset_util_test",
+            "type": "shell",
+            "command": "bazel build --compilation_mode=dbg //:dataset_util_test",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
         }
     ]
 }
