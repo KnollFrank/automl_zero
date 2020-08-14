@@ -105,8 +105,8 @@ namespace automl_zero {
             return vector_;
         }
 
-        void setVector(Vector<F> scalar) {
-            vector_ = scalar;
+        void setVector(Vector<F> vector) {
+            vector_ = vector;
         }
 
         Label operator-(const Label &label) const {
