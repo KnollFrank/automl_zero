@@ -222,10 +222,10 @@ namespace automl_zero
         EXPECT_EQ(FloatToIndex(IndexToFloat(11, 16), 16), 11);
     }
 
-    TEST(InstructionTest, IsTriviallyCopyable)
+    TEST(InstructionTest, IsCopyable)
     {
-        EXPECT_TRUE(std::is_trivially_copy_assignable<Instruction>::value);
-        EXPECT_TRUE(std::is_trivially_copy_constructible<Instruction>::value);
+        EXPECT_TRUE(std::is_copy_assignable<Instruction>::value);
+        EXPECT_TRUE(std::is_copy_constructible<Instruction>::value);
     }
 
     TEST(InstructionTest, InstructionIsSmall)
