@@ -138,6 +138,5 @@ namespace automl_zero
             algorithm_dest.FromProto(algorithm_src.ToProto());
             EXPECT_TRUE(algorithm_dest == algorithm_src);
         }
-
     } // namespace
 } // namespace automl_zero
