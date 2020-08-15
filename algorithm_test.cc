@@ -31,39 +31,45 @@
 #include "test_util.h"
 #include "gtest/gtest.h"
 
-namespace automl_zero {
-    namespace {
+namespace automl_zero
+{
+    namespace
+    {
+        using ::std::make_shared; // NOLINT
 
-        using ::std::make_shared;  // NOLINT
-
-        TEST(AlgorithmTest, DefaultConstructionProducesCorrectComponentFunctionSizes) {
+        TEST(AlgorithmTest, DefaultConstructionProducesCorrectComponentFunctionSizes)
+        {
             Algorithm algorithm;
             EXPECT_EQ(algorithm.setup_.size(), 0);
             EXPECT_EQ(algorithm.predict_.size(), 0);
             EXPECT_EQ(algorithm.learn_.size(), 0);
         }
 
-        TEST(AlgorithmTest, CopyConstructor) {
+        TEST(AlgorithmTest, CopyConstructor)
+        {
             Algorithm algorithm = SimpleRandomAlgorithm();
             Algorithm algorithm_copy = algorithm;
             EXPECT_TRUE(algorithm_copy == algorithm);
         }
 
-        TEST(AlgorithmTest, CopyAssignmentOperator) {
+        TEST(AlgorithmTest, CopyAssignmentOperator)
+        {
             Algorithm algorithm = SimpleRandomAlgorithm();
             Algorithm algorithm_copy;
             algorithm_copy = algorithm;
             EXPECT_TRUE(algorithm_copy == algorithm);
         }
 
-        TEST(AlgorithmTest, MoveConstructor) {
+        TEST(AlgorithmTest, MoveConstructor)
+        {
             Algorithm algorithm = SimpleRandomAlgorithm();
             Algorithm algorithm_copy = algorithm;
             Algorithm algorithm_move = std::move(algorithm);
             EXPECT_TRUE(algorithm_move == algorithm_copy);
         }
 
-        TEST(AlgorithmTest, MoveAssignmentOperator) {
+        TEST(AlgorithmTest, MoveAssignmentOperator)
+        {
             Algorithm algorithm = SimpleRandomAlgorithm();
             Algorithm algorithm_copy = algorithm;
             Algorithm algorithm_move;
@@ -71,14 +77,16 @@ namespace automl_zero {
             EXPECT_TRUE(algorithm_move == algorithm_copy);
         }
 
-        TEST(AlgorithmTest, CopyAssignmentOperator_SelfCopy) {
+        TEST(AlgorithmTest, CopyAssignmentOperator_SelfCopy)
+        {
             Algorithm algorithm = SimpleRandomAlgorithm();
             Algorithm algorithm_copy = algorithm;
             algorithm_copy = algorithm_copy;
             EXPECT_TRUE(algorithm_copy == algorithm);
         }
 
-        TEST(AlgorithmTest, EqualsOperator) {
+        TEST(AlgorithmTest, EqualsOperator)
+        {
             Algorithm algorithm = SimpleNoOpAlgorithm();
             algorithm.predict_.getInstructions()[1] =
                 make_shared<const Instruction>(VECTOR_SUM_OP, 1, 2, 3);
@@ -114,7 +122,8 @@ namespace automl_zero {
             EXPECT_FALSE(random_algorithm != same_random_algorithm);
         }
 
-        TEST(AlgorithmTest, ToFromProto) {
+        TEST(AlgorithmTest, ToFromProto)
+        {
             Algorithm algorithm_src = SimpleRandomAlgorithm();
             Algorithm algorithm_dest;
             algorithm_dest = SimpleNoOpAlgorithm();
@@ -122,12 +131,13 @@ namespace automl_zero {
             EXPECT_TRUE(algorithm_dest == algorithm_src);
         }
 
-        TEST(AlgorithmTest, ToFromProtoIntoDifferentComponentFunctionSizes) {
+        TEST(AlgorithmTest, ToFromProtoIntoDifferentComponentFunctionSizes)
+        {
             Algorithm algorithm_src = SimpleRandomAlgorithm();
             Algorithm algorithm_dest;
             algorithm_dest.FromProto(algorithm_src.ToProto());
             EXPECT_TRUE(algorithm_dest == algorithm_src);
         }
 
-    }  // namespace
-}  // namespace automl_zero
+    } // namespace
+} // namespace automl_zero
