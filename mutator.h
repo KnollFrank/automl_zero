@@ -80,6 +80,7 @@ namespace automl_zero
         FRIEND_TEST(MutatorTest, ComponentFunctionTest_Learn);
         FRIEND_TEST(MutatorTest, AlterParam);
         FRIEND_TEST(MutatorTest, AlterParamInLoop);
+        FRIEND_TEST(MutatorTest, AlterParamInLoopEmptyBody);
         FRIEND_TEST(MutatorTest, RandomizeInstruction);
         FRIEND_TEST(MutatorTest, RandomizeComponentFunction);
         FRIEND_TEST(MutatorTest, RandomizeAlgorithm);

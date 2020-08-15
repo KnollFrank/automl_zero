@@ -334,19 +334,14 @@ namespace automl_zero
         componentFunction.getInstructions().emplace_back(std::make_shared<const Instruction>(loop));
     }
 
-    TEST(MutatorTest, AlterParamInLoop)
+    TEST(MutatorTest, AlterParamInLoopEmptyBody)
     {
         Algorithm algorithm;
         addLoopInstructionEmptyBody(algorithm.predict_);
         mt19937 bit_gen;
         RandomGenerator rand_gen(&bit_gen);
         Mutator mutator(
-            ParseTextFormat<MutationTypeList>(
-                "mutation_types: [ "
-                "  ALTER_PARAM_MUTATION_TYPE, "
-                "  RANDOMIZE_INSTRUCTION_MUTATION_TYPE, "
-                "  RANDOMIZE_COMPONENT_FUNCTION_MUTATION_TYPE "
-                "]"),
+            ParseTextFormat<MutationTypeList>("mutation_types: [ ALTER_PARAM_MUTATION_TYPE ]"),
             1.0,
             {},                           // allowed_setup_ops
             {NO_OP, SCALAR_SUM_OP},       // allowed_predict_ops
@@ -355,8 +350,33 @@ namespace automl_zero
             &bit_gen, &rand_gen);
         Algorithm mutated_algorithm = algorithm;
         mutator.AlterParam(&mutated_algorithm);
-        IntegerT count = CountDifferentPredictInstructions(mutated_algorithm, algorithm);
-        EXPECT_EQ(count, 1);
+        EXPECT_NE(mutated_algorithm.predict_.getConstInstructions()[0], algorithm.predict_.getConstInstructions()[0]);
+    }
+
+    TEST(MutatorTest, AlterParamInLoop)
+    {
+        Algorithm algorithm;
+        addLoopInstruction(algorithm.predict_);
+        mt19937 bit_gen;
+        RandomGenerator rand_gen(&bit_gen);
+        Mutator mutator(
+            ParseTextFormat<MutationTypeList>("mutation_types: [ ALTER_PARAM_MUTATION_TYPE ]"),
+            1.0,
+            {},                           // allowed_setup_ops
+            {NO_OP, SCALAR_SUM_OP},       // allowed_predict_ops
+            {},                           // allowed_learn_ops
+            0, 10000, 0, 10000, 0, 10000, // min/max component function sizes
+            &bit_gen, &rand_gen);
+        EXPECT_TRUE(IsEventually(
+            function<bool(void)>([&]() {
+                Algorithm mutated_algorithm = algorithm;
+                mutator.AlterParam(&mutated_algorithm);
+                auto mutatedInstructionOfLoopBody = mutated_algorithm.predict_.getConstInstructions()[0]->children_[0];
+                auto instructionOfLoopBody = algorithm.predict_.getConstInstructions()[0]->children_[0];
+                return !mutatedInstructionOfLoopBody->isSameOpButHasDifferentParam(*instructionOfLoopBody);
+            }),
+            {true, false},
+            {false}));
     }
 
     TEST(MutatorTest, RandomizeInstruction)

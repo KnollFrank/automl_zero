@@ -146,6 +146,7 @@ namespace automl_zero
     {
       return !(*this == other);
     }
+    bool isSameOpButHasDifferentParam(const Instruction &other) const;
 
     // Clears the instruction, setting it to a no-op. Serves as a way to
     // initialize the instruction.
@@ -182,6 +183,8 @@ namespace automl_zero
     std::vector<std::shared_ptr<const Instruction>> children_;
 
   private:
+    bool paramEquals(const Instruction &other) const;
+
     double activation_data_;
     float float_data_0_;
     float float_data_1_;
