@@ -46,27 +46,27 @@ namespace automl_zero
         mt19937 *bit_gen,
         RandomGenerator *rand_gen)
         : allowed_actions_(allowed_actions),
-        mutate_prob_(mutate_prob),
-        allowed_setup_ops_(allowed_setup_ops),
-        allowed_predict_ops_(allowed_predict_ops),
-        allowed_learn_ops_(allowed_learn_ops),
-        mutate_setup_(!allowed_setup_ops_.empty()),
-        mutate_predict_(!allowed_predict_ops_.empty()),
-        mutate_learn_(!allowed_learn_ops_.empty()),
-        setup_size_min_(setup_size_min),
-        setup_size_max_(setup_size_max),
-        predict_size_min_(predict_size_min),
-        predict_size_max_(predict_size_max),
-        learn_size_min_(learn_size_min),
-        learn_size_max_(learn_size_max),
-        bit_gen_(bit_gen),
-        rand_gen_(rand_gen),
-        randomizer_(
-            allowed_setup_ops_,
-            allowed_predict_ops_,
-            allowed_learn_ops_,
-            bit_gen_,
-            rand_gen_) {}
+          mutate_prob_(mutate_prob),
+          allowed_setup_ops_(allowed_setup_ops),
+          allowed_predict_ops_(allowed_predict_ops),
+          allowed_learn_ops_(allowed_learn_ops),
+          mutate_setup_(!allowed_setup_ops_.empty()),
+          mutate_predict_(!allowed_predict_ops_.empty()),
+          mutate_learn_(!allowed_learn_ops_.empty()),
+          setup_size_min_(setup_size_min),
+          setup_size_max_(setup_size_max),
+          predict_size_min_(predict_size_min),
+          predict_size_max_(predict_size_max),
+          learn_size_min_(learn_size_min),
+          learn_size_max_(learn_size_max),
+          bit_gen_(bit_gen),
+          rand_gen_(rand_gen),
+          randomizer_(
+              allowed_setup_ops_,
+              allowed_predict_ops_,
+              allowed_learn_ops_,
+              bit_gen_,
+              rand_gen_) {}
 
     vector<MutationType> ConvertToMutationType(
         const vector<IntegerT> &mutation_actions_as_ints)
@@ -100,37 +100,37 @@ namespace automl_zero
 
     Mutator::Mutator()
         : allowed_actions_(ParseTextFormat<MutationTypeList>(
-            "mutation_types: [ "
-            "  ALTER_PARAM_MUTATION_TYPE, "
-            "  RANDOMIZE_INSTRUCTION_MUTATION_TYPE, "
-            "  RANDOMIZE_COMPONENT_FUNCTION_MUTATION_TYPE "
-            "]")),
-        mutate_prob_(0.5),
-        allowed_setup_ops_(
-            { NO_OP, SCALAR_SUM_OP, MATRIX_VECTOR_PRODUCT_OP, VECTOR_MEAN_OP }),
-        allowed_predict_ops_(
-            { NO_OP, SCALAR_SUM_OP, MATRIX_VECTOR_PRODUCT_OP, VECTOR_MEAN_OP }),
-        allowed_learn_ops_(
-            { NO_OP, SCALAR_SUM_OP, MATRIX_VECTOR_PRODUCT_OP, VECTOR_MEAN_OP }),
-        mutate_setup_(!allowed_setup_ops_.empty()),
-        mutate_predict_(!allowed_predict_ops_.empty()),
-        mutate_learn_(!allowed_learn_ops_.empty()),
-        setup_size_min_(2),
-        setup_size_max_(4),
-        predict_size_min_(3),
-        predict_size_max_(5),
-        learn_size_min_(4),
-        learn_size_max_(6),
-        bit_gen_owned_(make_unique<mt19937>(GenerateRandomSeed())),
-        bit_gen_(bit_gen_owned_.get()),
-        rand_gen_owned_(make_unique<RandomGenerator>(bit_gen_)),
-        rand_gen_(rand_gen_owned_.get()),
-        randomizer_(
-            allowed_setup_ops_,
-            allowed_predict_ops_,
-            allowed_learn_ops_,
-            bit_gen_,
-            rand_gen_)
+              "mutation_types: [ "
+              "  ALTER_PARAM_MUTATION_TYPE, "
+              "  RANDOMIZE_INSTRUCTION_MUTATION_TYPE, "
+              "  RANDOMIZE_COMPONENT_FUNCTION_MUTATION_TYPE "
+              "]")),
+          mutate_prob_(0.5),
+          allowed_setup_ops_(
+              {NO_OP, SCALAR_SUM_OP, MATRIX_VECTOR_PRODUCT_OP, VECTOR_MEAN_OP}),
+          allowed_predict_ops_(
+              {NO_OP, SCALAR_SUM_OP, MATRIX_VECTOR_PRODUCT_OP, VECTOR_MEAN_OP}),
+          allowed_learn_ops_(
+              {NO_OP, SCALAR_SUM_OP, MATRIX_VECTOR_PRODUCT_OP, VECTOR_MEAN_OP}),
+          mutate_setup_(!allowed_setup_ops_.empty()),
+          mutate_predict_(!allowed_predict_ops_.empty()),
+          mutate_learn_(!allowed_learn_ops_.empty()),
+          setup_size_min_(2),
+          setup_size_max_(4),
+          predict_size_min_(3),
+          predict_size_max_(5),
+          learn_size_min_(4),
+          learn_size_max_(6),
+          bit_gen_owned_(make_unique<mt19937>(GenerateRandomSeed())),
+          bit_gen_(bit_gen_owned_.get()),
+          rand_gen_owned_(make_unique<RandomGenerator>(bit_gen_)),
+          rand_gen_(rand_gen_owned_.get()),
+          randomizer_(
+              allowed_setup_ops_,
+              allowed_predict_ops_,
+              allowed_learn_ops_,
+              bit_gen_,
+              rand_gen_)
     {
     }
 
@@ -139,7 +139,7 @@ namespace automl_zero
         CHECK(!allowed_actions_.mutation_types().empty());
         const size_t action_index =
             absl::Uniform<size_t>(*bit_gen_, 0,
-                allowed_actions_.mutation_types_size());
+                                  allowed_actions_.mutation_types_size());
         const MutationType action = allowed_actions_.mutation_types(action_index);
         switch (action)
         {
@@ -172,7 +172,7 @@ namespace automl_zero
 
     void Mutator::AlterParam(Algorithm *algorithm)
     {
-        ComponentFunction &componentFunction = getComponentFunction(algorithm, RandomComponentFunction());
+        ComponentFunction &componentFunction = algorithm->MutableComponentFunction(RandomComponentFunction());
         if (!componentFunction.empty())
         {
             InstructionIndexT index = RandomInstructionIndex(componentFunction.size());
@@ -183,7 +183,7 @@ namespace automl_zero
     void Mutator::RandomizeInstruction(Algorithm *algorithm)
     {
         ComponentFunctionT componentFunctionType = RandomComponentFunction();
-        ComponentFunction &componentFunction = getComponentFunction(algorithm, componentFunctionType);
+        ComponentFunction &componentFunction = algorithm->MutableComponentFunction(componentFunctionType);
         if (!componentFunction.empty())
         {
             InstructionIndexT index = RandomInstructionIndex(componentFunction.size());
@@ -217,35 +217,43 @@ namespace automl_zero
     void Mutator::InsertInstruction(Algorithm *algorithm)
     {
         ComponentFunctionT componentFunctionType = RandomComponentFunction();
-        ComponentFunction &component_function = getComponentFunction(algorithm, componentFunctionType); // To modify.
+        ComponentFunction &component_function = algorithm->MutableComponentFunction(componentFunctionType); // To modify.
         InstructionIndexT maxSize = getMaxSize(componentFunctionType);
         if (component_function.size() >= maxSize - 1)
             return;
         InsertInstructionUnconditionally(getRandomOp(componentFunctionType), component_function);
     }
 
-    InstructionIndexT Mutator::getMaxSize(ComponentFunctionT componentFunction) {
+    InstructionIndexT Mutator::getMaxSize(ComponentFunctionT componentFunction)
+    {
         switch (componentFunction)
         {
-        case kSetupComponentFunction: return setup_size_max_;
-        case kPredictComponentFunction: return predict_size_max_;
-        case kLearnComponentFunction: return learn_size_max_;
+        case kSetupComponentFunction:
+            return setup_size_max_;
+        case kPredictComponentFunction:
+            return predict_size_max_;
+        case kLearnComponentFunction:
+            return learn_size_max_;
         }
     }
 
-    InstructionIndexT Mutator::getMinSize(ComponentFunctionT componentFunction) {
+    InstructionIndexT Mutator::getMinSize(ComponentFunctionT componentFunction)
+    {
         switch (componentFunction)
         {
-        case kSetupComponentFunction: return setup_size_min_;
-        case kPredictComponentFunction: return predict_size_min_;
-        case kLearnComponentFunction: return learn_size_min_;
+        case kSetupComponentFunction:
+            return setup_size_min_;
+        case kPredictComponentFunction:
+            return predict_size_min_;
+        case kLearnComponentFunction:
+            return learn_size_min_;
         }
     }
 
     void Mutator::RemoveInstruction(Algorithm *algorithm)
     {
         ComponentFunctionT componentFunctionType = RandomComponentFunction();
-        ComponentFunction &component_function = getComponentFunction(algorithm, componentFunctionType); // To modify.
+        ComponentFunction &component_function = algorithm->MutableComponentFunction(componentFunctionType); // To modify.
         InstructionIndexT minSize = getMinSize(componentFunctionType);
         if (component_function.size() <= minSize)
             return;
@@ -255,7 +263,7 @@ namespace automl_zero
     void Mutator::TradeInstruction(Algorithm *algorithm)
     {
         ComponentFunctionT componentFunctionType = RandomComponentFunction();
-        ComponentFunction &component_function = getComponentFunction(algorithm, componentFunctionType); // To modify.
+        ComponentFunction &component_function = algorithm->MutableComponentFunction(componentFunctionType); // To modify.
 
         InsertInstructionUnconditionally(getRandomOp(componentFunctionType), component_function);
         RemoveInstructionUnconditionally(component_function);
@@ -304,12 +312,18 @@ namespace automl_zero
         return randomizer_.LearnOp();
     }
 
-    Op Mutator::getRandomOp(ComponentFunctionT componentFunction) {
-        switch (componentFunction) {
-        case kSetupComponentFunction: return RandomSetupOp();
-        case kPredictComponentFunction: return RandomPredictOp();
-        case kLearnComponentFunction: return RandomLearnOp();
-        default: LOG(FATAL) << "Control flow should not reach here.";
+    Op Mutator::getRandomOp(ComponentFunctionT componentFunction)
+    {
+        switch (componentFunction)
+        {
+        case kSetupComponentFunction:
+            return RandomSetupOp();
+        case kPredictComponentFunction:
+            return RandomPredictOp();
+        case kLearnComponentFunction:
+            return RandomLearnOp();
+        default:
+            LOG(FATAL) << "Control flow should not reach here.";
         }
     }
 
@@ -339,15 +353,5 @@ namespace automl_zero
         const IntegerT index =
             absl::Uniform<IntegerT>(*bit_gen_, 0, allowed_component_functions.size());
         return allowed_component_functions[index];
-    }
-
-    ComponentFunction &Mutator::getComponentFunction(Algorithm *algorithm, ComponentFunctionT componentFunction) {
-        switch (componentFunction)
-        {
-        case kSetupComponentFunction: return algorithm->setup_;
-        case kPredictComponentFunction: return algorithm->predict_;
-        case kLearnComponentFunction: return algorithm->learn_;
-        default: LOG(FATAL) << "Control flow should not reach here.";
-        }
     }
 } // namespace automl_zero

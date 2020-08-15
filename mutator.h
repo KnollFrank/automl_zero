@@ -26,24 +26,26 @@
 #include "randomizer.h"
 #include "gtest/gtest_prod.h"
 
-namespace automl_zero {
+namespace automl_zero
+{
 
-    class Mutator {
+    class Mutator
+    {
     public:
         Mutator(
             // What mutations may be applied. See the MutationType enum.
-            const MutationTypeList& allowed_actions,
+            const MutationTypeList &allowed_actions,
             // The probability of mutating each time.
             double mutate_prob,
             // Ops that can be introduced into the setup component function. Empty
             // means the component function won't be mutated at all.
-            const std::vector<Op>& allowed_setup_ops,
+            const std::vector<Op> &allowed_setup_ops,
             // Ops that can be introduced into the predict component function. Empty
             // means the component function won't be mutated at all.
-            const std::vector<Op>& allowed_predict_ops,
+            const std::vector<Op> &allowed_predict_ops,
             // Ops that can be introduced into the learn component function. Empty
             // means the component function won't be mutated at all.
-            const std::vector<Op>& allowed_learn_ops,
+            const std::vector<Op> &allowed_learn_ops,
             // Minimum/maximum component function sizes.
             const IntegerT setup_size_min,
             const IntegerT setup_size_max,
@@ -52,16 +54,16 @@ namespace automl_zero {
             const IntegerT learn_size_min,
             const IntegerT learn_size_max,
             // The random bit generator.
-            std::mt19937* bit_gen,
+            std::mt19937 *bit_gen,
             // The random number generator.
-            RandomGenerator* rand_gen);
+            RandomGenerator *rand_gen);
 
-        Mutator(const Mutator& other) = delete;
-        Mutator& operator=(const Mutator& other) = delete;
+        Mutator(const Mutator &other) = delete;
+        Mutator &operator=(const Mutator &other) = delete;
 
-        void Mutate(std::shared_ptr<const Algorithm>* algorithm);
+        void Mutate(std::shared_ptr<const Algorithm> *algorithm);
         void Mutate(IntegerT num_mutations,
-            std::shared_ptr<const Algorithm>* algorithm);
+                    std::shared_ptr<const Algorithm> *algorithm);
 
         // Used to create a simple instance for tests.
         Mutator();
@@ -81,33 +83,33 @@ namespace automl_zero {
         FRIEND_TEST(MutatorTest, RandomizeComponentFunction);
         FRIEND_TEST(MutatorTest, RandomizeAlgorithm);
 
-        void MutateImpl(Algorithm* algorithm);
+        void MutateImpl(Algorithm *algorithm);
 
         // Randomizes a single parameter within one instruction. Keeps the same op.
-        void AlterParam(Algorithm* algorithm);
+        void AlterParam(Algorithm *algorithm);
 
         // Randomizes an instruction (all its parameters, including the op).
-        void RandomizeInstruction(Algorithm* algorithm);
+        void RandomizeInstruction(Algorithm *algorithm);
 
         // Randomizes all the instructions in one of the three component functions.
         // Does not change the component function size.
-        void RandomizeComponentFunction(Algorithm* algorithm);
+        void RandomizeComponentFunction(Algorithm *algorithm);
 
         // Inserts an instruction, making the component function longer. Has
         // no effect on a maximum-length component function.
-        void InsertInstruction(Algorithm* algorithm);
+        void InsertInstruction(Algorithm *algorithm);
 
         // Removes an instruction, making the component function shorter. Has
         // no effect on a minimum-length component function.
-        void RemoveInstruction(Algorithm* algorithm);
+        void RemoveInstruction(Algorithm *algorithm);
 
         // First removes an instruction, then inserts an instruction. Has
         // no effect on a zero-length component function.
-        void TradeInstruction(Algorithm* algorithm);
+        void TradeInstruction(Algorithm *algorithm);
 
         // Randomizes all the instructions in all of the component functions. Does not
         // change the component function sizes.
-        void RandomizeAlgorithm(Algorithm* algorithm);
+        void RandomizeAlgorithm(Algorithm *algorithm);
 
         void InsertInstructionUnconditionally(
             const Op op,
@@ -126,7 +128,6 @@ namespace automl_zero {
 
         // Returns which component function to mutate.
         ComponentFunctionT RandomComponentFunction();
-        ComponentFunction &getComponentFunction(Algorithm *algorithm, ComponentFunctionT componentFunction);
         InstructionIndexT getMaxSize(ComponentFunctionT componentFunction);
         InstructionIndexT getMinSize(ComponentFunctionT componentFunction);
 
@@ -145,13 +146,12 @@ namespace automl_zero {
         const InstructionIndexT learn_size_min_;
         const InstructionIndexT learn_size_max_;
         std::unique_ptr<std::mt19937> bit_gen_owned_;
-        std::mt19937* bit_gen_;
+        std::mt19937 *bit_gen_;
         std::unique_ptr<RandomGenerator> rand_gen_owned_;
-        RandomGenerator* rand_gen_;
+        RandomGenerator *rand_gen_;
         Randomizer randomizer_;
     };
 
-}  // namespace automl_zero
+} // namespace automl_zero
 
-
-#endif  // MUTATOR_H_
+#endif // MUTATOR_H_

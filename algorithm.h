@@ -25,12 +25,14 @@
 #include "componentfunction.h"
 #include "absl/flags/flag.h"
 
-namespace automl_zero {
+namespace automl_zero
+{
 
     class RandomGenerator;
 
     // Denotes one of the three component functions in the Algorithm.
-    enum ComponentFunctionT : IntegerT {
+    enum ComponentFunctionT : IntegerT
+    {
         kSetupComponentFunction = 0,
         kPredictComponentFunction = 1,
         kLearnComponentFunction = 2
@@ -39,20 +41,22 @@ namespace automl_zero {
     // The Algorithm describing an individual.
     // NOTE: the default constructor does NOT serve as a way to initialize the
     // Instruction.
-    class Algorithm {
+    class Algorithm
+    {
     public:
         // A Algorithm without any instructions.
         Algorithm() {}
 
-        explicit Algorithm(const SerializedAlgorithm& checkpoint_algorithm);
+        explicit Algorithm(const SerializedAlgorithm &checkpoint_algorithm);
 
-        Algorithm(const Algorithm& other);
-        Algorithm& operator=(const Algorithm& other);
-        Algorithm(Algorithm&& other);
-        Algorithm& operator=(Algorithm&& other);
+        Algorithm(const Algorithm &other);
+        Algorithm &operator=(const Algorithm &other);
+        Algorithm(Algorithm &&other);
+        Algorithm &operator=(Algorithm &&other);
 
-        bool operator ==(const Algorithm& other) const;
-        bool operator !=(const Algorithm& other) const {
+        bool operator==(const Algorithm &other) const;
+        bool operator!=(const Algorithm &other) const
+        {
             return !(*this == other);
         }
 
@@ -61,11 +65,11 @@ namespace automl_zero {
 
         // Serializes/deserializes a Algorithm to/from a amlz-specific proto.
         SerializedAlgorithm ToProto() const;
-        void FromProto(const SerializedAlgorithm& checkpoint_algorithm);
+        void FromProto(const SerializedAlgorithm &checkpoint_algorithm);
 
         // Returns a reference to the given component function in the Algorithm.
-        const automl_zero::ComponentFunction& ComponentFunction(ComponentFunctionT component_function_type) const;
-        automl_zero::ComponentFunction* MutableComponentFunction(ComponentFunctionT component_function_type);
+        const automl_zero::ComponentFunction &ComponentFunction(ComponentFunctionT component_function_type) const;
+        automl_zero::ComponentFunction &MutableComponentFunction(ComponentFunctionT component_function_type);
 
         // Setup, predict, and learn component functions.
         automl_zero::ComponentFunction setup_;
@@ -73,6 +77,6 @@ namespace automl_zero {
         automl_zero::ComponentFunction learn_;
     };
 
-}  // namespace automl_zero
+} // namespace automl_zero
 
-#endif  // ALGORITHM_H_
+#endif // ALGORITHM_H_
