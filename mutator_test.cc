@@ -312,7 +312,7 @@ namespace automl_zero
             {0, 1}, {1}));
     }
 
-    void addLoopInstruction(ComponentFunction &componentFunction)
+    void addLoopInstructionHavingSingleInstructionInBody(ComponentFunction &componentFunction)
     {
         // for(s6 = 1..s5) {
         Instruction loop = Instruction(LOOP, 5, 6);
@@ -357,7 +357,7 @@ namespace automl_zero
     {
         // Given
         Algorithm algorithm;
-        addLoopInstruction(algorithm.predict_);
+        addLoopInstructionHavingSingleInstructionInBody(algorithm.predict_);
         mt19937 bit_gen;
         RandomGenerator rand_gen(&bit_gen);
         Mutator mutator(
