@@ -186,7 +186,7 @@ namespace automl_zero
     bool Instruction::operator==(const Instruction &other) const
     {
         return op_ == other.op_ &&
-               this->paramEquals(other) && 
+               this->paramEquals(other) &&
                children_ == other.children_;
     }
 
@@ -221,8 +221,7 @@ namespace automl_zero
         children_ = {};
     }
 
-    void Instruction::SetOpAndRandomizeParams(
-        Op op, RandomGenerator *rand_gen)
+    void Instruction::SetOpAndRandomizeParams(Op op, RandomGenerator *rand_gen)
     {
         FillWithNoOp();
         op_ = op;
@@ -312,8 +311,7 @@ namespace automl_zero
         }
     }
 
-    void Instruction::AlterParam(
-        RandomGenerator *rand_gen)
+    void Instruction::AlterParamNeglectChildren(RandomGenerator *rand_gen)
     {
         switch (op_)
         {
@@ -431,6 +429,40 @@ namespace automl_zero
             }
             // Do not add default clause. All ops should be supported here.
         }
+    }
+
+    void Instruction::AlterParam(RandomGenerator *rand_gen)
+    {
+        if (children_.empty())
+        {
+            AlterParamNeglectChildren(rand_gen);
+        }
+        else
+        {
+            switch (rand_gen->Choice2())
+            {
+            case kChoice0of2:
+                AlterRandomParamOfRandomChildren(rand_gen);
+                break;
+
+            case kChoice1of2:
+                AlterParamNeglectChildren(rand_gen);
+                break;
+            }
+        }
+    }
+
+    // FK-TODO: DRY with Mutator::AlterParam
+    void Instruction::AlterRandomParamOfRandomChildren(RandomGenerator *rand_gen)
+    {
+        InstructionIndexT index = RandomInstructionIndex(rand_gen, children_.size());
+        children_[index] = std::make_shared<const Instruction>(*children_[index], rand_gen);
+    }
+
+    // FK-TODO: DRY with Mutator::RandomInstructionIndex
+    InstructionIndexT Instruction::RandomInstructionIndex(RandomGenerator *rand_gen, const InstructionIndexT numInstructions)
+    {
+        return rand_gen->UniformInteger(0, numInstructions);
     }
 
     void Instruction::RandomizeIn1(RandomGenerator *rand_gen)

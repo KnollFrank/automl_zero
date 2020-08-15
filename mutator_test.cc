@@ -355,6 +355,7 @@ namespace automl_zero
 
     TEST(MutatorTest, AlterParamInLoop)
     {
+        // Given
         Algorithm algorithm;
         addLoopInstruction(algorithm.predict_);
         mt19937 bit_gen;
@@ -370,9 +371,11 @@ namespace automl_zero
         EXPECT_TRUE(IsEventually(
             function<bool(void)>([&]() {
                 Algorithm mutated_algorithm = algorithm;
+                // When
                 mutator.AlterParam(&mutated_algorithm);
                 auto mutatedInstructionOfLoopBody = mutated_algorithm.predict_.getConstInstructions()[0]->children_[0];
                 auto instructionOfLoopBody = algorithm.predict_.getConstInstructions()[0]->children_[0];
+                // Then
                 return !mutatedInstructionOfLoopBody->isSameOpButHasDifferentParam(*instructionOfLoopBody);
             }),
             {true, false},

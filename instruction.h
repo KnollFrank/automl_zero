@@ -163,6 +163,7 @@ namespace automl_zero
     // Does not serve as a way to initialize the Instruction; typically used after
     // copy-construction.
     void AlterParam(RandomGenerator *rand_gen);
+    void AlterParamNeglectChildren(RandomGenerator *rand_gen);
 
     // Randomizes one parameter in the instruction. Internal use and tests only.
     void RandomizeIn1(RandomGenerator *rand_gen);
@@ -184,6 +185,8 @@ namespace automl_zero
 
   private:
     bool paramEquals(const Instruction &other) const;
+    InstructionIndexT RandomInstructionIndex(RandomGenerator *rand_gen, const InstructionIndexT numInstructions);
+    void AlterRandomParamOfRandomChildren(RandomGenerator *rand_gen);
 
     double activation_data_;
     float float_data_0_;
@@ -191,8 +194,7 @@ namespace automl_zero
     float float_data_2_;
   };
 
-  inline void MutateActivationLogScale(
-      RandomGenerator *rand_gen, double *value)
+  inline void MutateActivationLogScale(RandomGenerator *rand_gen, double *value)
   {
     if (*value > 0)
     {
@@ -208,8 +210,7 @@ namespace automl_zero
     }
   }
 
-  inline void MutateFloatUnitInterval(
-      RandomGenerator *rand_gen, float *value)
+  inline void MutateFloatUnitInterval(RandomGenerator *rand_gen, float *value)
   {
     *value += rand_gen->UniformFloat(0.0, 0.1);
     if (*value < 0.0)
@@ -222,8 +223,7 @@ namespace automl_zero
     }
   }
 
-  inline void MutateFloatLogScale(
-      RandomGenerator *rand_gen, float *value)
+  inline void MutateFloatLogScale(RandomGenerator *rand_gen, float *value)
   {
     if (*value > 0)
     {
@@ -239,8 +239,7 @@ namespace automl_zero
     }
   }
 
-  inline void MutateActivationLogScaleOrFlip(
-      RandomGenerator *rand_gen, double *value)
+  inline void MutateActivationLogScaleOrFlip(RandomGenerator *rand_gen, double *value)
   {
     if (rand_gen->UniformProbability() < kSignFlipProb)
     {
@@ -254,8 +253,7 @@ namespace automl_zero
     }
   }
 
-  inline void MutateFloatLogScaleOrFlip(
-      RandomGenerator *rand_gen, float *value)
+  inline void MutateFloatLogScaleOrFlip(RandomGenerator *rand_gen, float *value)
   {
     if (rand_gen->UniformProbability() < kSignFlipProb)
     {
