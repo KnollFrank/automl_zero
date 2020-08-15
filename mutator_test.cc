@@ -312,6 +312,53 @@ namespace automl_zero
             {0, 1}, {1}));
     }
 
+    void addLoopInstruction(ComponentFunction &componentFunction)
+    {
+        // for(s6 = 1..s5) {
+        Instruction loop = Instruction(LOOP, 5, 6);
+        //     s0 = s6 - s2
+        loop.children_.emplace_back(std::make_shared<const Instruction>(
+            SCALAR_DIFF_OP,
+            6,
+            2,
+            0));
+        //     }
+        componentFunction.getInstructions().emplace_back(std::make_shared<const Instruction>(loop));
+    }
+
+    void addLoopInstructionEmptyBody(ComponentFunction &componentFunction)
+    {
+        // for(s6 = 1..s5) {
+        Instruction loop = Instruction(LOOP, 5, 6);
+        //     }
+        componentFunction.getInstructions().emplace_back(std::make_shared<const Instruction>(loop));
+    }
+
+    TEST(MutatorTest, AlterParamInLoop)
+    {
+        Algorithm algorithm;
+        addLoopInstructionEmptyBody(algorithm.predict_);
+        mt19937 bit_gen;
+        RandomGenerator rand_gen(&bit_gen);
+        Mutator mutator(
+            ParseTextFormat<MutationTypeList>(
+                "mutation_types: [ "
+                "  ALTER_PARAM_MUTATION_TYPE, "
+                "  RANDOMIZE_INSTRUCTION_MUTATION_TYPE, "
+                "  RANDOMIZE_COMPONENT_FUNCTION_MUTATION_TYPE "
+                "]"),
+            1.0,
+            {},                           // allowed_setup_ops
+            {NO_OP, SCALAR_SUM_OP},       // allowed_predict_ops
+            {},                           // allowed_learn_ops
+            0, 10000, 0, 10000, 0, 10000, // min/max component function sizes
+            &bit_gen, &rand_gen);
+        Algorithm mutated_algorithm = algorithm;
+        mutator.AlterParam(&mutated_algorithm);
+        IntegerT count = CountDifferentPredictInstructions(mutated_algorithm, algorithm);
+        EXPECT_EQ(count, 1);
+    }
+
     TEST(MutatorTest, RandomizeInstruction)
     {
         RandomGenerator rand_gen;
@@ -717,7 +764,7 @@ namespace automl_zero
         EXPECT_TRUE(IsEventually(
             function<IntegerT(void)>([&mutator, algorithm]() {
                 auto mutated_algorithm = make_shared<const Algorithm>(algorithm);
-             
+
                 mutator.Mutate(&mutated_algorithm);
                 return MissingDataInComponentFunction(
                     algorithm.predict_.getConstInstructions(), mutated_algorithm->predict_.getConstInstructions());

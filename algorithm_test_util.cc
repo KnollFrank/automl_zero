@@ -25,7 +25,6 @@
 
 namespace automl_zero
 {
-
     using ::absl::make_unique;
     using ::std::make_shared;
     using ::std::shared_ptr;
