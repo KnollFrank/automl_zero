@@ -387,6 +387,32 @@ namespace automl_zero
             {false}));
     }
 
+    TEST(MutatorTest, RandomizeLoopInstruction)
+    {
+        // Given
+        Algorithm algorithm;
+        addLoopInstructionEmptyBody(algorithm.predict_);
+        mt19937 bit_gen;
+        RandomGenerator rand_gen(&bit_gen);
+        Op op = SCALAR_SUM_OP;
+        Mutator mutator(
+            ParseTextFormat<MutationTypeList>("mutation_types: [ RANDOMIZE_INSTRUCTION_MUTATION_TYPE ]"),
+            1.0,
+            {},                           // allowed_setup_ops
+            {op},                         // allowed_predict_ops
+            {},                           // allowed_learn_ops
+            0, 10000, 0, 10000, 0, 10000, // min/max component function sizes
+            &bit_gen, &rand_gen);
+        Algorithm mutated_algorithm = algorithm;
+
+        // When
+        mutator.RandomizeInstruction(&mutated_algorithm);
+
+        // Then
+        EXPECT_EQ(mutated_algorithm.predict_.getConstInstructions()[0]->op_, op);
+        EXPECT_TRUE(mutated_algorithm.predict_.getConstInstructions()[0]->children_.empty());
+    }
+
     TEST(MutatorTest, RandomizeInstruction)
     {
         RandomGenerator rand_gen;
