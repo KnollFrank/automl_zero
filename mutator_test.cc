@@ -413,6 +413,49 @@ namespace automl_zero
         EXPECT_TRUE(mutated_algorithm.predict_.getConstInstructions()[0]->children_.empty());
     }
 
+    TEST(MutatorTest, RandomizeLoopInstruction_LoopBody)
+    {
+        // Given
+        Algorithm algorithm;
+        addLoopInstructionHavingSingleInstructionInBody(algorithm.predict_);
+        mt19937 bit_gen;
+        RandomGenerator rand_gen(&bit_gen);
+        Op op = SCALAR_SUM_OP;
+        Mutator mutator(
+            ParseTextFormat<MutationTypeList>("mutation_types: [ RANDOMIZE_INSTRUCTION_MUTATION_TYPE ]"),
+            1.0,
+            {},                           // allowed_setup_ops
+            {op},                         // allowed_predict_ops
+            {},                           // allowed_learn_ops
+            0, 10000, 0, 10000, 0, 10000, // min/max component function sizes
+            &bit_gen, &rand_gen);
+        Algorithm mutated_algorithm = algorithm;
+
+        // When
+        auto loop = algorithm.predict_.getConstInstructions()[0];
+        auto loopBodyInstruction = loop->children_[0];
+
+        EXPECT_TRUE(IsEventually(
+            function<bool(void)>([&]() {
+                Algorithm mutated_algorithm = algorithm;
+                // When
+                mutator.RandomizeInstruction(&mutated_algorithm);
+
+                auto mutatedLoop = mutated_algorithm.predict_.getConstInstructions()[0];
+                if (mutatedLoop->children_.size() != loop->children_.size())
+                {
+                    return false;
+                }
+
+                auto mutatedLoopBodyImstruction = mutatedLoop->children_[0];
+
+                // Then
+                return *mutatedLoopBodyImstruction != *loopBodyInstruction;
+            }),
+            {true, false},
+            {true}));
+    }
+
     TEST(MutatorTest, RandomizeInstruction)
     {
         RandomGenerator rand_gen;
