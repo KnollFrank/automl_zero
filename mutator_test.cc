@@ -336,6 +336,7 @@ namespace automl_zero
 
     TEST(MutatorTest, AlterParamInLoopEmptyBody)
     {
+        // Given
         Algorithm algorithm;
         addLoopInstructionEmptyBody(algorithm.predict_);
         mt19937 bit_gen;
@@ -349,7 +350,11 @@ namespace automl_zero
             0, 10000, 0, 10000, 0, 10000, // min/max component function sizes
             &bit_gen, &rand_gen);
         Algorithm mutated_algorithm = algorithm;
+
+        // When
         mutator.AlterParam(&mutated_algorithm);
+
+        // Then
         EXPECT_NE(mutated_algorithm.predict_.getConstInstructions()[0], algorithm.predict_.getConstInstructions()[0]);
     }
 
