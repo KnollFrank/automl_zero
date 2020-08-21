@@ -424,7 +424,7 @@ namespace automl_zero
             ParseTextFormat<MutationTypeList>("mutation_types: [ RANDOMIZE_INSTRUCTION_MUTATION_TYPE ]"),
             1.0,
             {},                           // allowed_setup_ops
-            {SCALAR_SUM_OP},              // allowed_predict_ops
+            {LOOP, SCALAR_SUM_OP},        // allowed_predict_ops
             {},                           // allowed_learn_ops
             0, 10000, 0, 10000, 0, 10000, // min/max component function sizes
             &bit_gen, &rand_gen);
