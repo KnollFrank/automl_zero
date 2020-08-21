@@ -445,8 +445,8 @@ namespace automl_zero
                 }
 
                 // Then
-                auto mutatedLoopBodyImstruction = mutatedLoop->children_[0];
-                return *mutatedLoopBodyImstruction != *loopBodyInstruction;
+                auto mutatedLoopBodyInstruction = mutatedLoop->children_[0];
+                return *mutatedLoopBodyInstruction != *loopBodyInstruction;
             }),
             {true, false},
             {true}));
