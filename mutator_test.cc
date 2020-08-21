@@ -439,7 +439,8 @@ namespace automl_zero
                 mutator.RandomizeInstruction(&mutated_algorithm);
 
                 auto mutatedLoop = mutated_algorithm.predict_.getConstInstructions()[0];
-                if (mutatedLoop->children_.size() != loop->children_.size())
+                bool sameOpAndSameParams = mutatedLoop->op_ == loop->op_ && mutatedLoop->paramEquals(*loop);
+                if (!sameOpAndSameParams || mutatedLoop->children_.size() != loop->children_.size())
                 {
                     return false;
                 }
