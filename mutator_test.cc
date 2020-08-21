@@ -430,7 +430,6 @@ namespace automl_zero
             &bit_gen, &rand_gen);
 
         auto loop = algorithm.predict_.getConstInstructions()[0];
-        auto loopBodyInstruction = loop->children_[0];
 
         EXPECT_TRUE(IsEventually(
             function<bool(void)>([&]() {
@@ -438,16 +437,13 @@ namespace automl_zero
                 // When
                 mutator.RandomizeInstruction(&mutated_algorithm);
 
+                // Then
                 auto mutatedLoop = mutated_algorithm.predict_.getConstInstructions()[0];
                 bool sameOpAndSameParams = mutatedLoop->op_ == loop->op_ && mutatedLoop->paramEquals(*loop);
-                if (!sameOpAndSameParams || mutatedLoop->children_.size() != loop->children_.size())
-                {
-                    return false;
-                }
 
-                // Then
-                auto mutatedLoopBodyInstruction = mutatedLoop->children_[0];
-                return *mutatedLoopBodyInstruction != *loopBodyInstruction;
+                return sameOpAndSameParams &&
+                       mutatedLoop->children_.size() == loop->children_.size() &&
+                       *mutatedLoop->children_[0] != *loop->children_[0];
             }),
             {true, false},
             {true}));
