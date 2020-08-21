@@ -176,6 +176,7 @@ namespace automl_zero
     SerializedInstruction Serialize() const;
 
     void Deserialize(const SerializedInstruction &checkpoint_instruction);
+    bool paramEquals(const Instruction &other) const;
 
     Op op_;
     AddressT in1_; // First input address.
@@ -184,7 +185,6 @@ namespace automl_zero
     std::vector<std::shared_ptr<const Instruction>> children_;
 
   private:
-    bool paramEquals(const Instruction &other) const;
     InstructionIndexT RandomInstructionIndex(RandomGenerator *rand_gen, const InstructionIndexT numInstructions);
     void AlterRandomParamOfRandomChildren(RandomGenerator *rand_gen);
 
