@@ -19,71 +19,85 @@
 #include "algorithm.h"
 #include "random_generator.h"
 
-namespace automl_zero {
+namespace automl_zero
+{
 
-using ::std::make_shared;  // NOLINT
-using ::std::mt19937;  // NOLINT
-using ::std::shared_ptr;  // NOLINT
-using ::std::vector;  // NOLINT
+  using ::std::make_shared; // NOLINT
+  using ::std::mt19937;     // NOLINT
+  using ::std::shared_ptr;  // NOLINT
+  using ::std::vector;      // NOLINT
 
-Randomizer::Randomizer(
-    vector<Op> allowed_setup_ops,
-    vector<Op> allowed_predict_ops,
-    vector<Op> allowed_learn_ops,
-    mt19937* bit_gen,
-    RandomGenerator* rand_gen)
-    : allowed_setup_ops_(allowed_setup_ops),
-      allowed_predict_ops_(allowed_predict_ops),
-      allowed_learn_ops_(allowed_learn_ops),
-      bit_gen_(bit_gen),
-      rand_gen_(rand_gen) {}
+  Randomizer::Randomizer(
+      vector<Op> allowed_setup_ops,
+      vector<Op> allowed_predict_ops,
+      vector<Op> allowed_learn_ops,
+      mt19937 *bit_gen,
+      RandomGenerator *rand_gen)
+      : allowed_setup_ops_(allowed_setup_ops),
+        allowed_predict_ops_(allowed_predict_ops),
+        allowed_learn_ops_(allowed_learn_ops),
+        bit_gen_(bit_gen),
+        rand_gen_(rand_gen) {}
 
-void Randomizer::Randomize(Algorithm* algorithm) {
-  if (!allowed_setup_ops_.empty()) {
-    RandomizeSetup(algorithm);
+  void Randomizer::Randomize(Algorithm *algorithm)
+  {
+    if (!allowed_setup_ops_.empty())
+    {
+      RandomizeSetup(algorithm);
+    }
+    if (!allowed_predict_ops_.empty())
+    {
+      RandomizePredict(algorithm);
+    }
+    if (!allowed_learn_ops_.empty())
+    {
+      RandomizeLearn(algorithm);
+    }
   }
-  if (!allowed_predict_ops_.empty()) {
-    RandomizePredict(algorithm);
+
+  void Randomizer::RandomizeSetup(Algorithm *algorithm)
+  {
+    for (shared_ptr<const Instruction> &instruction : algorithm->setup_.getInstructions())
+    {
+      instruction = make_shared<const Instruction>(SetupOp(), rand_gen_, &*instruction);
+    }
   }
-  if (!allowed_learn_ops_.empty()) {
-    RandomizeLearn(algorithm);
+
+  void Randomizer::RandomizePredict(Algorithm *algorithm)
+  {
+    for (shared_ptr<const Instruction> &instruction : algorithm->predict_.getInstructions())
+    {
+      instruction = make_shared<const Instruction>(PredictOp(), rand_gen_, &*instruction);
+    }
   }
-}
 
-void Randomizer::RandomizeSetup(Algorithm* algorithm) {
-  for (shared_ptr<const Instruction>& instruction : algorithm->setup_.getInstructions()) {
-    instruction = make_shared<const Instruction>(SetupOp(), rand_gen_);
+  void Randomizer::RandomizeLearn(Algorithm *algorithm)
+  {
+    for (shared_ptr<const Instruction> &instruction : algorithm->learn_.getInstructions())
+    {
+      instruction = make_shared<const Instruction>(LearnOp(), rand_gen_, &*instruction);
+    }
   }
-}
 
-void Randomizer::RandomizePredict(Algorithm* algorithm) {
-  for (shared_ptr<const Instruction>& instruction : algorithm->predict_.getInstructions()) {
-    instruction = make_shared<const Instruction>(PredictOp(), rand_gen_);
+  Op Randomizer::SetupOp()
+  {
+    IntegerT op_index = absl::Uniform<DeprecatedOpIndexT>(
+        *bit_gen_, 0, allowed_setup_ops_.size());
+    return allowed_setup_ops_[op_index];
   }
-}
 
-void Randomizer::RandomizeLearn(Algorithm* algorithm) {
-  for (shared_ptr<const Instruction>& instruction : algorithm->learn_.getInstructions()) {
-    instruction = make_shared<const Instruction>(LearnOp(), rand_gen_);
+  Op Randomizer::PredictOp()
+  {
+    IntegerT op_index = absl::Uniform<DeprecatedOpIndexT>(
+        *bit_gen_, 0, allowed_predict_ops_.size());
+    return allowed_predict_ops_[op_index];
   }
-}
 
-Op Randomizer::SetupOp() {
-  IntegerT op_index = absl::Uniform<DeprecatedOpIndexT>(
-      *bit_gen_, 0, allowed_setup_ops_.size());
-  return allowed_setup_ops_[op_index];
-}
+  Op Randomizer::LearnOp()
+  {
+    IntegerT op_index = absl::Uniform<DeprecatedOpIndexT>(
+        *bit_gen_, 0, allowed_learn_ops_.size());
+    return allowed_learn_ops_[op_index];
+  }
 
-Op Randomizer::PredictOp() {
-  IntegerT op_index = absl::Uniform<DeprecatedOpIndexT>(
-      *bit_gen_, 0, allowed_predict_ops_.size());
-  return allowed_predict_ops_[op_index];
-}
-
-Op Randomizer::LearnOp() {
-  IntegerT op_index = absl::Uniform<DeprecatedOpIndexT>(
-      *bit_gen_, 0, allowed_learn_ops_.size());
-  return allowed_learn_ops_[op_index];
-}
-
-}  // namespace automl_zero
+} // namespace automl_zero
