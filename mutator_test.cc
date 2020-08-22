@@ -443,6 +443,7 @@ namespace automl_zero
 
                 return sameOpAndSameParams &&
                        mutatedLoop->children_.size() == loop->children_.size() &&
+                       mutatedLoop->children_[0]->op_ == SCALAR_SUM_OP &&
                        *mutatedLoop->children_[0] != *loop->children_[0];
             }),
             {true, false},
