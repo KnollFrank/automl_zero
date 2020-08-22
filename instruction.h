@@ -122,6 +122,7 @@ namespace automl_zero
 
     // Constructor that randomizes all parameters.
     Instruction(Op op, RandomGenerator *rand_gen);
+    Instruction(Op op, RandomGenerator *rand_gen, const Instruction *templateInstruction);
 
     // Copy constructor that randomly alters a parameter.
     Instruction(const Instruction &other, RandomGenerator *rand_gen);
@@ -157,6 +158,7 @@ namespace automl_zero
     // based on the component function (setup / learn / predict), and that is
     // not known at this point. Serves as a way to initialize the instruction.
     void SetOpAndRandomizeParams(Op op, RandomGenerator *rand_gen);
+    void SetOpAndRandomizeParams(Op op, RandomGenerator *rand_gen, const Instruction *templateInstruction);
 
     // Alters one parameter a small amount (if it makes sense) or randomizes it
     // (otherwise), depending on the parameter. The choice of parameter is random.

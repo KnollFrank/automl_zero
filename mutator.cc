@@ -187,7 +187,7 @@ namespace automl_zero
         if (!componentFunction.empty())
         {
             InstructionIndexT index = RandomInstructionIndex(componentFunction.size());
-            componentFunction.getInstructions()[index] = make_shared<const Instruction>(getRandomOp(componentFunctionType), rand_gen_);
+            componentFunction.getInstructions()[index] = make_shared<const Instruction>(getRandomOp(componentFunctionType), rand_gen_, &*componentFunction.getInstructions()[index]);
         }
     }
 

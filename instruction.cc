@@ -155,6 +155,11 @@ namespace automl_zero
         SetOpAndRandomizeParams(op, rand_gen);
     }
 
+    Instruction::Instruction(Op op, RandomGenerator *rand_gen, const Instruction *templateInstruction)
+    {
+        SetOpAndRandomizeParams(op, rand_gen, templateInstruction);
+    }
+
     Instruction::Instruction(
         const Instruction &other, RandomGenerator *rand_gen)
         : op_(other.op_),
@@ -219,6 +224,114 @@ namespace automl_zero
         float_data_1_ = 0.0;
         float_data_2_ = 0.0;
         children_ = {};
+    }
+
+    // FK-TODO: merge SetOpAndRandomizeParams(Op op, RandomGenerator *rand_gen) into this method
+    void Instruction::SetOpAndRandomizeParams(Op op, RandomGenerator *rand_gen, const Instruction *templateInstruction)
+    {
+        if (templateInstruction->op_ == LOOP && !templateInstruction->children_.empty())
+        {
+            *this = *templateInstruction;
+            switch (rand_gen->Choice2())
+            {
+            case kChoice0of2:
+                RandomizeIn1(rand_gen);
+                RandomizeOut(rand_gen);
+                return;
+            case kChoice1of2:
+                InstructionIndexT index = RandomInstructionIndex(rand_gen, children_.size());
+                children_[index] = std::make_shared<const Instruction>(op, rand_gen, &*children_[index]);
+                return;
+            }
+            return;
+        }
+
+        FillWithNoOp();
+        op_ = op;
+        switch (op_)
+        {
+        case NO_OP:
+            return;
+        case SCALAR_CONST_SET_OP:
+        case VECTOR_CONST_SET_OP:
+        case MATRIX_CONST_SET_OP:
+        case SCALAR_GAUSSIAN_SET_OP:
+        case VECTOR_GAUSSIAN_SET_OP:
+        case MATRIX_GAUSSIAN_SET_OP:
+        case SCALAR_UNIFORM_SET_OP:
+        case VECTOR_UNIFORM_SET_OP:
+        case MATRIX_UNIFORM_SET_OP:
+            RandomizeOut(rand_gen);
+            RandomizeData(rand_gen);
+            return;
+        case SCALAR_ABS_OP:
+        case SCALAR_HEAVYSIDE_OP:
+        case SCALAR_SIN_OP:
+        case SCALAR_COS_OP:
+        case SCALAR_TAN_OP:
+        case SCALAR_ARCSIN_OP:
+        case SCALAR_ARCCOS_OP:
+        case SCALAR_ARCTAN_OP:
+        case SCALAR_EXP_OP:
+        case SCALAR_LOG_OP:
+        case SCALAR_RECIPROCAL_OP:
+        case SCALAR_BROADCAST_OP:
+        case VECTOR_ABS_OP:
+        case VECTOR_HEAVYSIDE_OP:
+        case VECTOR_RECIPROCAL_OP:
+        case MATRIX_RECIPROCAL_OP:
+        case MATRIX_ROW_NORM_OP:
+        case MATRIX_COLUMN_NORM_OP:
+        case VECTOR_COLUMN_BROADCAST_OP:
+        case VECTOR_ROW_BROADCAST_OP:
+        case MATRIX_ABS_OP:
+        case MATRIX_HEAVYSIDE_OP:
+        case VECTOR_NORM_OP:
+        case MATRIX_NORM_OP:
+        case MATRIX_TRANSPOSE_OP:
+        case VECTOR_MEAN_OP:
+        case VECTOR_ST_DEV_OP:
+        case MATRIX_MEAN_OP:
+        case MATRIX_ST_DEV_OP:
+        case MATRIX_ROW_MEAN_OP:
+        case MATRIX_ROW_ST_DEV_OP:
+        case SCALAR_VECTOR_AT_INDEX_SET_OP:
+        case LOOP:
+            RandomizeIn1(rand_gen);
+            RandomizeOut(rand_gen);
+            return;
+        case SCALAR_SUM_OP:
+        case SCALAR_DIFF_OP:
+        case SCALAR_PRODUCT_OP:
+        case SCALAR_DIVISION_OP:
+        case SCALAR_MIN_OP:
+        case SCALAR_MAX_OP:
+        case VECTOR_SUM_OP:
+        case VECTOR_DIFF_OP:
+        case VECTOR_PRODUCT_OP:
+        case VECTOR_DIVISION_OP:
+        case VECTOR_MIN_OP:
+        case VECTOR_MAX_OP:
+        case MATRIX_SUM_OP:
+        case MATRIX_DIFF_OP:
+        case MATRIX_PRODUCT_OP:
+        case MATRIX_DIVISION_OP:
+        case MATRIX_MIN_OP:
+        case MATRIX_MAX_OP:
+        case SCALAR_VECTOR_PRODUCT_OP:
+        case VECTOR_INNER_PRODUCT_OP:
+        case VECTOR_OUTER_PRODUCT_OP:
+        case SCALAR_MATRIX_PRODUCT_OP:
+        case MATRIX_VECTOR_PRODUCT_OP:
+        case MATRIX_MATRIX_PRODUCT_OP:
+        case VECTOR_ARG_MIN_OP:
+        case VECTOR_SWAP_OP:
+            RandomizeIn1(rand_gen);
+            RandomizeIn2(rand_gen);
+            RandomizeOut(rand_gen);
+            return;
+            // Do not add default clause. All ops should be supported here.
+        }
     }
 
     void Instruction::SetOpAndRandomizeParams(Op op, RandomGenerator *rand_gen)
