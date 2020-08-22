@@ -758,6 +758,39 @@ namespace automl_zero
             {SCALAR_SUM_OP, SCALAR_DIFF_OP}, {SCALAR_SUM_OP, SCALAR_DIFF_OP}, 3));
     }
 
+    TEST(InsertInstructionMutationTypeTest, InsertsInstructionInLoopBody)
+    {
+        Algorithm algorithm;
+        addLoopInstructionEmptyBody(algorithm.predict_);
+        mt19937 bit_gen;
+        RandomGenerator rand_gen(&bit_gen);
+        Mutator mutator(
+            ParseTextFormat<MutationTypeList>("mutation_types: [INSERT_INSTRUCTION_MUTATION_TYPE] "),
+            1.0,                          // mutate_prob
+            {},                           // allowed_setup_ops
+            {SCALAR_SUM_OP},              // allowed_predict_ops
+            {},                           // allowed_learn_ops
+            0, 10000, 0, 10000, 0, 10000, // min/max component function sizes
+            &bit_gen, &rand_gen);
+        EXPECT_TRUE(IsEventually(
+            function<IntegerT(void)>([&mutator, algorithm]() {
+                auto mutated_algorithm = make_shared<const Algorithm>(algorithm);
+                mutator.Mutate(&mutated_algorithm);
+                if (mutated_algorithm->predict_.size() >= 1 && mutated_algorithm->predict_.getConstInstructions()[0]->op_ == LOOP)
+                {
+                    auto loop = mutated_algorithm->predict_.getConstInstructions()[0];
+                    return loop->children_.size() >= 1 ? static_cast<IntegerT>(loop->children_[0]->op_) : static_cast<IntegerT>(-1);
+                }
+                else
+                {
+                    return static_cast<IntegerT>(-1);
+                }
+            }),
+            {-1, SCALAR_SUM_OP},
+            {SCALAR_SUM_OP},
+            3));
+    }
+
     TEST(InsertInstructionMutationTypeTest, CoversLearnInstructions)
     {
         const Algorithm empty_algorithm;
