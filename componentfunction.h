@@ -15,7 +15,7 @@ namespace automl_zero
         bool empty() const;
         int size() const;
         void insertRandomly(RandomGenerator &rand_gen, std::shared_ptr<Instruction> instruction);
-        void remove(const InstructionIndexT position);
+        void removeRandomly(RandomGenerator &rand_gen);
         bool operator==(const ComponentFunction &other) const;
         bool operator!=(const ComponentFunction &other) const
         {

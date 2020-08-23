@@ -849,7 +849,40 @@ namespace automl_zero
             3));
     }
 
-    // TEST(RemoveInstructionMutationTypeTest, RemovesLoopBodyInstruction)
+    TEST(RemoveInstructionMutationTypeTest, RemovesLoopBodyInstruction)
+    {
+        Algorithm algorithm;
+        addLoopInstructionHavingSingleInstructionInBody(algorithm.predict_);
+        mt19937 bit_gen;
+        RandomGenerator rand_gen(&bit_gen);
+        Mutator mutator(
+            ParseTextFormat<MutationTypeList>("mutation_types: [REMOVE_INSTRUCTION_MUTATION_TYPE] "),
+            1.0,                          // mutate_prob
+            {},                           // allowed_setup_ops
+            {NO_OP},                      // allowed_predict_ops
+            {},                           // allowed_learn_ops
+            0, 10000, 0, 10000, 0, 10000, // min/max component function sizes
+            &bit_gen, &rand_gen);
+        EXPECT_TRUE(IsEventually(
+            function<IntegerT(void)>([&mutator, algorithm]() {
+                auto mutated_algorithm = make_shared<const Algorithm>(algorithm);
+
+                mutator.Mutate(&mutated_algorithm);
+
+                bool hasLoop = !mutated_algorithm->predict_.empty();
+                if (!hasLoop)
+                {
+                    return false;
+                }
+
+                auto loop = mutated_algorithm->predict_.getConstInstructions()[0];
+                bool isSingleInstructionInBodyRemoved = loop->children_.empty();
+                return isSingleInstructionInBodyRemoved;
+            }),
+            {false, true},
+            {true},
+            3));
+    }
 
     TEST(RemoveInstructionMutationTypeTest, CoversComponentFunctions)
     {

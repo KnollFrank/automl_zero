@@ -237,12 +237,12 @@ namespace automl_zero
                 // RandomizeParams
                 RandomizeIn1(rand_gen);
                 RandomizeOut(rand_gen);
-                return;
+                break;
             case kChoice0of2:
                 // SetOpAndRandomizeParams of a random child
                 InstructionIndexT index = RandomInstructionIndex(rand_gen, children_.size());
                 children_[index] = std::make_shared<Instruction>(op, rand_gen, &*children_[index]);
-                return;
+                break;
             }
         }
         else

@@ -22,7 +22,8 @@ namespace automl_zero
 
     void ComponentFunction::insertRandomly(RandomGenerator &rand_gen, std::shared_ptr<Instruction> instruction)
     {
-        const InstructionIndexT position = RandomInstructionIndex(rand_gen, size() + 1);
+        const InstructionIndexT position = RandomInstructionIndex(rand_gen, instructions.size() + 1);
+        // FK-FIXME: hier fehlt noch die Möglichkeit VOR und NACH einem LOOP eine Instruktion enzufügen. Test dafür schreiben.
         if (position < instructions.size() && instructions[position]->op_ == LOOP)
         {
             std::vector<std::shared_ptr<Instruction>> &loopInstructions = instructions[position]->children_;
@@ -39,10 +40,32 @@ namespace automl_zero
         }
     }
 
-    void ComponentFunction::remove(const InstructionIndexT position)
+    void ComponentFunction::removeRandomly(RandomGenerator &rand_gen)
     {
         CHECK_GT(instructions.size(), 0);
-        instructions.erase(instructions.begin() + position);
+        const InstructionIndexT position = RandomInstructionIndex(rand_gen, instructions.size());
+        if (position < instructions.size() && instructions[position]->op_ == LOOP && !instructions[position]->children_.empty())
+        {
+            switch (rand_gen.Choice2())
+            {
+            case kChoice0of2:
+            {
+                // remove some instruction within loop body
+                // FK-FIXME: LOOP könnte auch verschachtelt sein, also removeRandomly() irgendwie rekursiv aufrufen
+                std::vector<std::shared_ptr<Instruction>> &loopInstructions = instructions[position]->children_;
+                loopInstructions.erase(loopInstructions.begin() + RandomInstructionIndex(rand_gen, loopInstructions.size()));
+                break;
+            }
+            case kChoice1of2:
+                // remove loop instruction
+                instructions.erase(instructions.begin() + position);
+                break;
+            }
+        }
+        else
+        {
+            instructions.erase(instructions.begin() + position);
+        }
     }
 
     bool ComponentFunction::operator==(const ComponentFunction &other) const

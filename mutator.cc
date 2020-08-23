@@ -294,7 +294,7 @@ namespace automl_zero
 
     void Mutator::RemoveInstructionUnconditionally(ComponentFunction &component_function)
     {
-        component_function.remove(RandomInstructionIndex(component_function.size()));
+        component_function.removeRandomly(*rand_gen_);
     }
 
     Op Mutator::RandomSetupOp()
