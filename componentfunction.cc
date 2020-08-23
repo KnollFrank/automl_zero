@@ -22,10 +22,11 @@ namespace automl_zero
 
     void ComponentFunction::insertRandomly(RandomGenerator &rand_gen, std::shared_ptr<Instruction> instruction)
     {
-        const InstructionIndexT position = RandomInstructionIndex(rand_gen, size());
-        if (instructions.size() >= 1 && instructions[position]->op_ == LOOP)
+        const InstructionIndexT position = RandomInstructionIndex(rand_gen, size() + 1);
+        if (position < instructions.size() && instructions[position]->op_ == LOOP)
         {
             std::vector<std::shared_ptr<Instruction>> &loopInstructions = instructions[position]->children_;
+            // FK-FIXME: LOOP könnte auch verschachtelt sein, also insertRandomly() irgendwie rekursiv aufrufen
             loopInstructions.insert(
                 loopInstructions.begin() + RandomInstructionIndex(rand_gen, loopInstructions.size() + 1),
                 instruction);
