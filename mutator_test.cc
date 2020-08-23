@@ -775,7 +775,11 @@ namespace automl_zero
         EXPECT_TRUE(IsEventually(
             function<IntegerT(void)>([&mutator, algorithm]() {
                 auto mutated_algorithm = make_shared<const Algorithm>(algorithm);
+
+                // When
                 mutator.Mutate(&mutated_algorithm);
+
+                // Then
                 if (mutated_algorithm->predict_.size() >= 1 && mutated_algorithm->predict_.getConstInstructions()[0]->op_ == LOOP)
                 {
                     auto loop = mutated_algorithm->predict_.getConstInstructions()[0];
@@ -788,6 +792,68 @@ namespace automl_zero
             }),
             {-1, SCALAR_SUM_OP},
             {SCALAR_SUM_OP},
+            3));
+    }
+
+    TEST(InsertInstructionMutationTypeTest, InsertsInstructionBeforeLoop)
+    {
+        Algorithm algorithm;
+        addLoopInstructionHavingSingleInstructionInBody(algorithm.predict_);
+        mt19937 bit_gen;
+        RandomGenerator rand_gen(&bit_gen);
+        Mutator mutator(
+            ParseTextFormat<MutationTypeList>("mutation_types: [INSERT_INSTRUCTION_MUTATION_TYPE] "),
+            1.0,                          // mutate_prob
+            {},                           // allowed_setup_ops
+            {SCALAR_SUM_OP},              // allowed_predict_ops
+            {},                           // allowed_learn_ops
+            0, 10000, 0, 10000, 0, 10000, // min/max component function sizes
+            &bit_gen, &rand_gen);
+        EXPECT_TRUE(IsEventually(
+            function<bool(void)>([&mutator, algorithm]() {
+                auto mutated_algorithm = make_shared<const Algorithm>(algorithm);
+
+                // When
+                mutator.Mutate(&mutated_algorithm);
+
+                // Then
+                return mutated_algorithm->predict_.size() >= 2 &&
+                       mutated_algorithm->predict_.getConstInstructions()[0]->op_ == SCALAR_SUM_OP &&
+                       mutated_algorithm->predict_.getConstInstructions()[1]->op_ == LOOP;
+            }),
+            {false, true},
+            {true},
+            3));
+    }
+
+    TEST(InsertInstructionMutationTypeTest, InsertsInstructionAfterLoop)
+    {
+        Algorithm algorithm;
+        addLoopInstructionHavingSingleInstructionInBody(algorithm.predict_);
+        mt19937 bit_gen;
+        RandomGenerator rand_gen(&bit_gen);
+        Mutator mutator(
+            ParseTextFormat<MutationTypeList>("mutation_types: [INSERT_INSTRUCTION_MUTATION_TYPE] "),
+            1.0,                          // mutate_prob
+            {},                           // allowed_setup_ops
+            {SCALAR_SUM_OP},              // allowed_predict_ops
+            {},                           // allowed_learn_ops
+            0, 10000, 0, 10000, 0, 10000, // min/max component function sizes
+            &bit_gen, &rand_gen);
+        EXPECT_TRUE(IsEventually(
+            function<bool(void)>([&mutator, algorithm]() {
+                auto mutated_algorithm = make_shared<const Algorithm>(algorithm);
+
+                // When
+                mutator.Mutate(&mutated_algorithm);
+
+                // Then
+                return mutated_algorithm->predict_.size() >= 2 &&
+                       mutated_algorithm->predict_.getConstInstructions()[0]->op_ == LOOP &&
+                       mutated_algorithm->predict_.getConstInstructions()[1]->op_ == SCALAR_SUM_OP;
+            }),
+            {false, true},
+            {true},
             3));
     }
 
