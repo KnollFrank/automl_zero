@@ -176,7 +176,7 @@ namespace automl_zero
         if (!componentFunction.empty())
         {
             InstructionIndexT index = RandomInstructionIndex(componentFunction.size());
-            componentFunction.getInstructions()[index] = make_shared<const Instruction>(*componentFunction.getInstructions()[index], rand_gen_);
+            componentFunction.getInstructions()[index] = make_shared<Instruction>(*componentFunction.getInstructions()[index], rand_gen_);
         }
     }
 
@@ -187,7 +187,7 @@ namespace automl_zero
         if (!componentFunction.empty())
         {
             InstructionIndexT index = RandomInstructionIndex(componentFunction.size());
-            componentFunction.getInstructions()[index] = make_shared<const Instruction>(getRandomOp(componentFunctionType), rand_gen_, &*componentFunction.getInstructions()[index]);
+            componentFunction.getInstructions()[index] = make_shared<Instruction>(getRandomOp(componentFunctionType), rand_gen_, &*componentFunction.getInstructions()[index]);
         }
     }
 
@@ -287,9 +287,9 @@ namespace automl_zero
 
     void Mutator::InsertInstructionUnconditionally(const Op op, ComponentFunction &component_function)
     {
-        component_function.insert(
-            RandomInstructionIndex(component_function.size() + 1),
-            make_shared<const Instruction>(op, rand_gen_));
+        component_function.insertRandomly(
+            *rand_gen_,
+            make_shared<Instruction>(op, rand_gen_));
     }
 
     void Mutator::RemoveInstructionUnconditionally(ComponentFunction &component_function)

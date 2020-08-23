@@ -14,7 +14,7 @@ namespace automl_zero
     public:
         bool empty() const;
         int size() const;
-        void insert(const InstructionIndexT position, std::shared_ptr<const Instruction> instruction);
+        void insertRandomly(RandomGenerator &rand_gen, std::shared_ptr<Instruction> instruction);
         void remove(const InstructionIndexT position);
         bool operator==(const ComponentFunction &other) const;
         bool operator!=(const ComponentFunction &other) const
@@ -22,11 +22,12 @@ namespace automl_zero
             return !(*this == other);
         }
         void ShallowCopyTo(ComponentFunction &dest) const;
-        std::vector<std::shared_ptr<const Instruction>> &getInstructions();
-        const std::vector<std::shared_ptr<const Instruction>> &getConstInstructions() const;
+        std::vector<std::shared_ptr<Instruction>> &getInstructions();
+        const std::vector<std::shared_ptr<Instruction>> &getConstInstructions() const;
 
     private:
-        std::vector<std::shared_ptr<const Instruction>> instructions;
+        InstructionIndexT RandomInstructionIndex(RandomGenerator &rand_gen, const InstructionIndexT numInstructions);
+        std::vector<std::shared_ptr<Instruction>> instructions;
     };
 } // namespace automl_zero
 

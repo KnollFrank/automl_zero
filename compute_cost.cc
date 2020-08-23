@@ -20,9 +20,9 @@
 namespace automl_zero {
 
 double ComputeCost(
-    const std::vector<std::shared_ptr<const Instruction>>& component_function) {
+    const std::vector<std::shared_ptr<Instruction>>& component_function) {
   double cost = 0.0;
-  for (const std::shared_ptr<const Instruction>& instruction :
+  for (const std::shared_ptr<Instruction>& instruction :
        component_function) {
     cost += ComputeCost(*instruction);
   }

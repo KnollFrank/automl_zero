@@ -317,13 +317,13 @@ namespace automl_zero
         // for(s6 = 1..s5) {
         Instruction loop = Instruction(LOOP, 5, 6);
         //     s0 = s6 - s2
-        loop.children_.emplace_back(std::make_shared<const Instruction>(
+        loop.children_.emplace_back(std::make_shared<Instruction>(
             SCALAR_DIFF_OP,
             6,
             2,
             0));
         //     }
-        componentFunction.getInstructions().emplace_back(std::make_shared<const Instruction>(loop));
+        componentFunction.getInstructions().emplace_back(std::make_shared<Instruction>(loop));
     }
 
     void addLoopInstructionEmptyBody(ComponentFunction &componentFunction)
@@ -331,7 +331,7 @@ namespace automl_zero
         // for(s6 = 1..s5) {
         Instruction loop = Instruction(LOOP, 5, 6);
         //     }
-        componentFunction.getInstructions().emplace_back(std::make_shared<const Instruction>(loop));
+        componentFunction.getInstructions().emplace_back(std::make_shared<Instruction>(loop));
     }
 
     TEST(MutatorTest, AlterParamInLoopEmptyBody)

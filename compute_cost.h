@@ -25,7 +25,7 @@ namespace automl_zero {
 // be (roughly) proportional to time.
 
 double ComputeCost(
-    const std::vector<std::shared_ptr<const Instruction>>& component_function);
+    const std::vector<std::shared_ptr<Instruction>>& component_function);
 
 double ComputeCost(const Instruction& instruction);
 

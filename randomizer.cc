@@ -57,25 +57,25 @@ namespace automl_zero
 
   void Randomizer::RandomizeSetup(Algorithm *algorithm)
   {
-    for (shared_ptr<const Instruction> &instruction : algorithm->setup_.getInstructions())
+    for (shared_ptr<Instruction> &instruction : algorithm->setup_.getInstructions())
     {
-      instruction = make_shared<const Instruction>(SetupOp(), rand_gen_, &*instruction);
+      instruction = make_shared<Instruction>(SetupOp(), rand_gen_, &*instruction);
     }
   }
 
   void Randomizer::RandomizePredict(Algorithm *algorithm)
   {
-    for (shared_ptr<const Instruction> &instruction : algorithm->predict_.getInstructions())
+    for (shared_ptr<Instruction> &instruction : algorithm->predict_.getInstructions())
     {
-      instruction = make_shared<const Instruction>(PredictOp(), rand_gen_, &*instruction);
+      instruction = make_shared<Instruction>(PredictOp(), rand_gen_, &*instruction);
     }
   }
 
   void Randomizer::RandomizeLearn(Algorithm *algorithm)
   {
-    for (shared_ptr<const Instruction> &instruction : algorithm->learn_.getInstructions())
+    for (shared_ptr<Instruction> &instruction : algorithm->learn_.getInstructions())
     {
-      instruction = make_shared<const Instruction>(LearnOp(), rand_gen_, &*instruction);
+      instruction = make_shared<Instruction>(LearnOp(), rand_gen_, &*instruction);
     }
   }
 

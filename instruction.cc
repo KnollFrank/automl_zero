@@ -241,7 +241,7 @@ namespace automl_zero
             case kChoice0of2:
                 // SetOpAndRandomizeParams of a random child
                 InstructionIndexT index = RandomInstructionIndex(rand_gen, children_.size());
-                children_[index] = std::make_shared<const Instruction>(op, rand_gen, &*children_[index]);
+                children_[index] = std::make_shared<Instruction>(op, rand_gen, &*children_[index]);
                 return;
             }
         }
@@ -486,7 +486,7 @@ namespace automl_zero
     void Instruction::AlterRandomParamOfRandomChildren(RandomGenerator *rand_gen)
     {
         InstructionIndexT index = RandomInstructionIndex(rand_gen, children_.size());
-        children_[index] = std::make_shared<const Instruction>(*children_[index], rand_gen);
+        children_[index] = std::make_shared<Instruction>(*children_[index], rand_gen);
     }
 
     // FK-TODO: DRY with Mutator::RandomInstructionIndex
@@ -1293,7 +1293,7 @@ namespace automl_zero
         case LOOP:
         {
             stream << "  for(s" << out_ << " = 1..s" << in1_ << ") {" << std::endl;
-            for (const std::shared_ptr<const Instruction> &instruction : children_)
+            for (const std::shared_ptr<Instruction> &instruction : children_)
             {
                 stream << "  " << instruction->ToString();
             }

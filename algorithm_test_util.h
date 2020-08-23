@@ -87,7 +87,7 @@ IntegerT CountDifferentInstructions(const Algorithm& algorithm1,
 // component function. Returns -1 if it doesn't appear in that
 // component function and -2 if it appears multiple times.
 IntegerT ScalarSumOpPosition(
-    const std::vector<std::shared_ptr<const Instruction>>& component_function);
+    const std::vector<std::shared_ptr<Instruction>>& component_function);
 
 // Returns which component function is different (as a casted
 // ComponentFunctionT integer). Returns -1 if none of the component functions
@@ -100,8 +100,8 @@ IntegerT DifferentComponentFunction(const Algorithm& algorithm1,
 // component function 1 that is not present in component function 2. Returns -1
 // if none is missing and -2 if multiple are missing.
 IntegerT MissingDataInComponentFunction(
-    const std::vector<std::shared_ptr<const Instruction>>& component_function1,
-    const std::vector<std::shared_ptr<const Instruction>>& component_function2);
+    const std::vector<std::shared_ptr<Instruction>>& component_function1,
+    const std::vector<std::shared_ptr<Instruction>>& component_function2);
 
 }  // namespace automl_zero
 

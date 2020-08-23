@@ -14,11 +14,28 @@ namespace automl_zero
         return instructions.size();
     }
 
-    void ComponentFunction::insert(const InstructionIndexT position, std::shared_ptr<const Instruction> instruction)
+    // FK-TODO: DRY with Mutator::RandomInstructionIndex
+    InstructionIndexT ComponentFunction::RandomInstructionIndex(RandomGenerator &rand_gen, const InstructionIndexT numInstructions)
     {
-        instructions.insert(
-            instructions.begin() + position,
-            instruction);
+        return rand_gen.UniformInteger(0, numInstructions);
+    }
+
+    void ComponentFunction::insertRandomly(RandomGenerator &rand_gen, std::shared_ptr<Instruction> instruction)
+    {
+        const InstructionIndexT position = RandomInstructionIndex(rand_gen, size());
+        if (instructions.size() >= 1 && instructions[position]->op_ == LOOP)
+        {
+            std::vector<std::shared_ptr<Instruction>> &loopInstructions = instructions[position]->children_;
+            loopInstructions.insert(
+                loopInstructions.begin() + RandomInstructionIndex(rand_gen, loopInstructions.size() + 1),
+                instruction);
+        }
+        else
+        {
+            instructions.insert(
+                instructions.begin() + position,
+                instruction);
+        }
     }
 
     void ComponentFunction::remove(const InstructionIndexT position)
@@ -29,14 +46,14 @@ namespace automl_zero
 
     bool ComponentFunction::operator==(const ComponentFunction &other) const
     {
-        const std::vector<std::shared_ptr<const Instruction>> &component_function1 = this->instructions;
-        const std::vector<std::shared_ptr<const Instruction>> &component_function2 = other.getConstInstructions();
+        const std::vector<std::shared_ptr<Instruction>> &component_function1 = this->instructions;
+        const std::vector<std::shared_ptr<Instruction>> &component_function2 = other.getConstInstructions();
         if (component_function1.size() != component_function2.size())
         {
             return false;
         }
-        std::vector<std::shared_ptr<const Instruction>>::const_iterator instruction1_it = component_function1.begin();
-        for (const std::shared_ptr<const Instruction> &instruction2 : component_function2)
+        std::vector<std::shared_ptr<Instruction>>::const_iterator instruction1_it = component_function1.begin();
+        for (const std::shared_ptr<Instruction> &instruction2 : component_function2)
         {
             if (*instruction2 != **instruction1_it)
                 return false;
@@ -50,18 +67,18 @@ namespace automl_zero
     {
         dest.getInstructions().reserve(size());
         dest.getInstructions().clear();
-        for (const std::shared_ptr<const Instruction> &src_instr : instructions)
+        for (const std::shared_ptr<Instruction> &src_instr : instructions)
         {
             dest.getInstructions().emplace_back(src_instr);
         }
     }
 
-    std::vector<std::shared_ptr<const Instruction>> &ComponentFunction::getInstructions()
+    std::vector<std::shared_ptr<Instruction>> &ComponentFunction::getInstructions()
     {
         return instructions;
     }
 
-    const std::vector<std::shared_ptr<const Instruction>> &ComponentFunction::getConstInstructions() const
+    const std::vector<std::shared_ptr<Instruction>> &ComponentFunction::getConstInstructions() const
     {
         return instructions;
     }

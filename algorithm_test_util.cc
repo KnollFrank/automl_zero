@@ -35,7 +35,7 @@ namespace automl_zero
     {
         Algorithm algorithm = SimpleNoOpAlgorithm();
         algorithm.predict_.getInstructions()[0] =
-            make_shared<const Instruction>(IntegerDataSetter(algorithm_id));
+            make_shared<Instruction>(IntegerDataSetter(algorithm_id));
         return algorithm;
     }
 
@@ -54,7 +54,7 @@ namespace automl_zero
     {
         auto mutable_algorithm = make_unique<Algorithm>(**algorithm);
         mutable_algorithm->predict_.getInstructions()[0] =
-            make_shared<const Instruction>(IntegerDataSetter(new_algorithm_id));
+            make_shared<Instruction>(IntegerDataSetter(new_algorithm_id));
         algorithm->reset(mutable_algorithm.release());
     }
 
@@ -64,17 +64,17 @@ namespace automl_zero
         const IntegerT algorithm_id =
             mutable_algorithm->predict_.getInstructions()[0]->GetIntegerData();
         mutable_algorithm->predict_.getInstructions()[0] =
-            make_shared<const Instruction>(IntegerDataSetter(algorithm_id + by));
+            make_shared<Instruction>(IntegerDataSetter(algorithm_id + by));
         algorithm->reset(mutable_algorithm.release());
     }
 
     IntegerT CountDifferentInstructionsOfComponentFunction(
-        const std::vector<std::shared_ptr<const Instruction>> &componentFunction1,
-        const std::vector<std::shared_ptr<const Instruction>> &componentFunction2)
+        const std::vector<std::shared_ptr<Instruction>> &componentFunction1,
+        const std::vector<std::shared_ptr<Instruction>> &componentFunction2)
     {
         IntegerT num_diff_instructions = 0;
-        vector<shared_ptr<const Instruction>>::const_iterator instruction1_it = componentFunction1.begin();
-        for (const shared_ptr<const Instruction> &instruction2 : componentFunction2)
+        vector<shared_ptr<Instruction>>::const_iterator instruction1_it = componentFunction1.begin();
+        for (const shared_ptr<Instruction> &instruction2 : componentFunction2)
         {
             if (*instruction2 != **instruction1_it)
             {
@@ -108,7 +108,7 @@ namespace automl_zero
                CountDifferentLearnInstructions(algorithm1, algorithm2);
     }
 
-    IntegerT ScalarSumOpPosition(const vector<shared_ptr<const Instruction>> &component_function)
+    IntegerT ScalarSumOpPosition(const vector<shared_ptr<Instruction>> &component_function)
     {
         vector<IntegerT> positions;
         for (IntegerT position = 0; position < component_function.size(); ++position)
@@ -165,16 +165,16 @@ namespace automl_zero
     }
 
     IntegerT MissingDataInComponentFunction(
-        const vector<shared_ptr<const Instruction>> &component_function1,
-        const vector<shared_ptr<const Instruction>> &component_function2)
+        const vector<shared_ptr<Instruction>> &component_function1,
+        const vector<shared_ptr<Instruction>> &component_function2)
     {
         std::unordered_set<IntegerT> data2;
-        for (const shared_ptr<const Instruction> &instruction : component_function2)
+        for (const shared_ptr<Instruction> &instruction : component_function2)
         {
             data2.insert(instruction->GetIntegerData());
         }
         vector<IntegerT> missing;
-        for (const shared_ptr<const Instruction> &instruction : component_function1)
+        for (const shared_ptr<Instruction> &instruction : component_function1)
         {
             const IntegerT data1_value = instruction->GetIntegerData();
             if (data2.find(data1_value) == data2.end())

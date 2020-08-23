@@ -61,7 +61,7 @@ namespace automl_zero {
     }
 
     void SetIncreasingDataInComponentFunction(
-        vector<shared_ptr<const Instruction>>* component_function) {
+        vector<shared_ptr<Instruction>>* component_function) {
         for (IntegerT position = 0;
             position < component_function->size();
             ++position) {

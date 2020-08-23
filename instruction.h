@@ -184,7 +184,7 @@ namespace automl_zero
     AddressT in1_; // First input address.
     AddressT in2_; // Second input address.
     AddressT out_; // Output address.
-    std::vector<std::shared_ptr<const Instruction>> children_;
+    std::vector<std::shared_ptr<Instruction>> children_;
 
   private:
     InstructionIndexT RandomInstructionIndex(RandomGenerator *rand_gen, const InstructionIndexT numInstructions);

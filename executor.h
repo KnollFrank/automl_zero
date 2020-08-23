@@ -534,11 +534,11 @@ namespace automl_zero
 
     template <FeatureIndexT F>
     inline void ExecuteLoopBody(
-        const std::vector<std::shared_ptr<const Instruction>> &loopBody,
+        const std::vector<std::shared_ptr<Instruction>> &loopBody,
         RandomGenerator *rand_gen,
         Memory<F> *memory)
     {
-        for (const std::shared_ptr<const Instruction> &instruction : loopBody)
+        for (const std::shared_ptr<Instruction> &instruction : loopBody)
         {
             ExecuteInstruction(*instruction, rand_gen, memory);
         }
@@ -1211,7 +1211,7 @@ namespace automl_zero
         Memory<F> *memory,
         RandomGenerator *rand_gen_)
     {
-        for (const std::shared_ptr<const Instruction> &instruction : componentFunction.getConstInstructions())
+        for (const std::shared_ptr<Instruction> &instruction : componentFunction.getConstInstructions())
         {
             ExecuteInstruction(*instruction, rand_gen_, memory);
         }
@@ -1394,7 +1394,7 @@ namespace automl_zero
             optimized_predict_component_function;
         typename std::array<Instruction, max_component_function_size>::iterator
             optimized_predict_instr_it = optimized_predict_component_function.begin();
-        for (const std::shared_ptr<const Instruction> &predict_instr : algorithm_.predict_.getConstInstructions())
+        for (const std::shared_ptr<Instruction> &predict_instr : algorithm_.predict_.getConstInstructions())
         {
             *optimized_predict_instr_it = *predict_instr;
             ++optimized_predict_instr_it;
@@ -1405,7 +1405,7 @@ namespace automl_zero
             optimized_learn_component_function;
         typename std::array<Instruction, max_component_function_size>::iterator
             optimized_learn_instr_it = optimized_learn_component_function.begin();
-        for (const std::shared_ptr<const Instruction> &learn_instr : algorithm_.learn_.getConstInstructions())
+        for (const std::shared_ptr<Instruction> &learn_instr : algorithm_.learn_.getConstInstructions())
         {
             *optimized_learn_instr_it = *learn_instr;
             ++optimized_learn_instr_it;

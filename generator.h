@@ -121,11 +121,11 @@ namespace automl_zero
         std::unique_ptr<RandomGenerator> rand_gen_owned_;
         RandomGenerator *rand_gen_;
         Randomizer randomizer_;
-        std::shared_ptr<const Instruction> no_op_instruction_;
+        std::shared_ptr<Instruction> no_op_instruction_;
 
-        void SortAlgorithmSetup(std::vector<std::shared_ptr<const Instruction>> &setup, const std::shared_ptr<const Instruction> &no_op_instruction);
-        void SortAlgorithmPredict(std::vector<std::shared_ptr<const Instruction>> &predict, const int F, const std::shared_ptr<const Instruction> &no_op_instruction);
-        void SortAlgorithmLearn(std::vector<std::shared_ptr<const Instruction>> &learn, const std::shared_ptr<const Instruction> &no_op_instruction);
+        void SortAlgorithmSetup(std::vector<std::shared_ptr<Instruction>> &setup, const std::shared_ptr<Instruction> &no_op_instruction);
+        void SortAlgorithmPredict(std::vector<std::shared_ptr<Instruction>> &predict, const int F, const std::shared_ptr<Instruction> &no_op_instruction);
+        void SortAlgorithmLearn(std::vector<std::shared_ptr<Instruction>> &learn, const std::shared_ptr<Instruction> &no_op_instruction);
     };
 
 } // namespace automl_zero
