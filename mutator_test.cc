@@ -821,6 +821,36 @@ namespace automl_zero
             {SCALAR_SUM_OP, SCALAR_DIFF_OP}, {SCALAR_SUM_OP, SCALAR_DIFF_OP}, 3));
     }
 
+    TEST(RemoveInstructionMutationTypeTest, RemovesLoopInstruction)
+    {
+        Algorithm algorithm;
+        addLoopInstructionEmptyBody(algorithm.predict_);
+        mt19937 bit_gen;
+        RandomGenerator rand_gen(&bit_gen);
+        Mutator mutator(
+            ParseTextFormat<MutationTypeList>("mutation_types: [REMOVE_INSTRUCTION_MUTATION_TYPE] "),
+            1.0,                          // mutate_prob
+            {},                           // allowed_setup_ops
+            {NO_OP},                      // allowed_predict_ops
+            {},                           // allowed_learn_ops
+            0, 10000, 0, 10000, 0, 10000, // min/max component function sizes
+            &bit_gen, &rand_gen);
+        EXPECT_TRUE(IsEventually(
+            function<IntegerT(void)>([&mutator, algorithm]() {
+                auto mutated_algorithm = make_shared<const Algorithm>(algorithm);
+
+                mutator.Mutate(&mutated_algorithm);
+
+                bool loopInstructionRemoved = mutated_algorithm->predict_.empty();
+                return loopInstructionRemoved;
+            }),
+            {false, true},
+            {true},
+            3));
+    }
+
+    // TEST(RemoveInstructionMutationTypeTest, RemovesLoopBodyInstruction)
+
     TEST(RemoveInstructionMutationTypeTest, CoversComponentFunctions)
     {
         const Algorithm random_algorithm = SimpleRandomAlgorithm();
