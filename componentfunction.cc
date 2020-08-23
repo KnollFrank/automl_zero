@@ -23,14 +23,27 @@ namespace automl_zero
     void ComponentFunction::insertRandomly(RandomGenerator &rand_gen, std::shared_ptr<Instruction> instruction)
     {
         const InstructionIndexT position = RandomInstructionIndex(rand_gen, instructions.size() + 1);
-        // FK-FIXME: hier fehlt noch die Möglichkeit VOR und NACH einem LOOP eine Instruktion enzufügen. Test dafür schreiben.
         if (position < instructions.size() && instructions[position]->op_ == LOOP)
         {
-            std::vector<std::shared_ptr<Instruction>> &loopInstructions = instructions[position]->children_;
-            // FK-FIXME: LOOP könnte auch verschachtelt sein, also insertRandomly() irgendwie rekursiv aufrufen
-            loopInstructions.insert(
-                loopInstructions.begin() + RandomInstructionIndex(rand_gen, loopInstructions.size() + 1),
-                instruction);
+            switch (rand_gen.Choice2())
+            {
+            case kChoice0of2:
+            {
+                // insert instruction into loop body
+                std::vector<std::shared_ptr<Instruction>> &loopInstructions = instructions[position]->children_;
+                // FK-FIXME: LOOP könnte auch verschachtelt sein, also insertRandomly() irgendwie rekursiv aufrufen
+                loopInstructions.insert(
+                    loopInstructions.begin() + RandomInstructionIndex(rand_gen, loopInstructions.size() + 1),
+                    instruction);
+                break;
+            }
+            case kChoice1of2:
+                // insert instruction before loop instruction
+                instructions.insert(
+                    instructions.begin() + position,
+                    instruction);
+                break;
+            }
         }
         else
         {
