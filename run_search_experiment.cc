@@ -191,7 +191,7 @@ namespace automl_zero
             cout << "Search fitness for candidate algorithm = "
                  << search_fitness << endl;
             cout << "candidate algorithm: " << endl
-                 << best_algorithm->ToReadable() << endl;
+                 << candidate_algorithm->ToReadable() << endl;
 
             // Randomize T_select tasks.
             if (GetFlag(FLAGS_randomize_task_seeds))
