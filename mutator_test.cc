@@ -85,7 +85,7 @@ namespace automl_zero
             &bit_gen,
             &rand_gen);
         const Algorithm algorithm = SimpleRandomAlgorithm();
-        const IntegerT original_size = algorithm.predict_.getConstInstructions().size();
+        const IntegerT original_size = algorithm.predict_.size();
         EXPECT_TRUE(IsEventually(
             function<IntegerT(void)>([&]() {
                 auto mutated_algorithm = make_shared<const Algorithm>(algorithm);
@@ -817,7 +817,7 @@ namespace automl_zero
                 mutator.Mutate(&mutated_algorithm);
 
                 // Then
-                return mutated_algorithm->predict_.size() >= 2 &&
+                return mutated_algorithm->predict_.getConstInstructions().size() >= 2 &&
                        mutated_algorithm->predict_.getConstInstructions()[0]->op_ == SCALAR_SUM_OP &&
                        mutated_algorithm->predict_.getConstInstructions()[1]->op_ == LOOP;
             }),
@@ -848,7 +848,7 @@ namespace automl_zero
                 mutator.Mutate(&mutated_algorithm);
 
                 // Then
-                return mutated_algorithm->predict_.size() >= 2 &&
+                return mutated_algorithm->predict_.getConstInstructions().size() >= 2 &&
                        mutated_algorithm->predict_.getConstInstructions()[0]->op_ == LOOP &&
                        mutated_algorithm->predict_.getConstInstructions()[1]->op_ == SCALAR_SUM_OP;
             }),

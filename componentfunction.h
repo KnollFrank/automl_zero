@@ -27,6 +27,7 @@ namespace automl_zero
 
     private:
         InstructionIndexT RandomInstructionIndex(RandomGenerator &rand_gen, const InstructionIndexT numInstructions);
+        int sizeOf(const std::vector<std::shared_ptr<Instruction>> &instructions) const;
         std::vector<std::shared_ptr<Instruction>> instructions;
     };
 } // namespace automl_zero

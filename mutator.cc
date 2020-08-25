@@ -175,7 +175,7 @@ namespace automl_zero
         ComponentFunction &componentFunction = algorithm->MutableComponentFunction(RandomComponentFunction());
         if (!componentFunction.empty())
         {
-            InstructionIndexT index = RandomInstructionIndex(componentFunction.size());
+            InstructionIndexT index = RandomInstructionIndex(componentFunction.getConstInstructions().size());
             componentFunction.getInstructions()[index] = make_shared<Instruction>(*componentFunction.getInstructions()[index], rand_gen_);
         }
     }
@@ -186,7 +186,7 @@ namespace automl_zero
         ComponentFunction &componentFunction = algorithm->MutableComponentFunction(componentFunctionType);
         if (!componentFunction.empty())
         {
-            InstructionIndexT index = RandomInstructionIndex(componentFunction.size());
+            InstructionIndexT index = RandomInstructionIndex(componentFunction.getConstInstructions().size());
             componentFunction.getInstructions()[index] = make_shared<Instruction>(getRandomOp(componentFunctionType), rand_gen_, &*componentFunction.getInstructions()[index]);
         }
     }

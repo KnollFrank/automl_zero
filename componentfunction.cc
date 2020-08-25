@@ -9,9 +9,19 @@ namespace automl_zero
         return instructions.empty();
     }
 
+    int ComponentFunction::sizeOf(const std::vector<std::shared_ptr<Instruction>> &instructions) const
+    {
+        int size = 0;
+        for (const std::shared_ptr<Instruction> instruction : instructions)
+        {
+            size += 1 + sizeOf(instruction->children_);
+        }
+        return size;
+    }
+
     int ComponentFunction::size() const
     {
-        return instructions.size();
+        return sizeOf(instructions);
     }
 
     // FK-TODO: DRY with Mutator::RandomInstructionIndex

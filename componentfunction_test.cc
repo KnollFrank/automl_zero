@@ -53,4 +53,37 @@ namespace automl_zero
     // Then
     EXPECT_EQ(size, 1);
   }
+
+  TEST(ComponentfunctionTest, SizeOfLoopWithEmptyBodyIs1)
+  {
+    // Given
+    ComponentFunction componentFunction;
+    Instruction loop = Instruction(LOOP, 5, 6);
+    componentFunction.getInstructions().emplace_back(std::make_shared<Instruction>(loop));
+
+    // When
+    int size = componentFunction.size();
+
+    // Then
+    EXPECT_EQ(size, 1);
+  }
+
+  TEST(ComponentfunctionTest, SizeOfLoopWithSingleInstructionInBodyIs2)
+  {
+    // Given
+    ComponentFunction componentFunction;
+    Instruction loop = Instruction(LOOP, 5, 6);
+    loop.children_.emplace_back(std::make_shared<Instruction>(
+        SCALAR_DIFF_OP,
+        6,
+        2,
+        0));
+    componentFunction.getInstructions().emplace_back(std::make_shared<Instruction>(loop));
+
+    // When
+    int size = componentFunction.size();
+
+    // Then
+    EXPECT_EQ(size, 2); // LOOP + SCALAR_DIFF_OP
+  }
 } // namespace automl_zero
