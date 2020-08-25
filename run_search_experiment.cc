@@ -190,6 +190,8 @@ namespace automl_zero
                 &candidate_algorithm, &search_fitness);
             cout << "Search fitness for candidate algorithm = "
                  << search_fitness << endl;
+            cout << "candidate algorithm: " << endl
+                 << best_algorithm->ToReadable() << endl;
 
             // Randomize T_select tasks.
             if (GetFlag(FLAGS_randomize_task_seeds))
@@ -218,8 +220,8 @@ namespace automl_zero
                 best_select_fitness = select_fitness;
                 best_algorithm = candidate_algorithm;
                 cout << "Select fitness is the best so far. " << endl;
-                ::std::cout << "Best algorithm so far: " << ::std::endl
-                            << best_algorithm->ToReadable() << ::std::endl;
+                cout << "Best algorithm so far: " << endl
+                     << best_algorithm->ToReadable() << endl;
             }
 
             // Consider stopping experiments.
