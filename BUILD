@@ -169,6 +169,15 @@ cc_test(
     ],
 )
 
+cc_test(
+    name = "componentfunction_test",
+    srcs = ["componentfunction_test.cc"],
+    deps = [
+        ":componentfunction",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
 cc_library(
     name = "evaluator",
     srcs = ["evaluator.cc"],
