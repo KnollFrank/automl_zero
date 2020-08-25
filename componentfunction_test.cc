@@ -37,4 +37,20 @@ namespace automl_zero
     // Then
     EXPECT_EQ(size, 0);
   }
+
+  TEST(ComponentfunctionTest, SizeOfSingleInstructionComponentFunctionIs1)
+  {
+    // Given
+    ComponentFunction componentFunction;
+    componentFunction.getInstructions().emplace_back(std::make_shared<Instruction>(
+        SCALAR_CONST_SET_OP,
+        2,
+        ActivationDataSetter(1.0)));
+
+    // When
+    int size = componentFunction.size();
+
+    // Then
+    EXPECT_EQ(size, 1);
+  }
 } // namespace automl_zero
